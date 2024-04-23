@@ -1,4 +1,3 @@
 flask
 Werkzeug
 flask_cors
-sqlite3
