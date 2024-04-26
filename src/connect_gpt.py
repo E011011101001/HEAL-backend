@@ -1,14 +1,14 @@
 # This class takes a language and prompt as arguments and creates an instance.
-# gpt = ChatBot("Japanese", "You are a doctor. Ask for details about the symptoms.")
+#   gpt = ChatBot("Japanese", "You are a doctor. Ask for details about the symptoms.")
 
 # This class consists of two methods and one private method.
 
 # Use "speak_to_gpt" method to obtain a response from gpt for a single text without referring to the history.
-# gpt.speak_to_gpt("My chest hurt.")
+#   gpt.speak_to_gpt("My chest hurt.")
 
 # Use "speak_to_gpt_with_log" method to refer to the history. The format of the history is assumed to be the following tuple
-# history = [{"text":"My chest hurts.", "speaker": "user"}, {"text":"I'm sorry to hear that. When did the chest pain start?", "speaker":"assistant"}]
-# gpt.speak_to_gpt_with_log("1 hour ago.", history)
+#   history = [{"text":"My chest hurts.", "speaker": "user"}, {"text":"I'm sorry to hear that. When did the chest pain start?", "speaker":"assistant"}]
+#   gpt.speak_to_gpt_with_log("1 hour ago.", history)
 
 import openai
 import os
