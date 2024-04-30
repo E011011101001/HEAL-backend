@@ -21,6 +21,7 @@ def explain_med_term(lan, speak):
 
     prompt = """
 次の医療用語を説明してください。
+また、指定する言語でWikipediaのリンク先を出力してください。
 """
 
     # Creating Chatbot Instances

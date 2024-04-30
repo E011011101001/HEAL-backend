@@ -6,7 +6,7 @@
 # Use "speak_to_gpt" method to obtain a response from gpt for a single text without referring to the history.
 #   gpt.speak_to_gpt("My chest hurt.")
 
-# Use "speak_to_gpt_with_log" method to refer to the history. The format of the history is assumed to be the following tuple
+# Use "speak_to_gpt_with_log" method to refer to the history. The format of the history is assumed to be the following tuple (as of now).
 #   history = [{"text":"My chest hurts.", "speaker": "user"}, {"text":"I'm sorry to hear that. When did the chest pain start?", "speaker":"assistant"}]
 #   gpt.speak_to_gpt_with_log("1 hour ago.", history)
 

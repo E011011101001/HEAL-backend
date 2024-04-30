@@ -9,16 +9,35 @@
 #   response = communicate_qst("English", speak, history)
 #   newHistory = __create_log(speak, response, log)
 
+# create class
+# export_history
+# history -string
+
 import connect_gpt
 
-def communicate_qst(lan, speak, log):
+class questioner():
+    def __init__(self, lan, history=[]):
 
-    prompt = """
+        self.lan = lan
+        self.log = []
+
+        userText = True
+        for text in history:
+            if userText:
+                self.log.append({"text":text, "speaker": "user"})
+            else:
+                self.log.append({"text":text, "speaker": "assistant"})
+            
+            userText = not userText
+    
+    def communicate_qst(self, speak):
+
+        prompt = """
 これからあなたは問診を行ってもらいます。
 箇条書きされる質問について対話形式で質問を行ってください。
 ただし、一度のメッセージでは一言で回答できる質問だけをしてください。その際に括弧の中の選択肢を与えてください。
 一回の出力では質問を**ひとつだけ**出力してください。
-全ての質問が終了したときは、情報をまとめて表示してください。
+全ての質問が終了したときは、情報をまとめて箇条書きで表示してください。
 
 ・具合の悪いところをどこがどのように悪いか
 ・症状はいつからか
@@ -38,24 +57,42 @@ def communicate_qst(lan, speak, log):
 ・（飲むなら）頻度はどうか（１毎日・２時々・３月２～３回）
 """
 
-    # Creating Chatbot Instances
-    qst = connect_gpt.ChatBot(lan, prompt)
-    res = qst.speak_to_gpt_with_log(speak, log)
+        # Creating Chatbot Instances
+        qst = connect_gpt.ChatBot(self.lan, prompt)
+        res = qst.speak_to_gpt_with_log(speak, self.log)
 
-    return res
+        self.log = self.__create_log(speak, res, self.log)
 
-# Creating formatted log
-def __create_log(speak, res, log):
+        return res
 
-    log.append({"text":speak, "speaker": "user"})
-    log.append({"text":res, "speaker":"assistant"})
+    # Creating formatted log
+    def __create_log(self, speak, res, log):
+
+        log.append({"text":speak, "speaker": "user"})
+        log.append({"text":res, "speaker":"assistant"})
     
-    return log
+        return log
+    
+    def export_history(self):
+        history = []
+        for textTaple in self.log:
+            history.append(textTaple["text"])
+
+        return history
 
 if __name__ == "__main__":
-    log = []
 
-    for i in range(30):
+    #new questioner chat
+    Qst = questioner("Japanese")
+    for i in range(5):
         str = input(">>")
-        res = communicate_qst("Japanese", str, log)
-        log = __create_log(str, res, log)
+        res = Qst.communicate_qst(str)
+
+    #generate log
+    log = Qst.export_history()
+
+    #questioner chat using log
+    Qst2 = questioner("Japanese", log)
+    for i in range(10):
+        str = input(">>")
+        res = Qst2.communicate_qst(str)
