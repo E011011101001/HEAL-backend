@@ -2,3 +2,5 @@ flask
 Werkzeug
 flask_cors
 openai
+python-dotenv
+
