@@ -16,7 +16,10 @@ def body_requires(itemList: list[str]):
                     missedItemList.append(item)
 
             if missedItemList:
-                return {"missing": missedItemList}, 406
+                return ({
+                    "error": "Missing items.",
+                    "missing": missedItemList
+                }, 406)
             else:
                 return func(*args, **kwargs)
 
