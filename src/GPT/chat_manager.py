@@ -2,7 +2,7 @@ from flask import redirect, request, jsonify, make_response
 import traceback
 from database.todo import create_room_id
 
-from . import app
+from .. import app
 
 @app.route('<host>/chats/new', methods=['POST'])
 def create_room():
