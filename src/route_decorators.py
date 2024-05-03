@@ -5,7 +5,7 @@ from flask import request
 
 # Return a decorator that makes sure no item is missing before invoking func
 # Generate 406 if missing anything
-def body_requires(itemList: list[str]):
+def required_body_items(itemList: list[str]):
     def decorator(func):
         @wraps(func)
         def new_func(*args, **kwargs):
