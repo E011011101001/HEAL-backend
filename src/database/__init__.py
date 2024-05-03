@@ -7,12 +7,8 @@ def init_sqlite():
     return
 
 def __init():
-    if DB_PATH:
-        if not os.path.isfile(DB_PATH):
-            init_sqlite()
-    else:
-        print("FATAL: DB_PATH is not set. Exiting...")
-        exit()
+    if not os.path.isfile(DB_PATH):
+        init_sqlite()
 
     return
 
