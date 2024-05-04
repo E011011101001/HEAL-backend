@@ -10,4 +10,6 @@ You can find the front-end project [here](https://github.com/chrisrauch193/HEAL-
 
 2. Run `pip install -r requirements.txt` to install dependencies.
 
-3. Run `./run.sh` to start the backend server in debug mode.
+3. Use `.env.example` as a template to create `.env`, or export to the environment.
+
+4. Run `./run.sh` to start the backend server in debug mode.
