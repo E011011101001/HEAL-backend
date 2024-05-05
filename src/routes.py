@@ -3,8 +3,11 @@ import traceback
 
 from . import app
 from .route_decorators import required_body_items
-from .database import todo
 
+from . import database as db
+
+# TODO: remove todo
+from .database import todo
 
 @app.route('/users/register', methods=['POST'])
 @required_body_items(['type', 'email', 'password'])
@@ -27,8 +30,7 @@ def user_register():
                     'missing': ['specialisation']
                 }, 406
 
-        # TODO
-        if False: # check if exists
+        if db.user.email_exists(data.get('email')):
             return {
                 'error': 'conflictError',
                 'message': 'An account with this email address already exists.'
