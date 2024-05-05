@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <properties>
 	<Controls>
+		<ERD>
+			<Properties>
+				<^lock value="0"/>
+				<back_color value="FFFFFF"/>
+				<font value="Hack Nerd Font#000#14#0"/>
+				<gamma value="0"/>
+				<name value="ERD"/>
+				<size value="1680;2376"/>
+				<style value="4"/>
+				<style_links value="3"/>
+				<units value="5"/>
+			</Properties>
+			<Type value="Diagram"/>
+		</ERD>
 		<Table1>
 			<Parent value="#TOP"/>
 			<Properties>
@@ -18,36 +32,13 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table1"/>
-				<position value="542;215"/>
-				<size value="189;263"/>
+				<position value="691;758"/>
+				<size value="238;261"/>
 				<sort_fields value="1"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table1>
 		<Table10>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="5"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table10"/>
-				<position value="1185;520"/>
-				<size value="166;137"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table10>
-		<Table12>
 			<Parent value="#TOP"/>
 			<Properties>
 				<^checks value="0"/>
@@ -63,175 +54,14 @@
 				<^triggers value="0"/>
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
-				<name value="Table12"/>
-				<position value="1185;375"/>
-				<size value="166;116"/>
+				<name value="Table10"/>
+				<position value="171;378"/>
+				<size value="240;135"/>
 				<sort_fields value="1"/>
 			</Properties>
 			<Type value="Table"/>
-		</Table12>
-		<Table2>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="10"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table2"/>
-				<position value="877;354"/>
-				<size value="166;116"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table2>
-		<Table3>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="74"/>
-				<^indexes value="0"/>
-				<^level value="8"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="b4d647"/>
-				<name value="Table3"/>
-				<position value="565;81"/>
-				<size value="189;74"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table3>
-		<Table4>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="7"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table4"/>
-				<position value="884;33"/>
-				<size value="166;116"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table4>
-		<Table5>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="4"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table5"/>
-				<position value="884;513"/>
-				<size value="166;74"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table5>
-		<Table6>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="11"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table6"/>
-				<position value="884;186"/>
-				<size value="166;137"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table6>
-		<Table7>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="9"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table7"/>
-				<position value="1185;256"/>
-				<size value="166;74"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table7>
-		<Table8>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="3"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table8"/>
-				<position value="877;654"/>
-				<size value="166;158"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table8>
-		<Table9>
+		</Table10>
+		<Table11>
 			<Parent value="#TOP"/>
 			<Properties>
 				<^checks value="0"/>
@@ -247,37 +77,230 @@
 				<^triggers value="0"/>
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
+				<name value="Table11"/>
+				<position value="609;565"/>
+				<size value="229;135"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table11>
+		<Table12>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="7"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table12"/>
+				<position value="433;393"/>
+				<size value="254;114"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table12>
+		<Table2>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="11"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table2"/>
+				<position value="1249;791"/>
+				<size value="166;114"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table2>
+		<Table3>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="74"/>
+				<^indexes value="0"/>
+				<^level value="9"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="b4d647"/>
+				<name value="Table3"/>
+				<position value="1255;592"/>
+				<size value="232;72"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table3>
+		<Table4>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="8"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table4"/>
+				<position value="907;573"/>
+				<size value="269;114"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table4>
+		<Table5>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="5"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table5"/>
+				<position value="219;555"/>
+				<size value="303;72"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table5>
+		<Table6>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="12"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table6"/>
+				<position value="1233;428"/>
+				<size value="225;135"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table6>
+		<Table7>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="72"/>
+				<^indexes value="0"/>
+				<^level value="10"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table7"/>
+				<position value="316;1150"/>
+				<size value="259;72"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table7>
+		<Table8>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="4"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table8"/>
+				<position value="101;935"/>
+				<size value="293;156"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table8>
+		<Table9>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="3"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
 				<name value="Table9"/>
-				<position value="1185;696"/>
-				<size value="166;137"/>
+				<position value="305;722"/>
+				<size value="243;135"/>
 				<sort_fields value="1"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table9>
-		<test2>
-			<Properties>
-				<^lock value="0"/>
-				<back_color value="FFFFFF"/>
-				<font value=""/>
-				<gamma value="0"/>
-				<name value="test2"/>
-				<size value="1680;2376"/>
-				<style value="4"/>
-				<style_links value="0"/>
-				<units value="5"/>
-			</Properties>
-			<Type value="Diagram"/>
-		</test2>
 	</Controls>
 	<Editors>
-		<test2>
+		<HEAL>
 			<e0>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
-	&lt;Page value="1" /&gt;
+	&lt;Page value="3" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
 	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionField value="0" /&gt;
 	&lt;SelectionIndex value="-1" /&gt;
 	&lt;SelectionMethod value="-1" /&gt;
 	&lt;SelectionProperty value="-1" /&gt;
@@ -292,7 +315,30 @@
 			<e1>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
-	&lt;Page value="0" /&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="3" /&gt;
+	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Session"/>
+				<type value="40"/>
+			</e1>
+			<e2>
+				<data value=""/>
+				<name value="lnk_User_Session"/>
+				<type value="22"/>
+			</e2>
+			<e3>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="4" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
 	&lt;SelectionConsraintTab value="0" /&gt;
 	&lt;SelectionField value="-1" /&gt;
@@ -306,128 +352,21 @@
 '/>
 				<name value="MessageMedicalTeam"/>
 				<type value="40"/>
-			</e1>
-			<e10>
-				<data value=""/>
-				<name value="lnk_User_MM_MedicalTeam"/>
-				<type value="22"/>
-			</e10>
-			<e11>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="5" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="UserCondition"/>
-				<type value="40"/>
-			</e11>
-			<e12>
-				<data value=""/>
-				<name value="lnk_UserCondition_MM_MedicalTeam"/>
-				<type value="22"/>
-			</e12>
-			<e2>
-				<data value=""/>
-				<name value="lnk_MedicalTeam_MM_UserCondition"/>
-				<type value="22"/>
-			</e2>
-			<e3>
-				<data value=""/>
-				<name value="lnk_User_tbl_UserCondition_MM_MedicalTeam"/>
-				<type value="22"/>
 			</e3>
-			<e4>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="4" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="UserPrescription"/>
-				<type value="40"/>
-			</e4>
-			<e5>
-				<data value=""/>
-				<name value="lnk_MedicalTeam_MM_new_table_2"/>
-				<type value="22"/>
-			</e5>
-			<e6>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="3" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="MedicalTeamTranslation"/>
-				<type value="40"/>
-			</e6>
-			<e7>
-				<data value=""/>
-				<name value="lnk_MedicalTeam_MM_new_table"/>
-				<type value="22"/>
-			</e7>
-			<e8>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="4" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="MedicalTeamLink"/>
-				<type value="40"/>
-			</e8>
-			<e9>
-				<data value=""/>
-				<name value="lnk_MedicalTeam_MM_User"/>
-				<type value="22"/>
-			</e9>
-		</test2>
+		</HEAL>
 	</Editors>
 	<GUI>
 		<FullToolbarLeft value="1"/>
 		<FullToolbarRight value="1"/>
 		<HiddenLinks value=""/>
-		<PageEditor value="12"/>
-		<PageEditorHRel value="0.295455"/>
+		<PageEditor value="1"/>
+		<PageEditorHRel value="0.349810"/>
 		<PageToolbarLeft value="0"/>
 		<PageToolbarRB value="0"/>
-		<PageToolbarRight value="0"/>
-		<ScrollX value="407"/>
-		<ScrollY value="0"/>
-		<Selection value="VGFibGUxMA=="/>
+		<PageToolbarRight value="1"/>
+		<ScrollX value="224"/>
+		<ScrollY value="541"/>
+		<Selection value="RVJE"/>
 		<ShowAll value="1"/>
 		<ShowChanges value="1"/>
 		<ShowGL value="1"/>
@@ -435,7 +374,7 @@
 		<UseGrid value="0"/>
 	</GUI>
 	<Model>
-		<test2>
+		<HEAL>
 			<Links>
 				<o0>
 					<Changes value=""/>
@@ -486,7 +425,7 @@
 						<Child_Table value="UserCondition"/>
 						<Comment value=""/>
 						<Deferred value="0"/>
-						<Foreign_Key value=""/>
+						<Foreign_Key value="User_id"/>
 						<Name value="lnk_User_MM_MedicalTeam"/>
 						<On_Delete value=""/>
 						<On_Update value=""/>
@@ -584,6 +523,27 @@
 					<name value="lnk_User_tbl_UserCondition_MM_MedicalTeam"/>
 					<virtual value="0"/>
 				</o14>
+				<o15>
+					<Changes value=""/>
+					<Properties>
+						<Cardinality value="ONE to MANY"/>
+						<Child_Table value="Session"/>
+						<Comment value=""/>
+						<Deferred value="0"/>
+						<Foreign_Key value="User_id"/>
+						<Name value="lnk_User_Session"/>
+						<On_Delete value=""/>
+						<On_Update value=""/>
+						<Parent_Table value="User"/>
+						<Primary_Key value="User_id"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<control value=""/>
+					<delete value="0"/>
+					<name value="lnk_User_Session"/>
+					<virtual value="0"/>
+				</o15>
 				<o2>
 					<Changes value=""/>
 					<Properties>
@@ -829,8 +789,8 @@
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="0"/>
-								<Name value="Data_of_birth"/>
-								<Nullable value="0"/>
+								<Name value="Date_of_birth"/>
+								<Nullable value="1"/>
 								<Type value="Date"/>
 								<Unique value="0"/>
 								<color value=""/>
@@ -838,7 +798,7 @@
 							</Properties>
 							<control value=""/>
 							<delete value="0"/>
-							<name value="Data_of_birth"/>
+							<name value="Date_of_birth"/>
 							<virtual value="0"/>
 						</o3>
 						<o4>
@@ -957,7 +917,7 @@
 								<Indexed value="0"/>
 								<Name value="Type"/>
 								<Nullable value="0"/>
-								<Type value="Text"/>
+								<Type value="Integer"/>
 								<Unique value="0"/>
 								<color value=""/>
 								<font value=""/>
@@ -1212,6 +1172,150 @@
 					<name value="UserPrescription"/>
 					<virtual value="0"/>
 				</o10>
+				<o11>
+					<Changes value=""/>
+					<Fields>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="0"/>
+								<Name value="User_id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="User_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="Session_id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="1"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Session_id"/>
+							<virtual value="0"/>
+						</o1>
+						<o2>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="0"/>
+								<Name value="Valid_until"/>
+								<Nullable value="0"/>
+								<Type value="DateTime"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Valid_until"/>
+							<virtual value="0"/>
+						</o2>
+						<o3>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="Token"/>
+								<Nullable value="0"/>
+								<Type value="Text"/>
+								<Unique value="1"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Token"/>
+							<virtual value="0"/>
+						</o3>
+					</Fields>
+					<Properties>
+						<Check_Count value="0"/>
+						<Comment value=""/>
+						<Field_Count value="0"/>
+						<Index_Count value="0"/>
+						<Link_Count value="0"/>
+						<Method_Count value="0"/>
+						<Name value="Session"/>
+						<Primary_Key value="Session_id"/>
+						<Query value=""/>
+						<Record_Count value=""/>
+						<Strict value="0"/>
+						<Temporary value="0"/>
+						<Trigger_Count value="0"/>
+						<Unique_Count value="0"/>
+						<Without_RowID value="0"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<Uniques>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="Session_id	Asc	BINARY"/>
+								<Name value="unique_Session_id"/>
+								<On_Conflict value="Fail"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="unique_Session_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="Token	Asc	BINARY"/>
+								<Name value="unique_token"/>
+								<On_Conflict value="Fail"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="unique_token"/>
+							<virtual value="0"/>
+						</o1>
+					</Uniques>
+					<control value="Table11"/>
+					<delete value="0"/>
+					<name value="Session"/>
+					<virtual value="0"/>
+				</o11>
 				<o2>
 					<Changes value=""/>
 					<Fields>
@@ -2105,7 +2209,7 @@
 					<virtual value="0"/>
 				</o9>
 			</Tables>
-		</test2>
+		</HEAL>
 	</Model>
 	<Scene>
 		<HeightPX value="2376"/>
@@ -2119,6 +2223,6 @@
 		<PagesV value="1"/>
 		<WidthPX value="1680"/>
 	</Scene>
-	<version value="131000"/>
+	<version value="130901"/>
 </properties>
 
