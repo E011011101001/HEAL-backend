@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 
 # Fatal exit if None
-def get_env_required(key):
+def get_env_required(key: str):
     value = os.getenv(key)
     if value is None:
         sys.stderr.write(f"Fatal: {key} is not set. Exiting...")
@@ -21,3 +21,8 @@ PASSWORD_SALT = get_env_required('PASSWORD_SALT')
 
 # normal env
 DEBUG = bool(os.getenv('FLASK_DEBUG'))
+
+
+# glovars
+PATIENT = 1
+DOCTOR = 2
