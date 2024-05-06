@@ -56,6 +56,7 @@ def get_users(userId_patient):
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
 
+# chat manager
 @app.route('/chats/new', methods=['POST'])
 def create_room():
     try:
@@ -64,12 +65,74 @@ def create_room():
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
+
+@app.route('/chats/<int:roomId>', methods=['GET','DEL'])
+def operate_room(roomId):
+    if not todo.room_exists(roomId):
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
     
-@app.route('/chats/<roomId>', methods=['GET'])
-def get_retails(roomId):
+    if request.method == 'GET':
+        try:
+            roomData = todo.get_room_details(roomId)
+            return roomData, 200
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+        
+    if request.method == 'DEL':
+        try:
+            todo.delete_room(roomId)
+            return '', 204
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+@app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DEL'])
+def participant_room(roomId, userId):
+    if request.method == 'POST':
+        try:
+            data = todo.participant_room(roomId, userId)
+            return data, 201
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+        
+    if request.method == 'DEL':
+        try:
+            data = todo.exit_room(roomId, userId)
+            return data, 200
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+    
+@app.route('/users/<int:userId>/chats', method=['GET'])
+def get_rooms(userId):
     try:
-        roomData = todo.get_room_details(roomId)
-        return roomData, 201
+        data = todo.get_participating_rooms(userId)
+        return data, 200
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
+    
+# message manager
+@app.route('/chats/<int:roomId>/messages?page=<int:pageNum>&limit=<int:limNum>', method=['GET'])
+def get_chat_messages(roomId, pageNum, limNum):
+    try:
+        data = todo.get_chat_messages(roomId, pageNum, limNum)
+        return data, 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
+    
+@app.route('/chats/<int:roomId>/messages/<int:mesId>', method=['GET'])
+def get_message(roomId, mesId):
+    try:
+        data = todo.get_message(roomId, mesId)
+        return data, 200
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
+    
