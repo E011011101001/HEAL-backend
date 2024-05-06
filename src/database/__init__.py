@@ -4,6 +4,8 @@ from ..glovars import DB_PATH
 from ..utils import print_info
 from . import data_models
 
+from .user_ops import *
+
 
 def init_sqlite():
     data_models.init()

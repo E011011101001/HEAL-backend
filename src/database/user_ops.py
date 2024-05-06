@@ -1,6 +1,6 @@
-from data_models import User
 from peewee import DoesNotExist
 
+from .data_models import User
 
 def email_exists(email: str) -> bool:
     try:
