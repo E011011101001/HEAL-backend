@@ -26,9 +26,10 @@ class ChatBot:
         self.system_content2 = "Avoid private questions like personal information. Please respond in "+ self.lan +"."
 
     #private function
+    # model = gpt-3.5-turbo
     def __send_msg_to_gpt(self, messages):
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4-0125-preview",
             messages=messages,
             temperature=0,
             max_tokens=256,
