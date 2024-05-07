@@ -27,9 +27,9 @@ class questioner():
                 self.log.append({"text":text, "speaker": "user"})
             else:
                 self.log.append({"text":text, "speaker": "assistant"})
-            
+
             userText = not userText
-    
+
     def communicate_qst(self, speak):
 
         prompt = """
@@ -70,9 +70,9 @@ class questioner():
 
         log.append({"text":speak, "speaker": "user"})
         log.append({"text":res, "speaker":"assistant"})
-    
+
         return log
-    
+
     def export_history(self):
         history = []
         for textTaple in self.log:
@@ -83,7 +83,7 @@ class questioner():
 if __name__ == "__main__":
 
     #new questioner chat
-    Qst = questioner("Japanese")
+    Qst = questioner("English")
     for i in range(5):
         str = input(">>")
         res = Qst.communicate_qst(str)
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     log = Qst.export_history()
 
     #questioner chat using log
-    Qst2 = questioner("Japanese", log)
-    for i in range(10):
+    Qst2 = questioner("English", log)
+    for i in range(20):
         str = input(">>")
         res = Qst2.communicate_qst(str)

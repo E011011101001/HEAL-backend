@@ -19,13 +19,13 @@ class highlighter():
                 self.log.append({"text":text, "speaker": "user"})
             else:
                 self.log.append({"text":text, "speaker": "assistant"})
-            
+
             userText = not userText
 
     def search_med_term(self, speak):
 
         prompt = """
-次の文章から**医療専門用語だけ**を取り出し、コンマ区切りで列挙してください。
+次の文章の中にある**医療に関する専門用語**を取り出し、コンマ区切りで列挙してください。
 """
 
         # Creating Chatbot Instances
@@ -37,7 +37,7 @@ class highlighter():
     def explain_med_term(self, speak):
 
         prompt1 = """
-次の医療用語を３文程度で説明してください。
+次の医療用語を２文程度で説明してください。
 """
 
         # Creating Chatbot Instances
@@ -45,9 +45,9 @@ class highlighter():
         res1 = exp.speak_to_gpt(speak)
 
         prompt2 = """
-１．指定した用語が詳しく説明されている**リンク先**を調べてください。
-リンク先が提供できない場合は、**空白**を出力すること。
-２．リンク先のページに指定された用語の説明が本当にあるか確認してください。
+１．指定した用語について、詳しく説明されている**リンク先**を調べてください。
+リンク先が提供できない場合は、**None**と出力すること。
+２．リンク先のページに指定された用語の説明が本当にあるか確認してください。確認できなければ１に戻り他のページを検索してください。
 ３．確認できた場合のみ、**リンク先だけ**を出力してください。
 """
         link = connect_gpt.ChatBot(self.lan, prompt2)
@@ -57,8 +57,9 @@ class highlighter():
 
 if __name__ == "__main__":
 
-    HL = highlighter("English")
+    HL = highlighter("Japanese")
     for i in range(5):
 
         str2 = input(">>")
-        res2 = HL.explain_med_term(str2)
+        # res2 = HL.explain_med_term(str2)
+        res1 = HL.search_med_term(str2)

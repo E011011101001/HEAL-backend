@@ -1,4 +1,4 @@
-# create new chat room 
+# create new chat room
 def create_room_id():
     pass
 
@@ -13,10 +13,6 @@ def get_room_details(roomId: int) -> dict:
 
 # delete room corresponding to room id
 def delete_room(roomId: int):
-    pass
-
-# check room id
-def room_exists(roomId: int) -> bool:
     pass
 
 '''

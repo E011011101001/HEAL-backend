@@ -60,12 +60,13 @@ def get_users(userId_patient):
 @app.route('/chats/new', methods=['POST'])
 def create_room():
     try:
-        todo.create_room_id()
-        return '', 201
+        id = todo.create_room_id()
+        return jsonify({"roomId": id}), 201
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
 
+# need to separate
 @app.route('/chats/<int:roomId>', methods=['GET','DEL'])
 def operate_room(roomId):
     if not todo.room_exists(roomId):
@@ -73,7 +74,7 @@ def operate_room(roomId):
                 'error': 'instanceNotFoundError',
                 'message': 'The specified item does not exist.'
             }, 404
-    
+
     if request.method == 'GET':
         try:
             roomData = todo.get_room_details(roomId)
@@ -81,7 +82,7 @@ def operate_room(roomId):
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
-        
+
     if request.method == 'DEL':
         try:
             todo.delete_room(roomId)
@@ -99,7 +100,7 @@ def participant_room(roomId, userId):
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
-        
+
     if request.method == 'DEL':
         try:
             data = todo.exit_room(roomId, userId)
@@ -107,7 +108,7 @@ def participant_room(roomId, userId):
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
-    
+
 @app.route('/users/<int:userId>/chats', method=['GET'])
 def get_rooms(userId):
     try:
@@ -116,17 +117,28 @@ def get_rooms(userId):
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
-    
+
 # message manager
-@app.route('/chats/<int:roomId>/messages?page=<int:pageNum>&limit=<int:limNum>', method=['GET'])
-def get_chat_messages(roomId, pageNum, limNum):
+@app.route('/chats/<int:roomId>/messages', method=['GET'])
+def get_chat_messages(roomId):
+
+    try:
+        pageNum = request.args["page"]
+        limNum = request.args["limit"]
+    except Exception as e:
+        traceback.print_exc()
+        return {
+            'error': 'Error',
+            'message': 'Argument does not exist'
+        }, 406
+
     try:
         data = todo.get_chat_messages(roomId, pageNum, limNum)
         return data, 200
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
-    
+
 @app.route('/chats/<int:roomId>/messages/<int:mesId>', method=['GET'])
 def get_message(roomId, mesId):
     try:
@@ -135,4 +147,4 @@ def get_message(roomId, mesId):
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
-    
+
