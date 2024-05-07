@@ -4,6 +4,8 @@ import traceback
 from . import app
 from .route_decorators import required_body_items
 
+from peewee import DoesNotExist
+
 from . import database as db
 
 # TODO: remove todo
@@ -47,14 +49,64 @@ def user_register():
         traceback.print_exc()
         return {'status': 'ERROR'}
 
-@app.route('/users/<userId_patient>', methods=['GET'])
+@app.route('/users/<int:userId_patient>', methods=['GET'])
 def get_users(userId_patient):
     try:
         userData = todo.get_patient_details(userId_patient)
         return userData, 201
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
+
+@app.route('/users/<int:userId>', methods=['PUT'])
+def update_users(userId):
+    try:
+        data = request.get_json()
+        newData = todo.update_user(userId, data)
+        return newData, 200
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
+
+
+@app.route('/users/<int:userId>', methods=['DEL'])
+def delete_users(userId):
+    try:
+        todo.delete_user(userId)
+        return '', 204
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
+
+@app.route('/users/login', methods=['POST'])
+@required_body_items(['username', 'password'])
+def login():
+    pass
+
+@app.route('/users/verify-token', methods=['GET'])
+def verify_token():
+    pass
 
 # chat manager
 @app.route('/chats/new', methods=['POST'])
@@ -62,23 +114,24 @@ def create_room():
     try:
         id = todo.create_room_id()
         return jsonify({"roomId": id}), 201
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
 
-# need to separate
 @app.route('/chats/<int:roomId>', methods=['GET','DEL'])
 def operate_room(roomId):
-    if not todo.room_exists(roomId):
+    if request.method == 'GET':
+        try:
+            roomData = todo.get_room_details(roomId)
+            return roomData, 200
+
+        except DoesNotExist:
             return {
                 'error': 'instanceNotFoundError',
                 'message': 'The specified item does not exist.'
             }, 404
 
-    if request.method == 'GET':
-        try:
-            roomData = todo.get_room_details(roomId)
-            return roomData, 200
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
@@ -87,6 +140,13 @@ def operate_room(roomId):
         try:
             todo.delete_room(roomId)
             return '', 204
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
@@ -97,6 +157,13 @@ def participant_room(roomId, userId):
         try:
             data = todo.participant_room(roomId, userId)
             return data, 201
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
@@ -105,6 +172,13 @@ def participant_room(roomId, userId):
         try:
             data = todo.exit_room(roomId, userId)
             return data, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
@@ -114,6 +188,13 @@ def get_rooms(userId):
     try:
         data = todo.get_participating_rooms(userId)
         return data, 200
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
@@ -125,6 +206,7 @@ def get_chat_messages(roomId):
     try:
         pageNum = request.args["page"]
         limNum = request.args["limit"]
+
     except Exception as e:
         traceback.print_exc()
         return {
@@ -135,6 +217,13 @@ def get_chat_messages(roomId):
     try:
         data = todo.get_chat_messages(roomId, pageNum, limNum)
         return data, 200
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
@@ -144,7 +233,75 @@ def get_message(roomId, mesId):
     try:
         data = todo.get_message(roomId, mesId)
         return data, 200
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
     except Exception as e:
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
+
+# medical term manager
+@app.route('/medical-terms', method=['POST'])
+@required_body_items(['name', 'description'])
+def create_term():
+    pass
+
+@app.route('/medical-terms', method=['GET'])
+def get_terms():
+    pass
+
+@app.route('/medical-terms/<int:medicalTermId>', method=['GET', 'PUT', 'DEL'])
+def operate_single_term(medicalTermId):
+
+    if request.method == 'GET':
+        try:
+            data = todo.get_single_term(medicalTermId)
+            return data, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    if request.method == 'PUT':
+        try:
+            data = todo.update_term(medicalTermId)
+            return data, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    if request.method == 'DEL':
+        try:
+            data = todo.delete_term(medicalTermId)
+            return data, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+
+
 
