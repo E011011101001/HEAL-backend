@@ -4,7 +4,7 @@ import traceback
 from . import app
 from .route_decorators import required_body_items
 
-from peewee import DoesNotExist
+from peewee import DoesNotExist, IntegrityError
 
 from . import database as db
 
@@ -53,7 +53,7 @@ def user_register():
 def get_users(userId_patient):
     try:
         userData = todo.get_patient_details(userId_patient)
-        return userData, 201
+        return userData, 200
 
     except DoesNotExist:
         return {
@@ -83,7 +83,7 @@ def update_users(userId):
         return jsonify({'status': 'ERROR'})
 
 
-@app.route('/users/<int:userId>', methods=['DEL'])
+@app.route('/users/<int:userId>', methods=['DELETE'])
 def delete_users(userId):
     try:
         todo.delete_user(userId)
@@ -119,7 +119,7 @@ def create_room():
         traceback.print_exc()
         return jsonify({'status': 'ERROR'})
 
-@app.route('/chats/<int:roomId>', methods=['GET','DEL'])
+@app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
 def operate_room(roomId):
     if request.method == 'GET':
         try:
@@ -136,7 +136,7 @@ def operate_room(roomId):
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
 
-    if request.method == 'DEL':
+    if request.method == 'DELETE':
         try:
             todo.delete_room(roomId)
             return '', 204
@@ -151,7 +151,7 @@ def operate_room(roomId):
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
 
-@app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DEL'])
+@app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
 def participant_room(roomId, userId):
     if request.method == 'POST':
         try:
@@ -168,7 +168,7 @@ def participant_room(roomId, userId):
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
 
-    if request.method == 'DEL':
+    if request.method == 'DELETE':
         try:
             data = todo.exit_room(roomId, userId)
             return data, 200
@@ -210,7 +210,7 @@ def get_chat_messages(roomId):
     except Exception as e:
         traceback.print_exc()
         return {
-            'error': 'Error',
+            'error': 'argumentError',
             'message': 'Argument does not exist'
         }, 406
 
@@ -248,13 +248,33 @@ def get_message(roomId, mesId):
 @app.route('/medical-terms', method=['POST'])
 @required_body_items(['name', 'description'])
 def create_term():
-    pass
+    try:
+        data = request.get_json()
+        newData = todo.create_term(data)
+        return newData, 201
+
+    # need to confirm data['name']??
+    except IntegrityError:
+        return {
+            'error': 'conflictError',
+            'message': 'This medical term already exists.'
+        }, 409
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
 
 @app.route('/medical-terms', method=['GET'])
 def get_terms():
-    pass
+    try:
+        data = todo.get_terms()
+        return data, 200
 
-@app.route('/medical-terms/<int:medicalTermId>', method=['GET', 'PUT', 'DEL'])
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
+
+@app.route('/medical-terms/<int:medicalTermId>', method=['GET', 'PUT', 'DELETE'])
 def operate_single_term(medicalTermId):
 
     if request.method == 'GET':
@@ -287,7 +307,7 @@ def operate_single_term(medicalTermId):
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
 
-    if request.method == 'DEL':
+    if request.method == 'DELETE':
         try:
             data = todo.delete_term(medicalTermId)
             return data, 200
@@ -302,6 +322,51 @@ def operate_single_term(medicalTermId):
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
 
+# linking term manager
+@app.route('/messages/<int:mesId>/medical-terms', method=['GET'])
+def get_linked_term(mesId):
+    try:
+        data = todo.get_linking_term(mesId)
+        return data, 200
 
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
 
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
 
+@app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', method=['POST', 'DELETE'])
+def operate_linked_term(mesId, medicalTermId):
+    if request.method == 'POST':
+        try:
+            data = todo.create_linking_term(mesId, medicalTermId)
+            return data, 201
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    if request.method == 'DELETE':
+        try:
+            todo.delete_linking_term(mesId, medicalTermId)
+            return '', 204
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
