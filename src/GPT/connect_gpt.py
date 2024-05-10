@@ -27,6 +27,7 @@ class ChatBot:
 
     #private function
     # model = gpt-3.5-turbo
+    # model = gpt-4-0125-preview
     def __send_msg_to_gpt(self, messages):
         response = openai.chat.completions.create(
             model="gpt-4-0125-preview",
@@ -37,7 +38,7 @@ class ChatBot:
             frequency_penalty=0,
             presence_penalty=0
         )
-    
+
         pol_msg = response.choices[0].message.content
         response = pol_msg
 
@@ -66,14 +67,14 @@ class ChatBot:
         for textTaple in history:
             messages.append({"role": textTaple["speaker"], "content": textTaple["text"]})
 
-        messages.append({"role": "user", "content": utterance})   
+        messages.append({"role": "user", "content": utterance})
 
-        return self.__send_msg_to_gpt(messages)     
-            
+        return self.__send_msg_to_gpt(messages)
+
 
 if __name__ == "__main__":
 
-    tmpHistory = [{"text":"My chest hurts.", "speaker": "user"}, 
+    tmpHistory = [{"text":"My chest hurts.", "speaker": "user"},
                   {"text":"I'm sorry to hear that. Can you tell me more about your symptoms? When did the chest pain start? Have you experienced any other symptoms along with the chest pain?", "speaker":"assistant"}]
 
     prompt = "You are about to have a conversation with a patient who is troubled by certain symptoms. Ask for details about the symptoms and how they came about."

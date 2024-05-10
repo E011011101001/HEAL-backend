@@ -6,6 +6,7 @@
 # do we need history?
 
 import connect_gpt
+import urllib.request
 
 class highlighter():
     def __init__(self, lan, history=[]):
@@ -34,6 +35,16 @@ class highlighter():
 
         return res
 
+    def check_url(self, url):
+        validUrl = True
+        try:
+            tmp = urllib.request.urlopen(url)
+            tmp.close()
+        except:
+            validUrl = False
+
+        return validUrl
+
     def explain_med_term(self, speak):
 
         prompt1 = """
@@ -45,21 +56,32 @@ class highlighter():
         res1 = exp.speak_to_gpt(speak)
 
         prompt2 = """
-１．指定した用語について、詳しく説明されている**リンク先**を調べてください。
-リンク先が提供できない場合は、**None**と出力すること。
-２．リンク先のページに指定された用語の説明が本当にあるか確認してください。確認できなければ１に戻り他のページを検索してください。
-３．確認できた場合のみ、**リンク先だけ**を出力してください。
+指定した用語について説明されているサイトの**URLだけ**を出力してください。ただし、次の言語で書かれたサイトを出力してください。
+言語："""+self.lan+"""
+
+どうしてもサイトが見つからなければWikipediaのurlを出力しても構いません
 """
+
         link = connect_gpt.ChatBot(self.lan, prompt2)
         res2 = link.speak_to_gpt(speak)
 
-        return {"exp":res1, "link":res2}
+        words = res2.split()
+        res3 = ""
+        for word in words:
+            if word.startswith("http://") or word.startswith("https://"):
+                url = word
+                if self.check_url(url):
+                    res3 = url
+                break
+
+        print("last: " + res3)
+        return {"exp":res1, "link":res3}
 
 if __name__ == "__main__":
 
-    HL = highlighter("Japanese")
+    HL = highlighter("English")
     for i in range(5):
 
         str2 = input(">>")
-        # res2 = HL.explain_med_term(str2)
-        res1 = HL.search_med_term(str2)
+        res2 = HL.explain_med_term(str2)
+        # res1 = HL.search_med_term(str2)

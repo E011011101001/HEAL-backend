@@ -370,3 +370,122 @@ def operate_linked_term(mesId, medicalTermId):
         except Exception as e:
             traceback.print_exc()
             return jsonify({'status': 'ERROR'})
+
+# medical history
+@app.route('/patients/<int:userId>/medical-history', method=['GET'])
+def get_medical_history(userId):
+    try:
+        data = todo.get_history(userId)
+        return data, 200
+
+    except DoesNotExist:
+        return {
+            'error': 'instanceNotFoundError',
+            'message': 'The specified item does not exist.'
+        }, 404
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'status': 'ERROR'})
+
+@app.route('/patients/<int:userId>/patient-conditions/<int:termId>', method=['POST', 'PUT', 'DELETE'])
+def add_condition(userId, termId):
+
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            newData = todo.add_condition(userId, termId, data)
+            return newData, 201
+
+        except IntegrityError:
+            return {
+                'error': 'conflictError',
+                'message': 'This medical term already exists.'
+            }, 409
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    if request.method == 'PUT':
+        try:
+            data = request.get_json()
+            newData = todo.update_condition(userId, termId, data)
+            return newData, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    # we need body and response ?
+    if request.method == 'DELETE':
+        try:
+            data = todo.delete_condition(userId, termId, data)
+            return data, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+@app.route('/patients/<int:userId>/conditions/<int:conditionTermId>/prescriptions/<int:prescriptionTermId>', method=['POST', 'PUT', 'DELETE'])
+def add_condition(userId, conditionTermId, prescriptionTermId):
+
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            newData = todo.add_prescription(userId, conditionTermId, prescriptionTermId, data)
+            return newData, 201
+
+        except IntegrityError:
+            return {
+                'error': 'conflictError',
+                'message': 'This medical term already exists.'
+            }, 409
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    if request.method == 'PUT':
+        try:
+            data = request.get_json()
+            newData = todo.update_prescription(userId, conditionTermId, prescriptionTermId, data)
+            return newData, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
+
+    # we need body and response ?
+    if request.method == 'DELETE':
+        try:
+            data = todo.delete_prescription(userId, conditionTermId, prescriptionTermId, data)
+            return data, 200
+
+        except DoesNotExist:
+            return {
+                'error': 'instanceNotFoundError',
+                'message': 'The specified item does not exist.'
+            }, 404
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 'ERROR'})
