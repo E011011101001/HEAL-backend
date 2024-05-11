@@ -11,10 +11,6 @@ from . import database as db
 # TODO: remove todo
 from .database import todo
 
-http500 = {
-    "error": "internalServerError",
-    "message": "The server encountered an unexpected condition that prevented it from fulfilling the request."
-}
 
 @app.route('/users/register', methods=['POST'])
 @required_body_items(['type', 'email', 'password'])
@@ -50,10 +46,6 @@ def user_register():
         todo.create_user(data)
         return '', 201
 
-    except Exception:
-        traceback.print_exc()
-        return http500
-
 @app.route('/users/<int:userId_patient>', methods=['GET'])
 def get_users(userId_patient):
     try:
@@ -66,9 +58,6 @@ def get_users(userId_patient):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/users/<int:userId>', methods=['PUT'])
 def update_users(userId):
@@ -83,10 +72,6 @@ def update_users(userId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
-
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
 def delete_users(userId):
@@ -100,9 +85,6 @@ def delete_users(userId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['username', 'password'])
@@ -120,41 +102,32 @@ def create_room():
         id = todo.create_room_id()
         return {"roomId": id}, 201
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
 def operate_room(roomId):
-    if request.method == 'GET':
-        try:
-            roomData = todo.get_room_details(roomId)
-            return roomData, 200
+    try:
+        if request.method == 'GET':
+            try:
+                roomData = todo.get_room_details(roomId)
+                return roomData, 200
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+            except DoesNotExist:
+                return {
+                    'error': 'instanceNotFoundError',
+                    'message': 'The specified item does not exist.'
+                }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
+        if request.method == 'DELETE':
+            try:
+                todo.delete_room(roomId)
+                return '', 204
 
-    if request.method == 'DELETE':
-        try:
-            todo.delete_room(roomId)
-            return '', 204
+            except DoesNotExist:
+                return {
+                    'error': 'instanceNotFoundError',
+                    'message': 'The specified item does not exist.'
+                }, 404
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
-
-        except Exception as e:
-            traceback.print_exc()
-            return http500
 
 @app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
 def participant_room(roomId, userId):
@@ -169,10 +142,6 @@ def participant_room(roomId, userId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     if request.method == 'DELETE':
         try:
             data = todo.exit_room(roomId, userId)
@@ -184,9 +153,6 @@ def participant_room(roomId, userId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
 
 @app.route('/users/<int:userId>/chats', method=['GET'])
 def get_rooms(userId):
@@ -200,9 +166,6 @@ def get_rooms(userId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 # message manager
 @app.route('/chats/<int:roomId>/messages', method=['GET'])
@@ -229,9 +192,6 @@ def get_chat_messages(roomId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/chats/<int:roomId>/messages/<int:mesId>', method=['GET'])
 def get_message(roomId, mesId):
@@ -245,9 +205,6 @@ def get_message(roomId, mesId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 # medical term manager
 @app.route('/medical-terms', method=['POST'])
@@ -265,19 +222,12 @@ def create_term():
             'message': 'This medical term already exists.'
         }, 409
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/medical-terms', method=['GET'])
 def get_terms():
-    try:
-        data = todo.get_terms()
-        return data, 200
+    data = todo.get_terms()
+    return data, 200
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/medical-terms/<int:medicalTermId>', method=['GET', 'PUT', 'DELETE'])
 def operate_single_term(medicalTermId):
@@ -293,10 +243,6 @@ def operate_single_term(medicalTermId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     if request.method == 'PUT':
         try:
             data = todo.update_term(medicalTermId)
@@ -308,10 +254,6 @@ def operate_single_term(medicalTermId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     if request.method == 'DELETE':
         try:
             data = todo.delete_term(medicalTermId)
@@ -322,10 +264,6 @@ def operate_single_term(medicalTermId):
                 'error': 'instanceNotFoundError',
                 'message': 'The specified item does not exist.'
             }, 404
-
-        except Exception as e:
-            traceback.print_exc()
-            return http500
 
 # linking term manager
 @app.route('/messages/<int:mesId>/medical-terms', method=['GET'])
@@ -340,9 +278,6 @@ def get_linked_term(mesId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', method=['POST', 'DELETE'])
 def operate_linked_term(mesId, medicalTermId):
@@ -357,10 +292,6 @@ def operate_linked_term(mesId, medicalTermId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     if request.method == 'DELETE':
         try:
             todo.delete_linking_term(mesId, medicalTermId)
@@ -372,9 +303,6 @@ def operate_linked_term(mesId, medicalTermId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
 
 # medical history
 @app.route('/patients/<int:userId>/medical-history', method=['GET'])
@@ -389,9 +317,6 @@ def get_medical_history(userId):
             'message': 'The specified item does not exist.'
         }, 404
 
-    except Exception as e:
-        traceback.print_exc()
-        return http500
 
 @app.route('/patients/<int:userId>/patient-conditions/<int:termId>', method=['POST', 'PUT', 'DELETE'])
 def add_condition(userId, termId):
@@ -408,10 +333,6 @@ def add_condition(userId, termId):
                 'message': 'This medical term already exists.'
             }, 409
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     if request.method == 'PUT':
         try:
             data = request.get_json()
@@ -423,10 +344,6 @@ def add_condition(userId, termId):
                 'error': 'instanceNotFoundError',
                 'message': 'The specified item does not exist.'
             }, 404
-
-        except Exception as e:
-            traceback.print_exc()
-            return http500
 
     # we need body and response ?
     if request.method == 'DELETE':
@@ -440,9 +357,6 @@ def add_condition(userId, termId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
 
 @app.route('/patients/<int:userId>/conditions/<int:conditionTermId>/prescriptions/<int:prescriptionTermId>', method=['POST', 'PUT', 'DELETE'])
 def add_condition(userId, conditionTermId, prescriptionTermId):
@@ -459,10 +373,6 @@ def add_condition(userId, conditionTermId, prescriptionTermId):
                 'message': 'This medical term already exists.'
             }, 409
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     if request.method == 'PUT':
         try:
             data = request.get_json()
@@ -475,10 +385,6 @@ def add_condition(userId, conditionTermId, prescriptionTermId):
                 'message': 'The specified item does not exist.'
             }, 404
 
-        except Exception as e:
-            traceback.print_exc()
-            return http500
-
     # we need body and response ?
     if request.method == 'DELETE':
         try:
@@ -490,7 +396,3 @@ def add_condition(userId, conditionTermId, prescriptionTermId):
                 'error': 'instanceNotFoundError',
                 'message': 'The specified item does not exist.'
             }, 404
-
-        except Exception as e:
-            traceback.print_exc()
-            return http500

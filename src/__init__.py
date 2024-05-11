@@ -10,6 +10,7 @@ from . import database
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
+from . import error_hander
 from . import routes
 
 if __name__ == '__main__':
