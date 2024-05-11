@@ -30,7 +30,7 @@ class Session(Model):
         database = db
 
 class Doctor(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', index = True, null = True, uniqe = True)
+    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', index = True, null = True, unique = True)
     Specialisation = TextField(null = True)
     Hospital = TextField(null = True)
 
