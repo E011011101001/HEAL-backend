@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, request, jsonify, make_response
+from flask import Blueprint, redirect, request, make_response
 import traceback
 
 from . import app
@@ -10,6 +10,11 @@ from . import database as db
 
 # TODO: remove todo
 from .database import todo
+
+http500 = {
+    "error": "internalServerError",
+    "message": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+}
 
 @app.route('/users/register', methods=['POST'])
 @required_body_items(['type', 'email', 'password'])
@@ -47,7 +52,7 @@ def user_register():
 
     except Exception:
         traceback.print_exc()
-        return {'status': 'ERROR'}
+        return http500
 
 @app.route('/users/<int:userId_patient>', methods=['GET'])
 def get_users(userId_patient):
@@ -63,7 +68,7 @@ def get_users(userId_patient):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/users/<int:userId>', methods=['PUT'])
 def update_users(userId):
@@ -80,7 +85,7 @@ def update_users(userId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
@@ -97,7 +102,7 @@ def delete_users(userId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['username', 'password'])
@@ -113,11 +118,11 @@ def verify_token():
 def create_room():
     try:
         id = todo.create_room_id()
-        return jsonify({"roomId": id}), 201
+        return {"roomId": id}, 201
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
 def operate_room(roomId):
@@ -134,7 +139,7 @@ def operate_room(roomId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'DELETE':
         try:
@@ -149,7 +154,7 @@ def operate_room(roomId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
 @app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
 def participant_room(roomId, userId):
@@ -166,7 +171,7 @@ def participant_room(roomId, userId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'DELETE':
         try:
@@ -181,7 +186,7 @@ def participant_room(roomId, userId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
 @app.route('/users/<int:userId>/chats', method=['GET'])
 def get_rooms(userId):
@@ -197,7 +202,7 @@ def get_rooms(userId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 # message manager
 @app.route('/chats/<int:roomId>/messages', method=['GET'])
@@ -226,7 +231,7 @@ def get_chat_messages(roomId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/chats/<int:roomId>/messages/<int:mesId>', method=['GET'])
 def get_message(roomId, mesId):
@@ -242,7 +247,7 @@ def get_message(roomId, mesId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 # medical term manager
 @app.route('/medical-terms', method=['POST'])
@@ -262,7 +267,7 @@ def create_term():
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/medical-terms', method=['GET'])
 def get_terms():
@@ -272,7 +277,7 @@ def get_terms():
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/medical-terms/<int:medicalTermId>', method=['GET', 'PUT', 'DELETE'])
 def operate_single_term(medicalTermId):
@@ -290,7 +295,7 @@ def operate_single_term(medicalTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'PUT':
         try:
@@ -305,7 +310,7 @@ def operate_single_term(medicalTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'DELETE':
         try:
@@ -320,7 +325,7 @@ def operate_single_term(medicalTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
 # linking term manager
 @app.route('/messages/<int:mesId>/medical-terms', method=['GET'])
@@ -337,7 +342,7 @@ def get_linked_term(mesId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', method=['POST', 'DELETE'])
 def operate_linked_term(mesId, medicalTermId):
@@ -354,7 +359,7 @@ def operate_linked_term(mesId, medicalTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'DELETE':
         try:
@@ -369,7 +374,7 @@ def operate_linked_term(mesId, medicalTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
 # medical history
 @app.route('/patients/<int:userId>/medical-history', method=['GET'])
@@ -386,7 +391,7 @@ def get_medical_history(userId):
 
     except Exception as e:
         traceback.print_exc()
-        return jsonify({'status': 'ERROR'})
+        return http500
 
 @app.route('/patients/<int:userId>/patient-conditions/<int:termId>', method=['POST', 'PUT', 'DELETE'])
 def add_condition(userId, termId):
@@ -405,7 +410,7 @@ def add_condition(userId, termId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'PUT':
         try:
@@ -421,7 +426,7 @@ def add_condition(userId, termId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     # we need body and response ?
     if request.method == 'DELETE':
@@ -437,7 +442,7 @@ def add_condition(userId, termId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
 @app.route('/patients/<int:userId>/conditions/<int:conditionTermId>/prescriptions/<int:prescriptionTermId>', method=['POST', 'PUT', 'DELETE'])
 def add_condition(userId, conditionTermId, prescriptionTermId):
@@ -456,7 +461,7 @@ def add_condition(userId, conditionTermId, prescriptionTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     if request.method == 'PUT':
         try:
@@ -472,7 +477,7 @@ def add_condition(userId, conditionTermId, prescriptionTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
 
     # we need body and response ?
     if request.method == 'DELETE':
@@ -488,4 +493,4 @@ def add_condition(userId, conditionTermId, prescriptionTermId):
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'ERROR'})
+            return http500
