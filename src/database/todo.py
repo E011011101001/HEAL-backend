@@ -18,7 +18,7 @@ update user details
 reference
 https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-37d7339d-15c4-41a7-91ce-4ee009dbe0b4
 '''
-def update_user(userId: int, userInfo: dict) -> dict:
+def update_user(userId: int, userInfo: dict):
     pass
 
 # delete user information

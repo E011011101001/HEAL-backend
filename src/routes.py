@@ -63,15 +63,33 @@ def get_users(userId_patient):
 def update_users(userId):
     try:
         data = request.get_json()
-        newData = todo.update_user(userId, data)
+
+        # confirm data structure
+        for field in data:
+            if field == "type":
+                if data["type"] != "PATIENT" or "DOCTOR":
+                    return {
+                        'error': 'TypeError',
+                        'message': 'Invalid type exist.'
+                    }, 404
+
+            if field == "height":
+                if data["height"] >= 0:
+                    return {
+                        'error': 'TypeError',
+                        'message': 'Invalid type exist.'
+                    }, 404
+
+        # update user
+        todo.update_user(userId, data)
+
+        # get user details
+        newData = todo.get_user(userId)
+
         return newData, 200
 
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
-
+    except:
+        return {}
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
 def delete_users(userId):
