@@ -47,3 +47,26 @@ def create_user(data):
         newDoctor.save()
 
     return newUser.id
+
+
+def get_user_full(userId: int) -> dict:
+    baseUser = BaseUser.get(BaseUser.id == userId)
+    ret = {
+        'user_id': baseUser.id,
+        "email": baseUser.Email,
+        "language": baseUser.Language_code,
+    }
+
+    if baseUser.Type == PATIENT:
+        patient = baseUser.patient[0]
+        ret['type'] = 'PATIENT'
+        ret['dateOfBirth'] = patient.Date_of_birth
+        ret['height'] = patient.Height
+        ret['weight'] = patient.Weight
+    else:
+        doctor = baseUser.doctor[0]
+        ret['type'] = 'DOCTOR'
+        ret['hospital'] = doctor.Hospital
+        ret['specialisation'] = doctor.Specialisation
+
+    return ret

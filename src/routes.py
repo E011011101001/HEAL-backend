@@ -49,9 +49,10 @@ def user_register():
     return '', 201
 
 
-@app.route('/users/<int:userId_patient>', methods=['GET'])
-def get_users(userId_patient):
-    userData = todo.get_patient_details(userId_patient)
+@app.route('/users/<int:userId>', methods=['GET'])
+def get_users(userId):
+    print(userId)
+    userData = db.user.get_user_full(userId)
     return userData
 
 
