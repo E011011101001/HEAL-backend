@@ -1,7 +1,4 @@
 ### user ###
-# create user information
-def create_user(userInfo: dict) -> dict:
-    pass
 
 '''
 get user details from user id

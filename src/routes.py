@@ -15,7 +15,7 @@ from .database import todo
 _todo = '', 500
 
 @app.route('/users/register', methods=['POST'])
-@required_body_items(['type', 'email', 'password'])
+@required_body_items(['type', 'email', 'password', 'name'])
 def user_register():
     PATIENT = 'PATIENT'
     DOCTOR = 'DOCTOR'
@@ -44,7 +44,8 @@ def user_register():
     if not data.get('language'):
         data['language'] = 'en'
 
-    todo.create_user(data)
+    db.user.create_user(data)
+
     return '', 201
 
 

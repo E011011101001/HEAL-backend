@@ -19,7 +19,7 @@
 				<back_color value="B4D64700"/>
 				<name value="Table1"/>
 				<position value="387;807"/>
-				<size value="238;156"/>
+				<size value="238;177"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
@@ -112,7 +112,7 @@
 				<name value="Table2"/>
 				<position value="387;1197"/>
 				<size value="238;114"/>
-				<sort_fields value="1"/>
+				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table2>
@@ -331,27 +331,14 @@
 				<type value="40"/>
 			</e1>
 			<e10>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="0" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="Patient"/>
-				<type value="40"/>
+				<data value=""/>
+				<name value="lnk_MedicalTerm_MM_Message"/>
+				<type value="22"/>
 			</e10>
 			<e11>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
-	&lt;Page value="1" /&gt;
+	&lt;Page value="0" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
 	&lt;SelectionConsraintTab value="0" /&gt;
 	&lt;SelectionField value="-1" /&gt;
@@ -363,66 +350,15 @@
 	&lt;SelectionUnique value="-1" /&gt;
 &lt;/properties&gt;
 '/>
-				<name value="DoctorInRoom"/>
+				<name value="MessageTermCache"/>
 				<type value="40"/>
 			</e11>
-			<e2>
-				<data value=""/>
-				<name value="lnk_MedicalTerm_PatientPrescription"/>
-				<type value="22"/>
-			</e2>
-			<e3>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="2" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="PatientCondition"/>
-				<type value="40"/>
-			</e3>
-			<e4>
-				<data value=""/>
-				<name value="lnk_Message_MM_MedicalTerm"/>
-				<type value="22"/>
-			</e4>
-			<e5>
-				<data value=""/>
-				<name value="lnk_MedicalTerm_MM_Message"/>
-				<type value="22"/>
-			</e5>
-			<e6>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="-1" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="Message_Term_Cache"/>
-				<type value="40"/>
-			</e6>
-			<e7>
+			<e12>
 				<data value=""/>
 				<name value="lnk_MedicalTerm_PatientCondition"/>
 				<type value="22"/>
-			</e7>
-			<e8>
+			</e12>
+			<e13>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
 	&lt;Page value="0" /&gt;
@@ -439,8 +375,8 @@
 '/>
 				<name value="Session"/>
 				<type value="40"/>
-			</e8>
-			<e9>
+			</e13>
+			<e14>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
 	&lt;Page value="1" /&gt;
@@ -457,6 +393,142 @@
 '/>
 				<name value="Doctor"/>
 				<type value="40"/>
+			</e14>
+			<e15>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="2" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="BaseUser"/>
+				<type value="40"/>
+			</e15>
+			<e2>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="0" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Patient"/>
+				<type value="40"/>
+			</e2>
+			<e3>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="DoctorInRoom"/>
+				<type value="40"/>
+			</e3>
+			<e4>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="3" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Message"/>
+				<type value="40"/>
+			</e4>
+			<e5>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="2" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Report"/>
+				<type value="40"/>
+			</e5>
+			<e6>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Room"/>
+				<type value="40"/>
+			</e6>
+			<e7>
+				<data value=""/>
+				<name value="lnk_MedicalTerm_PatientPrescription"/>
+				<type value="22"/>
+			</e7>
+			<e8>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="2" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="PatientCondition"/>
+				<type value="40"/>
+			</e8>
+			<e9>
+				<data value=""/>
+				<name value="lnk_Message_MM_MedicalTerm"/>
+				<type value="22"/>
 			</e9>
 		</design>
 	</Editors>
@@ -464,14 +536,14 @@
 		<FullToolbarLeft value="1"/>
 		<FullToolbarRight value="1"/>
 		<HiddenLinks value=""/>
-		<PageEditor value="1"/>
-		<PageEditorHRel value="0.303333"/>
+		<PageEditor value="15"/>
+		<PageEditorHRel value="0.301111"/>
 		<PageToolbarLeft value="0"/>
 		<PageToolbarRB value="0"/>
 		<PageToolbarRight value="0"/>
 		<ScrollX value="0"/>
-		<ScrollY value="480"/>
-		<Selection value="VGFibGU5"/>
+		<ScrollY value="780"/>
+		<Selection value="VGFibGUx"/>
 		<ShowAll value="1"/>
 		<ShowChanges value="1"/>
 		<ShowGL value="1"/>
@@ -493,7 +565,7 @@
 						<On_Delete value=""/>
 						<On_Update value=""/>
 						<Parent_Table value="Room"/>
-						<Primary_Key value="Room_id"/>
+						<Primary_Key value="id"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
@@ -514,7 +586,7 @@
 						<On_Delete value=""/>
 						<On_Update value=""/>
 						<Parent_Table value="Room"/>
-						<Primary_Key value="Room_id"/>
+						<Primary_Key value="id"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
@@ -590,7 +662,7 @@
 					<Changes value=""/>
 					<Properties>
 						<Cardinality value="ONE to MANY"/>
-						<Child_Table value="Message_Term_Cache"/>
+						<Child_Table value="MessageTermCache"/>
 						<Comment value=""/>
 						<Deferred value="0"/>
 						<Foreign_Key value="MedicalTerm_id"/>
@@ -611,7 +683,7 @@
 					<Changes value=""/>
 					<Properties>
 						<Cardinality value="ONE to MANY"/>
-						<Child_Table value="Message_Term_Cache"/>
+						<Child_Table value="MessageTermCache"/>
 						<Comment value=""/>
 						<Deferred value="0"/>
 						<Foreign_Key value="Message_id"/>
@@ -619,7 +691,7 @@
 						<On_Delete value=""/>
 						<On_Update value=""/>
 						<Parent_Table value="Message"/>
-						<Primary_Key value="Message_id"/>
+						<Primary_Key value="id"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
@@ -808,7 +880,7 @@
 						<On_Delete value=""/>
 						<On_Update value=""/>
 						<Parent_Table value="Room"/>
-						<Primary_Key value="Room_id"/>
+						<Primary_Key value="id"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
@@ -873,6 +945,27 @@
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="0"/>
+								<Name value="Password"/>
+								<Nullable value="0"/>
+								<Type value="Text"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Password"/>
+							<virtual value="0"/>
+						</o2>
+						<o3>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="0"/>
 								<Name value="Name"/>
 								<Nullable value="0"/>
 								<Type value="Text"/>
@@ -884,8 +977,8 @@
 							<delete value="0"/>
 							<name value="Name"/>
 							<virtual value="0"/>
-						</o2>
-						<o3>
+						</o3>
+						<o4>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -905,8 +998,8 @@
 							<delete value="0"/>
 							<name value="Type"/>
 							<virtual value="0"/>
-						</o3>
-						<o4>
+						</o4>
+						<o5>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -926,7 +1019,7 @@
 							<delete value="0"/>
 							<name value="Language_code"/>
 							<virtual value="0"/>
-						</o4>
+						</o5>
 					</Fields>
 					<Properties>
 						<Check_Count value="0"/>
@@ -981,7 +1074,7 @@
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
-								<Name value="Room_id"/>
+								<Name value="id"/>
 								<Nullable value="0"/>
 								<Type value="Integer"/>
 								<Unique value="1"/>
@@ -990,7 +1083,7 @@
 							</Properties>
 							<control value=""/>
 							<delete value="0"/>
-							<name value="Room_id"/>
+							<name value="id"/>
 							<virtual value="0"/>
 						</o0>
 						<o1>
@@ -1065,7 +1158,7 @@
 						<Link_Count value="0"/>
 						<Method_Count value="0"/>
 						<Name value="Room"/>
-						<Primary_Key value="Room_id"/>
+						<Primary_Key value="id"/>
 						<Query value=""/>
 						<Record_Count value=""/>
 						<Strict value="0"/>
@@ -1328,7 +1421,7 @@ Joined_time"/>
 						<Index_Count value="0"/>
 						<Link_Count value="0"/>
 						<Method_Count value="0"/>
-						<Name value="Message_Term_Cache"/>
+						<Name value="MessageTermCache"/>
 						<Primary_Key value="MedicalTerm_id
 Message_id"/>
 						<Query value=""/>
@@ -1343,13 +1436,34 @@ Message_id"/>
 					</Properties>
 					<control value="Table7"/>
 					<delete value="0"/>
-					<name value="Message_Term_Cache"/>
+					<name value="MessageTermCache"/>
 					<virtual value="0"/>
 				</o11>
 				<o2>
 					<Changes value=""/>
 					<Fields>
 						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="1"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="1"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1369,27 +1483,6 @@ Message_id"/>
 							<delete value="0"/>
 							<name value="Room_id"/>
 							<virtual value="0"/>
-						</o0>
-						<o1>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="1"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="1"/>
-								<Name value="Report_id"/>
-								<Nullable value="0"/>
-								<Type value="Integer"/>
-								<Unique value="1"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="Report_id"/>
-							<virtual value="0"/>
 						</o1>
 						<o2>
 							<Changes value=""/>
@@ -1400,7 +1493,7 @@ Message_id"/>
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="0"/>
-								<Name value="Consultation"/>
+								<Name value="Consultation_date"/>
 								<Nullable value="0"/>
 								<Type value="Date"/>
 								<Unique value="0"/>
@@ -1409,7 +1502,7 @@ Message_id"/>
 							</Properties>
 							<control value=""/>
 							<delete value="0"/>
-							<name value="Consultation"/>
+							<name value="Consultation_date"/>
 							<virtual value="0"/>
 						</o2>
 						<o3>
@@ -1442,7 +1535,7 @@ Message_id"/>
 						<Link_Count value="0"/>
 						<Method_Count value="0"/>
 						<Name value="Report"/>
-						<Primary_Key value="Report_id"/>
+						<Primary_Key value="id"/>
 						<Query value=""/>
 						<Record_Count value=""/>
 						<Strict value="0"/>
@@ -1464,6 +1557,27 @@ Message_id"/>
 						<o0>
 							<Changes value=""/>
 							<Properties>
+								<Autoincrement value="1"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="1"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
 								<Autoincrement value="0"/>
 								<Collation value="BINARY"/>
 								<Comment value=""/>
@@ -1481,8 +1595,8 @@ Message_id"/>
 							<delete value="0"/>
 							<name value="User_id"/>
 							<virtual value="0"/>
-						</o0>
-						<o1>
+						</o1>
+						<o2>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1502,27 +1616,6 @@ Message_id"/>
 							<delete value="0"/>
 							<name value="Room_id"/>
 							<virtual value="0"/>
-						</o1>
-						<o2>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="1"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="1"/>
-								<Name value="Message_id"/>
-								<Nullable value="0"/>
-								<Type value="Integer"/>
-								<Unique value="1"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="Message_id"/>
-							<virtual value="0"/>
 						</o2>
 						<o3>
 							<Changes value=""/>
@@ -1534,7 +1627,7 @@ Message_id"/>
 								<Field_Position value="0"/>
 								<Indexed value="0"/>
 								<Name value="Text"/>
-								<Nullable value="1"/>
+								<Nullable value="0"/>
 								<Type value="Text"/>
 								<Unique value="0"/>
 								<color value=""/>
@@ -1554,7 +1647,7 @@ Message_id"/>
 						<Link_Count value="0"/>
 						<Method_Count value="0"/>
 						<Name value="Message"/>
-						<Primary_Key value="Message_id"/>
+						<Primary_Key value="id"/>
 						<Query value=""/>
 						<Record_Count value=""/>
 						<Strict value="0"/>
@@ -2122,7 +2215,7 @@ Language_code	Asc	BINARY"/>
 							<Changes value=""/>
 							<Properties>
 								<Comment value=""/>
-								<Fields value="MedicalTerm_id"/>
+								<Fields value="MedicalTerm_id	Asc	BINARY"/>
 								<Name value="unique_1"/>
 								<On_Conflict value="Fail"/>
 								<color value=""/>

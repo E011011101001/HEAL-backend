@@ -14,6 +14,7 @@ db = SqliteDatabase(DB_PATH, pragmas=[('foreign_keys', 'on')])
 class BaseUser(Model):
     id = AutoField()
     Email = TextField()
+    Password = TextField()
     Language_code = TextField(default='en')
     Name = TextField()
     Type = IntegerField() # 1 for Patient, 2 for Doctor. See glovars
