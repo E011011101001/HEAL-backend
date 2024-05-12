@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <properties>
 	<Controls>
-		<ERD>
-			<Properties>
-				<^lock value="0"/>
-				<back_color value="FFFFFF"/>
-				<font value="Hack Nerd Font#000#14#0"/>
-				<gamma value="0"/>
-				<name value="ERD"/>
-				<size value="1680;2376"/>
-				<style value="4"/>
-				<style_links value="3"/>
-				<units value="5"/>
-			</Properties>
-			<Type value="Diagram"/>
-		</ERD>
 		<Table1>
 			<Parent value="#TOP"/>
 			<Properties>
@@ -22,7 +8,7 @@
 				<^group value="-1"/>
 				<^height value="-1"/>
 				<^indexes value="0"/>
-				<^level value="5"/>
+				<^level value="7"/>
 				<^links value="0"/>
 				<^lock value="0"/>
 				<^methods value="0"/>
@@ -32,35 +18,12 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table1"/>
-				<position value="655;705"/>
+				<position value="387;807"/>
 				<size value="238;156"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table1>
-		<Table10>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="9"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table10"/>
-				<position value="316;406"/>
-				<size value="270;135"/>
-				<sort_fields value="0"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table10>
 		<Table11>
 			<Parent value="#TOP"/>
 			<Properties>
@@ -68,7 +31,7 @@
 				<^group value="-1"/>
 				<^height value="-1"/>
 				<^indexes value="0"/>
-				<^level value="6"/>
+				<^level value="8"/>
 				<^links value="0"/>
 				<^lock value="0"/>
 				<^methods value="0"/>
@@ -78,36 +41,13 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table11"/>
-				<position value="281;716"/>
+				<position value="67;818"/>
 				<size value="238;135"/>
 				<sort_fields value="1"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table11>
 		<Table13>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="-1"/>
-				<^indexes value="0"/>
-				<^level value="2"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="B4D64700"/>
-				<name value="Table13"/>
-				<position value="1012;893"/>
-				<size value="293;135"/>
-				<sort_fields value="0"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table13>
-		<Table14>
 			<Parent value="#TOP"/>
 			<Properties>
 				<^checks value="0"/>
@@ -123,21 +63,21 @@
 				<^triggers value="0"/>
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
-				<name value="Table14"/>
-				<position value="281;900"/>
-				<size value="238;114"/>
+				<name value="Table13"/>
+				<position value="718;1030"/>
+				<size value="293;135"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
-		</Table14>
-		<Table2>
+		</Table13>
+		<Table14>
 			<Parent value="#TOP"/>
 			<Properties>
 				<^checks value="0"/>
 				<^group value="-1"/>
 				<^height value="-1"/>
 				<^indexes value="0"/>
-				<^level value="11"/>
+				<^level value="6"/>
 				<^links value="0"/>
 				<^lock value="0"/>
 				<^methods value="0"/>
@@ -146,37 +86,14 @@
 				<^triggers value="0"/>
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
-				<name value="Table2"/>
-				<position value="655;985"/>
-				<size value="238;114"/>
-				<sort_fields value="1"/>
-			</Properties>
-			<Type value="Table"/>
-		</Table2>
-		<Table3>
-			<Parent value="#TOP"/>
-			<Properties>
-				<^checks value="0"/>
-				<^group value="-1"/>
-				<^height value="74"/>
-				<^indexes value="0"/>
-				<^level value="10"/>
-				<^links value="0"/>
-				<^lock value="0"/>
-				<^methods value="0"/>
-				<^minimized value="0"/>
-				<^properties value="0"/>
-				<^triggers value="0"/>
-				<^uniques value="0"/>
-				<back_color value="b4d647"/>
-				<name value="Table3"/>
-				<position value="655;1143"/>
+				<name value="Table14"/>
+				<position value="67;1037"/>
 				<size value="238;114"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
-		</Table3>
-		<Table4>
+		</Table14>
+		<Table2>
 			<Parent value="#TOP"/>
 			<Properties>
 				<^checks value="0"/>
@@ -192,8 +109,54 @@
 				<^triggers value="0"/>
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
+				<name value="Table2"/>
+				<position value="387;1197"/>
+				<size value="238;114"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table2>
+		<Table3>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="74"/>
+				<^indexes value="0"/>
+				<^level value="11"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="b4d647"/>
+				<name value="Table3"/>
+				<position value="387;1385"/>
+				<size value="238;114"/>
+				<sort_fields value="0"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table3>
+		<Table4>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="5"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
 				<name value="Table4"/>
-				<position value="281;1133"/>
+				<position value="67;1375"/>
 				<size value="238;135"/>
 				<sort_fields value="0"/>
 			</Properties>
@@ -216,8 +179,8 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table5"/>
-				<position value="656;366"/>
-				<size value="303;156"/>
+				<position value="1096;589"/>
+				<size value="303;177"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
@@ -239,12 +202,35 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table6"/>
-				<position value="655;1301"/>
+				<position value="387;1543"/>
 				<size value="238;114"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table6>
+		<Table7>
+			<Parent value="#TOP"/>
+			<Properties>
+				<^checks value="0"/>
+				<^group value="-1"/>
+				<^height value="-1"/>
+				<^indexes value="0"/>
+				<^level value="2"/>
+				<^links value="0"/>
+				<^lock value="0"/>
+				<^methods value="0"/>
+				<^minimized value="0"/>
+				<^properties value="0"/>
+				<^triggers value="0"/>
+				<^uniques value="0"/>
+				<back_color value="B4D64700"/>
+				<name value="Table7"/>
+				<position value="1146;1208"/>
+				<size value="303;93"/>
+				<sort_fields value="1"/>
+			</Properties>
+			<Type value="Table"/>
+		</Table7>
 		<Table8>
 			<Parent value="#TOP"/>
 			<Properties>
@@ -252,7 +238,7 @@
 				<^group value="-1"/>
 				<^height value="-1"/>
 				<^indexes value="0"/>
-				<^level value="8"/>
+				<^level value="10"/>
 				<^links value="0"/>
 				<^lock value="0"/>
 				<^methods value="0"/>
@@ -262,8 +248,8 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table8"/>
-				<position value="1012;705"/>
-				<size value="293;156"/>
+				<position value="718;786"/>
+				<size value="293;198"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
@@ -275,7 +261,7 @@
 				<^group value="-1"/>
 				<^height value="-1"/>
 				<^indexes value="0"/>
-				<^level value="7"/>
+				<^level value="9"/>
 				<^links value="0"/>
 				<^lock value="0"/>
 				<^methods value="0"/>
@@ -285,80 +271,35 @@
 				<^uniques value="0"/>
 				<back_color value="B4D64700"/>
 				<name value="Table9"/>
-				<position value="1012;531"/>
-				<size value="293;93"/>
+				<position value="718;578"/>
+				<size value="293;177"/>
 				<sort_fields value="0"/>
 			</Properties>
 			<Type value="Table"/>
 		</Table9>
+		<a>
+			<Properties>
+				<^lock value="0"/>
+				<back_color value="FFFFFF"/>
+				<font value="Hack Nerd Font#000#14#0"/>
+				<gamma value="0"/>
+				<name value="a"/>
+				<size value="1680;2376"/>
+				<style value="4"/>
+				<style_links value="3"/>
+				<units value="5"/>
+			</Properties>
+			<Type value="Diagram"/>
+		</a>
 	</Controls>
 	<Editors>
-		<HEAL>
+		<design>
 			<e0>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="3" /&gt;
-	&lt;SelectionField value="-1" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="PatientCondition"/>
-				<type value="40"/>
-			</e0>
-			<e1>
-				<data value=""/>
-				<name value="lnk_Patient_PatientCondition"/>
-				<type value="22"/>
-			</e1>
-			<e2>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="-1" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="PatientPrescription"/>
-				<type value="40"/>
-			</e2>
-			<e3>
-				<data value='&lt;?xml version="1.0"?&gt;
-&lt;properties&gt;
-	&lt;Page value="0" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="-1" /&gt;
-	&lt;SelectionIndex value="-1" /&gt;
-	&lt;SelectionMethod value="-1" /&gt;
-	&lt;SelectionProperty value="-1" /&gt;
-	&lt;SelectionTrigger value="-1" /&gt;
-	&lt;SelectionTriggerTab value="0" /&gt;
-	&lt;SelectionUnique value="-1" /&gt;
-&lt;/properties&gt;
-'/>
-				<name value="Patient"/>
-				<type value="40"/>
-			</e3>
-			<e4>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
 	&lt;Page value="3" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="3" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
 	&lt;SelectionField value="-1" /&gt;
 	&lt;SelectionIndex value="-1" /&gt;
 	&lt;SelectionMethod value="-1" /&gt;
@@ -370,13 +311,13 @@
 '/>
 				<name value="MedicalTerm"/>
 				<type value="40"/>
-			</e4>
-			<e5>
+			</e0>
+			<e1>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
-	&lt;Page value="3" /&gt;
+	&lt;Page value="1" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="3" /&gt;
+	&lt;SelectionConsraintTab value="1" /&gt;
 	&lt;SelectionField value="-1" /&gt;
 	&lt;SelectionIndex value="-1" /&gt;
 	&lt;SelectionMethod value="-1" /&gt;
@@ -386,13 +327,46 @@
 	&lt;SelectionUnique value="-1" /&gt;
 &lt;/properties&gt;
 '/>
-				<name value="MedicalTeamLink"/>
+				<name value="PatientPrescription"/>
 				<type value="40"/>
+			</e1>
+			<e2>
+				<data value=""/>
+				<name value="lnk_MedicalTerm_PatientPrescription"/>
+				<type value="22"/>
+			</e2>
+			<e3>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="3" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="PatientCondition"/>
+				<type value="40"/>
+			</e3>
+			<e4>
+				<data value=""/>
+				<name value="lnk_Message_MM_MedicalTerm"/>
+				<type value="22"/>
+			</e4>
+			<e5>
+				<data value=""/>
+				<name value="lnk_MedicalTerm_MM_Message"/>
+				<type value="22"/>
 			</e5>
 			<e6>
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
-	&lt;Page value="0" /&gt;
+	&lt;Page value="1" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
 	&lt;SelectionConsraintTab value="0" /&gt;
 	&lt;SelectionField value="-1" /&gt;
@@ -404,28 +378,28 @@
 	&lt;SelectionUnique value="-1" /&gt;
 &lt;/properties&gt;
 '/>
-				<name value="BaseUser"/>
+				<name value="Message_Term_Cache"/>
 				<type value="40"/>
 			</e6>
 			<e7>
 				<data value=""/>
-				<name value="lnk_MedicalTerm_MedicalTeamLink"/>
+				<name value="lnk_MedicalTerm_PatientCondition"/>
 				<type value="22"/>
 			</e7>
-		</HEAL>
+		</design>
 	</Editors>
 	<GUI>
 		<FullToolbarLeft value="1"/>
 		<FullToolbarRight value="1"/>
 		<HiddenLinks value=""/>
-		<PageEditor value="7"/>
-		<PageEditorHRel value="0.298889"/>
+		<PageEditor value="3"/>
+		<PageEditorHRel value="0.303333"/>
 		<PageToolbarLeft value="0"/>
 		<PageToolbarRB value="0"/>
 		<PageToolbarRight value="0"/>
 		<ScrollX value="0"/>
-		<ScrollY value="960"/>
-		<Selection value="RVJE"/>
+		<ScrollY value="660"/>
+		<Selection value="YQ=="/>
 		<ShowAll value="1"/>
 		<ShowChanges value="1"/>
 		<ShowGL value="1"/>
@@ -433,7 +407,7 @@
 		<UseGrid value="0"/>
 	</GUI>
 	<Model>
-		<HEAL>
+		<design>
 			<Links>
 				<o0>
 					<Changes value=""/>
@@ -523,11 +497,11 @@
 					<Changes value=""/>
 					<Properties>
 						<Cardinality value="ONE to MANY"/>
-						<Child_Table value="MedicalTeamLink"/>
+						<Child_Table value="PatientPrescription"/>
 						<Comment value=""/>
 						<Deferred value="0"/>
 						<Foreign_Key value="MedicalTerm_id"/>
-						<Name value="lnk_MedicalTerm_MedicalTeamLink"/>
+						<Name value="lnk_MedicalTerm_PatientPrescription"/>
 						<On_Delete value=""/>
 						<On_Update value=""/>
 						<Parent_Table value="MedicalTerm"/>
@@ -537,9 +511,72 @@
 					</Properties>
 					<control value=""/>
 					<delete value="0"/>
-					<name value="lnk_MedicalTerm_MedicalTeamLink"/>
+					<name value="lnk_MedicalTerm_PatientPrescription"/>
 					<virtual value="0"/>
 				</o12>
+				<o13>
+					<Changes value=""/>
+					<Properties>
+						<Cardinality value="ONE to MANY"/>
+						<Child_Table value="Message_Term_Cache"/>
+						<Comment value=""/>
+						<Deferred value="0"/>
+						<Foreign_Key value="MedicalTerm_id"/>
+						<Name value="lnk_MedicalTerm_MM_Message"/>
+						<On_Delete value=""/>
+						<On_Update value=""/>
+						<Parent_Table value="MedicalTerm"/>
+						<Primary_Key value="id"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<control value=""/>
+					<delete value="0"/>
+					<name value="lnk_MedicalTerm_MM_Message"/>
+					<virtual value="0"/>
+				</o13>
+				<o14>
+					<Changes value=""/>
+					<Properties>
+						<Cardinality value="ONE to MANY"/>
+						<Child_Table value="Message_Term_Cache"/>
+						<Comment value=""/>
+						<Deferred value="0"/>
+						<Foreign_Key value="Message_id"/>
+						<Name value="lnk_Message_MM_MedicalTerm"/>
+						<On_Delete value=""/>
+						<On_Update value=""/>
+						<Parent_Table value="Message"/>
+						<Primary_Key value="Message_id"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<control value=""/>
+					<delete value="0"/>
+					<name value="lnk_Message_MM_MedicalTerm"/>
+					<virtual value="0"/>
+				</o14>
+				<o15>
+					<Changes value=""/>
+					<Properties>
+						<Cardinality value="ONE to ONE"/>
+						<Child_Table value="PatientCondition"/>
+						<Comment value=""/>
+						<Deferred value="0"/>
+						<Foreign_Key value="MedicalTerm_id"/>
+						<Name value="lnk_MedicalTerm_PatientCondition"/>
+						<On_Delete value=""/>
+						<On_Update value=""/>
+						<Parent_Table value="MedicalTerm"/>
+						<Primary_Key value="id"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<control value=""/>
+					<delete value="0"/>
+					<name value="lnk_MedicalTerm_PatientCondition"/>
+					<virtual value="0"/>
+				</o15>
 				<o2>
 					<Changes value=""/>
 					<Properties>
@@ -594,7 +631,7 @@
 						<On_Delete value=""/>
 						<On_Update value=""/>
 						<Parent_Table value="PatientCondition"/>
-						<Primary_Key value="User_condition_id"/>
+						<Primary_Key value="id"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
@@ -984,114 +1021,6 @@
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
-								<Name value="BaseUser_id"/>
-								<Nullable value="1"/>
-								<Type value="Integer"/>
-								<Unique value="1"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="BaseUser_id"/>
-							<virtual value="0"/>
-						</o0>
-						<o1>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="0"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="0"/>
-								<Name value="Specialisation"/>
-								<Nullable value="1"/>
-								<Type value="Text"/>
-								<Unique value="0"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="Specialisation"/>
-							<virtual value="0"/>
-						</o1>
-						<o2>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="0"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="0"/>
-								<Name value="Hospital"/>
-								<Nullable value="1"/>
-								<Type value="Text"/>
-								<Unique value="0"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="Hospital"/>
-							<virtual value="0"/>
-						</o2>
-					</Fields>
-					<Properties>
-						<Check_Count value="0"/>
-						<Comment value=""/>
-						<Field_Count value="0"/>
-						<Index_Count value="0"/>
-						<Link_Count value="0"/>
-						<Method_Count value="0"/>
-						<Name value="Doctor"/>
-						<Primary_Key value="BaseUser_id"/>
-						<Query value=""/>
-						<Record_Count value=""/>
-						<Strict value="0"/>
-						<Temporary value="0"/>
-						<Trigger_Count value="0"/>
-						<Unique_Count value="0"/>
-						<Without_RowID value="0"/>
-						<color value=""/>
-						<font value=""/>
-					</Properties>
-					<Uniques>
-						<o0>
-							<Changes value=""/>
-							<Properties>
-								<Comment value=""/>
-								<Fields value="BaseUser_id	Asc	BINARY"/>
-								<Name value="unique_BaseUser_id"/>
-								<On_Conflict value="Fail"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="unique_BaseUser_id"/>
-							<virtual value="0"/>
-						</o0>
-					</Uniques>
-					<control value="Table14"/>
-					<delete value="0"/>
-					<name value="Doctor"/>
-					<virtual value="0"/>
-				</o10>
-				<o11>
-					<Changes value=""/>
-					<Fields>
-						<o0>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="0"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="1"/>
 								<Name value="Doctor_id"/>
 								<Nullable value="0"/>
 								<Type value="Integer"/>
@@ -1232,6 +1161,117 @@ Joined_time"/>
 					<control value="Table4"/>
 					<delete value="0"/>
 					<name value="DoctorInRoom"/>
+					<virtual value="0"/>
+				</o10>
+				<o11>
+					<Changes value=""/>
+					<Fields>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="Message_id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Message_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="MedicalTerm_id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="MedicalTerm_id"/>
+							<virtual value="0"/>
+						</o1>
+					</Fields>
+					<Indexes>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="Message_id	Asc	BINARY"/>
+								<Name value="index_Message_id"/>
+								<Query value=""/>
+								<Table value=""/>
+								<Temporary value="0"/>
+								<Unique value="0"/>
+								<Where value=""/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="index_Message_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="MedicalTerm_id	Asc	BINARY"/>
+								<Name value="index_MedicalTerm_id1"/>
+								<Query value=""/>
+								<Table value=""/>
+								<Temporary value="0"/>
+								<Unique value="0"/>
+								<Where value=""/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="index_MedicalTerm_id1"/>
+							<virtual value="0"/>
+						</o1>
+					</Indexes>
+					<Properties>
+						<Check_Count value="0"/>
+						<Comment value=""/>
+						<Field_Count value="0"/>
+						<Index_Count value="0"/>
+						<Link_Count value="0"/>
+						<Method_Count value="0"/>
+						<Name value="Message_Term_Cache"/>
+						<Primary_Key value="MedicalTerm_id
+Message_id"/>
+						<Query value=""/>
+						<Record_Count value=""/>
+						<Strict value="0"/>
+						<Temporary value="0"/>
+						<Trigger_Count value="0"/>
+						<Unique_Count value="0"/>
+						<Without_RowID value="0"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<control value="Table7"/>
+					<delete value="0"/>
+					<name value="Message_Term_Cache"/>
 					<virtual value="0"/>
 				</o11>
 				<o2>
@@ -1473,7 +1513,7 @@ Joined_time"/>
 								<Name value="id"/>
 								<Nullable value="0"/>
 								<Type value="Text"/>
-								<Unique value="0"/>
+								<Unique value="1"/>
 								<color value=""/>
 								<font value=""/>
 							</Properties>
@@ -1485,7 +1525,7 @@ Joined_time"/>
 						<o1>
 							<Changes value=""/>
 							<Properties>
-								<Autoincrement value="1"/>
+								<Autoincrement value="0"/>
 								<Collation value="BINARY"/>
 								<Comment value=""/>
 								<Default_Value value=""/>
@@ -1494,7 +1534,7 @@ Joined_time"/>
 								<Name value="Term_id"/>
 								<Nullable value="0"/>
 								<Type value="Integer"/>
-								<Unique value="1"/>
+								<Unique value="0"/>
 								<color value=""/>
 								<font value=""/>
 							</Properties>
@@ -1545,28 +1585,30 @@ Joined_time"/>
 							<name value="Discription"/>
 							<virtual value="0"/>
 						</o3>
-					</Fields>
-					<Indexes>
-						<o0>
+						<o4>
 							<Changes value=""/>
 							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
 								<Comment value=""/>
-								<Fields value="Language_code	Asc	BINARY"/>
-								<Name value="index_Language_code"/>
-								<Query value=""/>
-								<Table value=""/>
-								<Temporary value="0"/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="0"/>
+								<Name value="URL"/>
+								<Nullable value="1"/>
+								<Type value="Text"/>
 								<Unique value="0"/>
-								<Where value=""/>
 								<color value=""/>
 								<font value=""/>
 							</Properties>
 							<control value=""/>
 							<delete value="0"/>
-							<name value="index_Language_code"/>
+							<name value="URL"/>
 							<virtual value="0"/>
-						</o0>
-						<o1>
+						</o4>
+					</Fields>
+					<Indexes>
+						<o0>
 							<Changes value=""/>
 							<Properties>
 								<Comment value=""/>
@@ -1583,6 +1625,25 @@ Joined_time"/>
 							<control value=""/>
 							<delete value="0"/>
 							<name value="index_Term_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="Language_code	Asc	BINARY"/>
+								<Name value="index_Language_code"/>
+								<Query value=""/>
+								<Table value=""/>
+								<Temporary value="0"/>
+								<Unique value="0"/>
+								<Where value=""/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="index_Language_code"/>
 							<virtual value="0"/>
 						</o1>
 					</Indexes>
@@ -1622,6 +1683,21 @@ Language_code	Asc	BINARY"/>
 							<name value="unique_term_language"/>
 							<virtual value="0"/>
 						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="id	Asc	BINARY"/>
+								<Name value="unique_id"/>
+								<On_Conflict value="Fail"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="unique_id"/>
+							<virtual value="0"/>
+						</o1>
 					</Uniques>
 					<control value="Table5"/>
 					<delete value="0"/>
@@ -1640,7 +1716,7 @@ Language_code	Asc	BINARY"/>
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
-								<Name value="Link_id"/>
+								<Name value="id"/>
 								<Nullable value="0"/>
 								<Type value="Integer"/>
 								<Unique value="1"/>
@@ -1649,31 +1725,10 @@ Language_code	Asc	BINARY"/>
 							</Properties>
 							<control value=""/>
 							<delete value="0"/>
-							<name value="Link_id"/>
+							<name value="id"/>
 							<virtual value="0"/>
 						</o0>
 						<o1>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="0"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="0"/>
-								<Name value="URL"/>
-								<Nullable value="0"/>
-								<Type value="Text"/>
-								<Unique value="0"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="URL"/>
-							<virtual value="0"/>
-						</o1>
-						<o2>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1685,7 +1740,7 @@ Language_code	Asc	BINARY"/>
 								<Name value="MedicalTerm_id"/>
 								<Nullable value="1"/>
 								<Type value="Text"/>
-								<Unique value="0"/>
+								<Unique value="1"/>
 								<color value=""/>
 								<font value=""/>
 							</Properties>
@@ -1693,95 +1748,8 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="MedicalTerm_id"/>
 							<virtual value="0"/>
-						</o2>
-					</Fields>
-					<Indexes>
-						<o0>
-							<Changes value=""/>
-							<Properties>
-								<Comment value=""/>
-								<Fields value="MedicalTerm_id	Asc	BINARY"/>
-								<Name value="index_MedicalTerm_id"/>
-								<Query value=""/>
-								<Table value=""/>
-								<Temporary value="0"/>
-								<Unique value="0"/>
-								<Where value=""/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="index_MedicalTerm_id"/>
-							<virtual value="0"/>
-						</o0>
-					</Indexes>
-					<Properties>
-						<Check_Count value="0"/>
-						<Comment value=""/>
-						<Field_Count value="0"/>
-						<Index_Count value="0"/>
-						<Link_Count value="0"/>
-						<Method_Count value="0"/>
-						<Name value="MedicalTeamLink"/>
-						<Primary_Key value="Link_id"/>
-						<Query value=""/>
-						<Record_Count value=""/>
-						<Strict value="0"/>
-						<Temporary value="0"/>
-						<Trigger_Count value="0"/>
-						<Unique_Count value="0"/>
-						<Without_RowID value="0"/>
-						<color value=""/>
-						<font value=""/>
-					</Properties>
-					<Uniques>
-						<o0>
-							<Changes value=""/>
-							<Properties>
-								<Comment value=""/>
-								<Fields value="Link_id	Asc	BINARY"/>
-								<Name value="unique_Link_id"/>
-								<On_Conflict value="Fail"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="unique_Link_id"/>
-							<virtual value="0"/>
-						</o0>
-					</Uniques>
-					<control value="Table10"/>
-					<delete value="0"/>
-					<name value="MedicalTeamLink"/>
-					<virtual value="0"/>
-				</o5>
-				<o6>
-					<Changes value=""/>
-					<Fields>
-						<o0>
-							<Changes value=""/>
-							<Properties>
-								<Autoincrement value="1"/>
-								<Collation value="BINARY"/>
-								<Comment value=""/>
-								<Default_Value value=""/>
-								<Field_Position value="0"/>
-								<Indexed value="1"/>
-								<Name value="User_condition_id"/>
-								<Nullable value="0"/>
-								<Type value="Integer"/>
-								<Unique value="1"/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="User_condition_id"/>
-							<virtual value="0"/>
-						</o0>
-						<o1>
+						</o1>
+						<o2>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1801,8 +1769,8 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="Patient_id"/>
 							<virtual value="0"/>
-						</o1>
-						<o2>
+						</o2>
+						<o3>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1822,8 +1790,8 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="Status"/>
 							<virtual value="0"/>
-						</o2>
-						<o3>
+						</o3>
+						<o4>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1843,8 +1811,8 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="Diagnosis_date"/>
 							<virtual value="0"/>
-						</o3>
-						<o4>
+						</o4>
+						<o5>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1864,7 +1832,7 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="Resolution_date"/>
 							<virtual value="0"/>
-						</o4>
+						</o5>
 					</Fields>
 					<Indexes>
 						<o0>
@@ -1895,7 +1863,7 @@ Language_code	Asc	BINARY"/>
 						<Link_Count value="0"/>
 						<Method_Count value="0"/>
 						<Name value="PatientCondition"/>
-						<Primary_Key value="User_condition_id"/>
+						<Primary_Key value="id"/>
 						<Query value=""/>
 						<Record_Count value=""/>
 						<Strict value="0"/>
@@ -1906,15 +1874,53 @@ Language_code	Asc	BINARY"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
+					<Uniques>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="MedicalTerm_id	Asc	BINARY"/>
+								<Name value="unique_MedicalTerm_id"/>
+								<On_Conflict value="Fail"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="unique_MedicalTerm_id"/>
+							<virtual value="0"/>
+						</o0>
+					</Uniques>
 					<control value="Table8"/>
 					<delete value="0"/>
 					<name value="PatientCondition"/>
 					<virtual value="0"/>
-				</o6>
-				<o7>
+				</o5>
+				<o6>
 					<Changes value=""/>
 					<Fields>
 						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="1"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1934,8 +1940,29 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="UserCondition_id"/>
 							<virtual value="0"/>
-						</o0>
-						<o1>
+						</o1>
+						<o2>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="MedicalTerm_id"/>
+								<Nullable value="0"/>
+								<Type value="Integer"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="MedicalTerm_id"/>
+							<virtual value="0"/>
+						</o2>
+						<o3>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1955,8 +1982,8 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="Dosage"/>
 							<virtual value="0"/>
-						</o1>
-						<o2>
+						</o3>
+						<o4>
 							<Changes value=""/>
 							<Properties>
 								<Autoincrement value="0"/>
@@ -1976,8 +2003,48 @@ Language_code	Asc	BINARY"/>
 							<delete value="0"/>
 							<name value="Frequency"/>
 							<virtual value="0"/>
-						</o2>
+						</o4>
 					</Fields>
+					<Indexes>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="MedicalTerm_id	Asc	BINARY"/>
+								<Name value="index_MedicalTerm_id"/>
+								<Query value=""/>
+								<Table value=""/>
+								<Temporary value="0"/>
+								<Unique value="0"/>
+								<Where value=""/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="index_MedicalTerm_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="id	Asc	BINARY"/>
+								<Name value="index_id"/>
+								<Query value=""/>
+								<Table value=""/>
+								<Temporary value="0"/>
+								<Unique value="0"/>
+								<Where value=""/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="index_id"/>
+							<virtual value="0"/>
+						</o1>
+					</Indexes>
 					<Properties>
 						<Check_Count value="0"/>
 						<Comment value=""/>
@@ -1997,12 +2064,29 @@ Language_code	Asc	BINARY"/>
 						<color value=""/>
 						<font value=""/>
 					</Properties>
+					<Uniques>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="MedicalTerm_id"/>
+								<Name value="unique_1"/>
+								<On_Conflict value="Fail"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="unique_1"/>
+							<virtual value="0"/>
+						</o0>
+					</Uniques>
 					<control value="Table9"/>
 					<delete value="0"/>
 					<name value="PatientPrescription"/>
 					<virtual value="0"/>
-				</o7>
-				<o8>
+				</o6>
+				<o7>
 					<Changes value=""/>
 					<Fields>
 						<o0>
@@ -2145,8 +2229,8 @@ Language_code	Asc	BINARY"/>
 					<delete value="0"/>
 					<name value="Session"/>
 					<virtual value="0"/>
-				</o8>
-				<o9>
+				</o7>
+				<o8>
 					<Changes value=""/>
 					<Fields>
 						<o0>
@@ -2274,9 +2358,117 @@ Language_code	Asc	BINARY"/>
 					<delete value="0"/>
 					<name value="Patient"/>
 					<virtual value="0"/>
+				</o8>
+				<o9>
+					<Changes value=""/>
+					<Fields>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="1"/>
+								<Name value="BaseUser_id"/>
+								<Nullable value="1"/>
+								<Type value="Integer"/>
+								<Unique value="1"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="BaseUser_id"/>
+							<virtual value="0"/>
+						</o0>
+						<o1>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="0"/>
+								<Name value="Specialisation"/>
+								<Nullable value="1"/>
+								<Type value="Text"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Specialisation"/>
+							<virtual value="0"/>
+						</o1>
+						<o2>
+							<Changes value=""/>
+							<Properties>
+								<Autoincrement value="0"/>
+								<Collation value="BINARY"/>
+								<Comment value=""/>
+								<Default_Value value=""/>
+								<Field_Position value="0"/>
+								<Indexed value="0"/>
+								<Name value="Hospital"/>
+								<Nullable value="1"/>
+								<Type value="Text"/>
+								<Unique value="0"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="Hospital"/>
+							<virtual value="0"/>
+						</o2>
+					</Fields>
+					<Properties>
+						<Check_Count value="0"/>
+						<Comment value=""/>
+						<Field_Count value="0"/>
+						<Index_Count value="0"/>
+						<Link_Count value="0"/>
+						<Method_Count value="0"/>
+						<Name value="Doctor"/>
+						<Primary_Key value="BaseUser_id"/>
+						<Query value=""/>
+						<Record_Count value=""/>
+						<Strict value="0"/>
+						<Temporary value="0"/>
+						<Trigger_Count value="0"/>
+						<Unique_Count value="0"/>
+						<Without_RowID value="0"/>
+						<color value=""/>
+						<font value=""/>
+					</Properties>
+					<Uniques>
+						<o0>
+							<Changes value=""/>
+							<Properties>
+								<Comment value=""/>
+								<Fields value="BaseUser_id	Asc	BINARY"/>
+								<Name value="unique_BaseUser_id"/>
+								<On_Conflict value="Fail"/>
+								<color value=""/>
+								<font value=""/>
+							</Properties>
+							<control value=""/>
+							<delete value="0"/>
+							<name value="unique_BaseUser_id"/>
+							<virtual value="0"/>
+						</o0>
+					</Uniques>
+					<control value="Table14"/>
+					<delete value="0"/>
+					<name value="Doctor"/>
+					<virtual value="0"/>
 				</o9>
 			</Tables>
-		</HEAL>
+		</design>
 	</Model>
 	<Scene>
 		<HeightPX value="2376"/>

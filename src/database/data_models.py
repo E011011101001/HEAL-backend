@@ -4,7 +4,7 @@ import sys
 
 from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField, ForeignKeyField
 
-from ..glovars import DB_PATH, PATIENT, DOCTOR
+from ..glovars import DB_PATH
 
 
 # pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
