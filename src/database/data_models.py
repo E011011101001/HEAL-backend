@@ -2,7 +2,8 @@
 
 import sys
 
-from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField, ForeignKeyField
+from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField,\
+    ForeignKeyField, BooleanField, CompositeKey
 
 from ..glovars import DB_PATH
 
@@ -20,6 +21,26 @@ class BaseUser(Model):
     class Meta:
         database = db
 
+
+class Doctor(Model):
+    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', primary_key=True)
+    Specialisation = TextField(null=True)
+    Hospital = TextField(null=True)
+
+    class Meta:
+        database = db
+
+
+class Patient(Model):
+    BaseUser_id = ForeignKeyField(BaseUser, backref='patient', primary_key=True)
+    Date_of_birth = DateField(null=True)
+    Height = IntegerField(null=True)
+    Weight = IntegerField(null=True)
+
+    class Meta:
+        database = db
+
+
 class Session(Model):
     id = AutoField()
     User_id = ForeignKeyField(BaseUser, backref='sessions')
@@ -29,44 +50,54 @@ class Session(Model):
     class Meta:
         database = db
 
-class Doctor(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', index = True, null = True, unique = True)
-    Specialisation = TextField(null = True)
-    Hospital = TextField(null = True)
+
+class Room(Model):
+    id = AutoField()
+    Patient_id = ForeignKeyField(Patient, backref='room', null=True)
+    Creation_time = DateTimeField()
 
     class Meta:
         database = db
+
 
 class DoctorInRoom(Model):
-    id = ForeignKeyField(Doctor, backref='doctorinroom', index = True)
-    Room_id = AutoField()
+    Doctor_id = ForeignKeyField(Doctor, backref='doctorInRoom')
+    Room_id = ForeignKeyField(Room, backref='doctorInRoom')
     Joined_time = DateTimeField()
-    Enabled = bool()
+    Enabled = BooleanField(default=True)
+
+    class Meta:
+        database = db
+        primary_key = CompositeKey('Doctor_id', 'Room_id', 'Joined_time')
+
+
+class MedicalTerm(Model):
+    id = AutoField()
+    Term_id = TextField(index=True)
+    Language_code = TextField(default='en', index=True)
+    Discription = TextField()
+    URL = TextField(null=True)
 
     class Meta:
         database = db
 
-class Patient(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='patient', index = True, null = True, unique = True)
-    Date_of_birth = DateField(null = True)
-    Height = IntegerField(null = True)
-    Weight = IntegerField(null = True)
-
-    class Meta:
-        database = db
 
 class PatientCondition(Model):
     id = AutoField()
-    Patient_id = ForeignKeyField(Patient, backref='patientcondition', null = True)
+    MedicalTerm_id = ForeignKeyField(MedicalTerm)
+    Patient_id = ForeignKeyField(Patient, backref='patientCondition')
     Status = TextField()
     Diagnosis_date = DateField()
-    Resolution_date = DateField(null = True)
+    Resolution_date = DateField(null=True)
 
     class Meta:
         database = db
 
+
 class PatientPrescription(Model):
-    UserCondition_id = ForeignKeyField(PatientCondition, backref='patientprescription')
+    id = AutoField()
+    UserCondition_id = ForeignKeyField(PatientCondition, backref='patientPrescription')
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription')
     Dosage = TextField()
     Frequency = TextField()
 
@@ -74,55 +105,49 @@ class PatientPrescription(Model):
         database = db
 
 
-class Room(Model):
-    id = AutoField()
-    Patient_id = ForeignKeyField(Patient, backref='room', null = True)
-    Creation_time = DateTimeField()
-
-    class Meta:
-        database = db
-
 class Message(Model):
     id = AutoField()
     User_id = ForeignKeyField(BaseUser, backref='message')
     Room_id = ForeignKeyField(Room, backref='message')
-    Text = TextField(null = True)
+    Text = TextField()
 
     class Meta:
         database = db
 
+
 class Report(Model):
     id = AutoField()
     Room_id = ForeignKeyField(Room, backref='report')
-    Consultation = DateField()
+    Consultation_date = DateField()
     Report_details = TextField()
 
     class Meta:
         database = db
 
 
-class MedicalTerm(Model):
-    id = TextField(index = True)
-    Term_id = AutoField()
-    Language_code = TextField(default='en')
-    Discription = TextField()
+class MessageTermCache(Model):
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='messageTermCache')
+    Message_id = ForeignKeyField(Message, backref='messageTermCache')
 
     class Meta:
         database = db
-
-
-class MedicalTeamLink(Model):
-    Link_id = AutoField()
-    URL = TextField()
-    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='medicaltermlink')
-
-    class Meta:
-        database = db
-
-
+        primary_key = CompositeKey('MedicalTerm_id', 'Message_id')
 
 
 def init():
     db.connect()
-    db.create_tables([BaseUser, Session])
+    db.create_tables([
+        BaseUser,
+        Doctor,
+        Patient,
+        Session,
+        Room,
+        DoctorInRoom,
+        MedicalTerm,
+        PatientCondition,
+        PatientPrescription,
+        Message,
+        Report,
+        MessageTermCache
+    ])
     db.close()

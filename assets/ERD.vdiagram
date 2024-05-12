@@ -316,9 +316,9 @@
 				<data value='&lt;?xml version="1.0"?&gt;
 &lt;properties&gt;
 	&lt;Page value="1" /&gt;
-	&lt;SelectionCheck value="-1" /&gt;
-	&lt;SelectionConsraintTab value="1" /&gt;
-	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionCheck value="0" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="0" /&gt;
 	&lt;SelectionIndex value="-1" /&gt;
 	&lt;SelectionMethod value="-1" /&gt;
 	&lt;SelectionProperty value="-1" /&gt;
@@ -330,6 +330,42 @@
 				<name value="PatientPrescription"/>
 				<type value="40"/>
 			</e1>
+			<e10>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="0" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Patient"/>
+				<type value="40"/>
+			</e10>
+			<e11>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="DoctorInRoom"/>
+				<type value="40"/>
+			</e11>
 			<e2>
 				<data value=""/>
 				<name value="lnk_MedicalTerm_PatientPrescription"/>
@@ -341,7 +377,7 @@
 	&lt;Page value="1" /&gt;
 	&lt;SelectionCheck value="-1" /&gt;
 	&lt;SelectionConsraintTab value="0" /&gt;
-	&lt;SelectionField value="3" /&gt;
+	&lt;SelectionField value="2" /&gt;
 	&lt;SelectionIndex value="-1" /&gt;
 	&lt;SelectionMethod value="-1" /&gt;
 	&lt;SelectionProperty value="-1" /&gt;
@@ -386,20 +422,56 @@
 				<name value="lnk_MedicalTerm_PatientCondition"/>
 				<type value="22"/>
 			</e7>
+			<e8>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="0" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="-1" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Session"/>
+				<type value="40"/>
+			</e8>
+			<e9>
+				<data value='&lt;?xml version="1.0"?&gt;
+&lt;properties&gt;
+	&lt;Page value="1" /&gt;
+	&lt;SelectionCheck value="-1" /&gt;
+	&lt;SelectionConsraintTab value="0" /&gt;
+	&lt;SelectionField value="0" /&gt;
+	&lt;SelectionIndex value="-1" /&gt;
+	&lt;SelectionMethod value="-1" /&gt;
+	&lt;SelectionProperty value="-1" /&gt;
+	&lt;SelectionTrigger value="-1" /&gt;
+	&lt;SelectionTriggerTab value="0" /&gt;
+	&lt;SelectionUnique value="-1" /&gt;
+&lt;/properties&gt;
+'/>
+				<name value="Doctor"/>
+				<type value="40"/>
+			</e9>
 		</design>
 	</Editors>
 	<GUI>
 		<FullToolbarLeft value="1"/>
 		<FullToolbarRight value="1"/>
 		<HiddenLinks value=""/>
-		<PageEditor value="3"/>
+		<PageEditor value="1"/>
 		<PageEditorHRel value="0.303333"/>
 		<PageToolbarLeft value="0"/>
 		<PageToolbarRB value="0"/>
 		<PageToolbarRight value="0"/>
 		<ScrollX value="0"/>
-		<ScrollY value="660"/>
-		<Selection value="YQ=="/>
+		<ScrollY value="480"/>
+		<Selection value="VGFibGU5"/>
 		<ShowAll value="1"/>
 		<ShowChanges value="1"/>
 		<ShowGL value="1"/>
@@ -1738,7 +1810,7 @@ Language_code	Asc	BINARY"/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
 								<Name value="MedicalTerm_id"/>
-								<Nullable value="1"/>
+								<Nullable value="0"/>
 								<Type value="Text"/>
 								<Unique value="1"/>
 								<color value=""/>
@@ -1759,7 +1831,7 @@ Language_code	Asc	BINARY"/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
 								<Name value="Patient_id"/>
-								<Nullable value="1"/>
+								<Nullable value="0"/>
 								<Type value="Integer"/>
 								<Unique value="0"/>
 								<color value=""/>
@@ -1911,7 +1983,7 @@ Language_code	Asc	BINARY"/>
 								<Name value="id"/>
 								<Nullable value="0"/>
 								<Type value="Integer"/>
-								<Unique value="0"/>
+								<Unique value="1"/>
 								<color value=""/>
 								<font value=""/>
 							</Properties>
@@ -2025,25 +2097,6 @@ Language_code	Asc	BINARY"/>
 							<name value="index_MedicalTerm_id"/>
 							<virtual value="0"/>
 						</o0>
-						<o1>
-							<Changes value=""/>
-							<Properties>
-								<Comment value=""/>
-								<Fields value="id	Asc	BINARY"/>
-								<Name value="index_id"/>
-								<Query value=""/>
-								<Table value=""/>
-								<Temporary value="0"/>
-								<Unique value="0"/>
-								<Where value=""/>
-								<color value=""/>
-								<font value=""/>
-							</Properties>
-							<control value=""/>
-							<delete value="0"/>
-							<name value="index_id"/>
-							<virtual value="0"/>
-						</o1>
 					</Indexes>
 					<Properties>
 						<Check_Count value="0"/>
@@ -2053,7 +2106,7 @@ Language_code	Asc	BINARY"/>
 						<Link_Count value="0"/>
 						<Method_Count value="0"/>
 						<Name value="PatientPrescription"/>
-						<Primary_Key value=""/>
+						<Primary_Key value="id"/>
 						<Query value=""/>
 						<Record_Count value=""/>
 						<Strict value="0"/>
@@ -2243,7 +2296,7 @@ Language_code	Asc	BINARY"/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
 								<Name value="BaseUser_id"/>
-								<Nullable value="1"/>
+								<Nullable value="0"/>
 								<Type value="Integer"/>
 								<Unique value="1"/>
 								<color value=""/>
@@ -2372,7 +2425,7 @@ Language_code	Asc	BINARY"/>
 								<Field_Position value="0"/>
 								<Indexed value="1"/>
 								<Name value="BaseUser_id"/>
-								<Nullable value="1"/>
+								<Nullable value="0"/>
 								<Type value="Integer"/>
 								<Unique value="1"/>
 								<color value=""/>
