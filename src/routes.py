@@ -1,10 +1,11 @@
 from flask import Blueprint, redirect, request, make_response
 import traceback
+from peewee import IntegrityError
 
 from . import app
 from .route_decorators import required_body_items, required_params
 
-from peewee import IntegrityError
+from .utils import salted_hash
 
 from . import database as db
 
@@ -51,7 +52,6 @@ def user_register():
 
 @app.route('/users/<int:userId>', methods=['GET'])
 def get_users(userId):
-    print(userId)
     userData = db.user.get_user_full(userId)
     return userData
 
@@ -99,7 +99,28 @@ def delete_users(userId):
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['username', 'password'])
 def login():
-    return _todo
+    data = request.get_json()
+    failed = False
+    try:
+        user = db.user.get_user_and_password(data['username'])
+        failed = user['password'] != salted_hash(data['password'])
+    except Exception:
+        failed = True
+    finally:
+        if failed:
+            forbiddenError = {
+                "error": "forbiddenError",
+                "message": "You do not have enough permissions to perform this action."
+            }
+            return forbiddenError, 403
+        else:
+            token = db.user.new_session_by_id(user['id'])
+            return {
+                'user': get_users(user['id']),
+                'token': token
+            }
+
+
 
 @app.route('/users/verify-token', methods=['GET'])
 def verify_token():

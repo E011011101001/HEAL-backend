@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 
 from .glovars import PASSWORD_SALT
 
@@ -15,3 +16,7 @@ def salted_hash(password: str):
 
 def print_info(str: str):
     print(f'[INFO] {str}')
+
+
+def gen_session_token() -> str:
+    return uuid.uuid4().hex

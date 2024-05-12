@@ -1,7 +1,8 @@
 from peewee import DoesNotExist
+from datetime import datetime, timedelta
 
-from .data_models import BaseUser, Doctor, Patient
-from ..utils import salted_hash
+from .data_models import BaseUser, Doctor, Patient, Session
+from ..utils import salted_hash, gen_session_token
 from ..glovars import PATIENT, DOCTOR
 
 def email_exists(email: str) -> bool:
@@ -70,3 +71,25 @@ def get_user_full(userId: int) -> dict:
         ret['specialisation'] = doctor.Specialisation
 
     return ret
+
+
+def get_user_and_password(email: str) -> dict:
+    user = BaseUser.get(BaseUser.Email == email)
+    return {
+        'id': user.id,
+        'password': user.Password
+    }
+
+
+'''
+    return
+        session string
+'''
+def new_session_by_id(userId: int) -> str:
+    token = gen_session_token()
+    newSession = Session.create(
+        User_id=userId,
+        Token=token,
+        Valid_until=datetime.now() + timedelta(days=2)
+    )
+    return token
