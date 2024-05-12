@@ -3,7 +3,7 @@ import traceback
 from peewee import IntegrityError
 
 from . import app
-from .route_decorators import required_body_items, required_params
+from .route_decorators import required_body_items, required_params, login_required
 
 from .utils import salted_hash
 
@@ -123,8 +123,9 @@ def login():
 
 
 @app.route('/users/verify-token', methods=['GET'])
-def verify_token():
-    return _todo
+@login_required
+def verify_token(userId):
+    return get_users(userId)
 
 # chat manager
 @app.route('/chats/new', methods=['POST'])

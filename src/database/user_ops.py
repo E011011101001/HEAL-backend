@@ -93,3 +93,16 @@ def new_session_by_id(userId: int) -> str:
         Valid_until=datetime.now() + timedelta(days=2)
     )
     return token
+
+
+def get_user_by_token(token) -> dict | None:
+
+    try:
+        session = Session.get(Session.Token == token)
+    except DoesNotExist:
+            return None
+
+    return {
+        'id': session.User_id,
+        'expirationTime': session.Valid_until
+    }
