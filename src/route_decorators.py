@@ -16,10 +16,33 @@ def required_body_items(itemList: list[str]):
                     missedItemList.append(item)
 
             if missedItemList:
-                return ({
+                return {
                     "error": "Missing items.",
                     "missing": missedItemList
-                }, 406)
+                }, 406
+            else:
+                return func(*args, **kwargs)
+
+        return new_func
+
+    return decorator
+
+
+def required_params(itemList: list[str]):
+    def decorator(func):
+        @wraps(func)
+        def new_func(*args, **kwargs):
+            missedItemList = []
+            data = request.get_json()
+            for item in itemList:
+                if request.args.get(item) is None:
+                    missedItemList.append(item)
+
+            if missedItemList:
+                return {
+                    "error": "Missing items.",
+                    "missing": missedItemList
+                }, 406
             else:
                 return func(*args, **kwargs)
 

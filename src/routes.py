@@ -2,9 +2,9 @@ from flask import Blueprint, redirect, request, make_response
 import traceback
 
 from . import app
-from .route_decorators import required_body_items
+from .route_decorators import required_body_items, required_params
 
-from peewee import DoesNotExist, IntegrityError
+from peewee import IntegrityError
 
 from . import database as db
 
@@ -12,220 +12,152 @@ from . import database as db
 from .database import todo
 
 
+_todo = '', 500
+
 @app.route('/users/register', methods=['POST'])
 @required_body_items(['type', 'email', 'password'])
 def user_register():
-    PATIENT = "PATIENT"
-    DOCTOR = "DOCTOR"
-    try:
-        data = request.get_json()
-        userType = data.get('type')
-        if not userType in [PATIENT, DOCTOR]:
+    PATIENT = 'PATIENT'
+    DOCTOR = 'DOCTOR'
+    data = request.get_json()
+    userType = data.get('type')
+    if not userType in [PATIENT, DOCTOR]:
+        return {
+            'error': 'TypeError',
+            'message': f'"type" must be either "{PATIENT}" or "{DOCTOR}".'
+        }, 406
+
+    if userType is DOCTOR:
+        if not data.get('specialisation'):
             return {
-                'error': 'TypeError',
-                'message': f'"type" must be either "{PATIENT}" or "{DOCTOR}".'
+                'error': 'Missing items.',
+                'missing': ['specialisation']
             }, 406
 
-        if userType is DOCTOR:
-            if not data.get('specialisation'):
-                return {
-                    'error': 'Missing items.',
-                    'missing': ['specialisation']
-                }, 406
+    if db.user.email_exists(data.get('email')):
+        return {
+            'error': 'conflictError',
+            'message': 'An account with this email address already exists.'
+        }, 409
 
-        if db.user.email_exists(data.get('email')):
-            return {
-                'error': 'conflictError',
-                'message': 'An account with this email address already exists.'
-            }, 409
+    # language default to 'en'
+    if not data.get('language'):
+        data['language'] = 'en'
 
-        # language default to 'en'
-        if not data.get('language'):
-            data['language'] = 'en'
+    todo.create_user(data)
+    return '', 201
 
-        todo.create_user(data)
-        return '', 201
 
 @app.route('/users/<int:userId_patient>', methods=['GET'])
 def get_users(userId_patient):
-    try:
-        userData = todo.get_patient_details(userId_patient)
-        return userData, 200
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    userData = todo.get_patient_details(userId_patient)
+    return userData
 
 
 @app.route('/users/<int:userId>', methods=['PUT'])
 def update_users(userId):
-    try:
-        data = request.get_json()
+    data = request.get_json()
 
-        # confirm data structure
-        for field in data:
-            if field == "type":
-                if data["type"] != "PATIENT" or "DOCTOR":
-                    return {
-                        'error': 'TypeError',
-                        'message': 'Invalid type exist.'
-                    }, 404
+    # TODO: why traverse
 
-            if field == "height":
-                if data["height"] >= 0:
-                    return {
-                        'error': 'TypeError',
-                        'message': 'Invalid type exist.'
-                    }, 404
+    # confirm data structure
+    # for field in data:
+    #     if field == 'type':
+    #         if data['type'] != 'PATIENT' or 'DOCTOR':
+    #             return {
+    #                 'error': 'TypeError',
+    #                 'message': 'Invalid type exist.'
+    #             }, 404
 
-        # update user
-        todo.update_user(userId, data)
+    #     if field == 'height':
+    #         if data['height'] >= 0:
+    #             return {
+    #                 'error': 'TypeError',
+    #                 'message': 'Invalid type exist.'
+    #             }, 404
 
-        # get user details
-        newData = todo.get_user(userId)
+    # update user
+    todo.update_user(userId, data)
 
-        return newData, 200
+    # TODO: logic wrong. Check the user type and use the corresponding getter
+    # # get user details
+    # newData = todo.get_user(userId)
 
-    except:
-        return {}
+    # return newData
+    # TODO
+    return '', 500
+
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
 def delete_users(userId):
-    try:
-        todo.delete_user(userId)
-        return '', 204
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    todo.delete_user(userId)
+    return '', 204
 
 
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['username', 'password'])
 def login():
-    pass
+    return _todo
 
 @app.route('/users/verify-token', methods=['GET'])
 def verify_token():
-    pass
+    return _todo
 
 # chat manager
 @app.route('/chats/new', methods=['POST'])
 def create_room():
-    try:
-        id = todo.create_room_id()
-        return {"roomId": id}, 201
+    id = todo.create_room_id()
+    return {'roomId': id}, 201
 
 
 @app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
 def operate_room(roomId):
-    try:
-        if request.method == 'GET':
-            try:
-                roomData = todo.get_room_details(roomId)
-                return roomData, 200
+    if request.method == 'GET':
+        roomData = todo.get_room_details(roomId)
+        return roomData
 
-            except DoesNotExist:
-                return {
-                    'error': 'instanceNotFoundError',
-                    'message': 'The specified item does not exist.'
-                }, 404
-
-        if request.method == 'DELETE':
-            try:
-                todo.delete_room(roomId)
-                return '', 204
-
-            except DoesNotExist:
-                return {
-                    'error': 'instanceNotFoundError',
-                    'message': 'The specified item does not exist.'
-                }, 404
+    # if request.method == 'DELETE':
+    todo.delete_room(roomId)
+    return '', 204
 
 
 @app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
 def participant_room(roomId, userId):
     if request.method == 'POST':
-        try:
-            data = todo.participant_room(roomId, userId)
-            return data, 201
+        data = todo.participant_room(roomId, userId)
+        return data, 201
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
-
-    if request.method == 'DELETE':
-        try:
-            data = todo.exit_room(roomId, userId)
-            return data, 200
-
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+    # if request.method == 'DELETE':
+    data = todo.exit_room(roomId, userId)
+    return data
 
 
-@app.route('/users/<int:userId>/chats', method=['GET'])
+@app.route('/users/<int:userId>/chats', methods=['GET'])
 def get_rooms(userId):
-    try:
-        data = todo.get_participating_rooms(userId)
-        return data, 200
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    data = todo.get_participanting_rooms(userId)
+    return data
 
 
 # message manager
-@app.route('/chats/<int:roomId>/messages', method=['GET'])
+@app.route('/chats/<int:roomId>/messages', methods=['GET'])
+@required_params(['page', 'limit'])
 def get_chat_messages(roomId):
+    pageNum = request.args.get('page'); assert pageNum is not None
 
-    try:
-        pageNum = request.args["page"]
-        limNum = request.args["limit"]
+    limNum = request.args.get('limit'); assert limNum is not None
 
-    except Exception as e:
-        traceback.print_exc()
-        return {
-            'error': 'argumentError',
-            'message': 'Argument does not exist'
-        }, 406
-
-    try:
-        data = todo.get_chat_messages(roomId, pageNum, limNum)
-        return data, 200
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    data = todo.get_chat_messages(roomId, int(pageNum), int(limNum))
+    return data
 
 
-@app.route('/chats/<int:roomId>/messages/<int:mesId>', method=['GET'])
+@app.route('/chats/<int:roomId>/messages/<int:mesId>', methods=['GET'])
 def get_message(roomId, mesId):
-    try:
-        data = todo.get_message(roomId, mesId)
-        return data, 200
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    data = todo.get_message(roomId, mesId)
+    return data
 
 
 # medical term manager
-@app.route('/medical-terms', method=['POST'])
+@app.route('/medical-terms', methods=['POST'])
 @required_body_items(['name', 'description'])
 def create_term():
     try:
@@ -241,176 +173,93 @@ def create_term():
         }, 409
 
 
-@app.route('/medical-terms', method=['GET'])
+@app.route('/medical-terms', methods=['GET'])
 def get_terms():
     data = todo.get_terms()
-    return data, 200
+    return data
 
 
-@app.route('/medical-terms/<int:medicalTermId>', method=['GET', 'PUT', 'DELETE'])
+@app.route('/medical-terms/<int:medicalTermId>', methods=['GET', 'PUT', 'DELETE'])
 def operate_single_term(medicalTermId):
-
     if request.method == 'GET':
-        try:
-            data = todo.get_single_term(medicalTermId)
-            return data, 200
-
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+        data = todo.get_single_term(medicalTermId)
+        return data
 
     if request.method == 'PUT':
-        try:
-            data = todo.update_term(medicalTermId)
-            return data, 200
+        data = todo.update_term(medicalTermId)
+        return data
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
-
-    if request.method == 'DELETE':
-        try:
-            data = todo.delete_term(medicalTermId)
-            return data, 200
-
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+    # if request.method == 'DELETE':
+    todo.delete_term(medicalTermId)
+    return '', 204
 
 # linking term manager
-@app.route('/messages/<int:mesId>/medical-terms', method=['GET'])
+@app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])
 def get_linked_term(mesId):
-    try:
-        data = todo.get_linking_term(mesId)
-        return data, 200
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    data = todo.get_linking_term(mesId)
+    return data
 
 
-@app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', method=['POST', 'DELETE'])
+@app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', methods=['POST', 'DELETE'])
 def operate_linked_term(mesId, medicalTermId):
     if request.method == 'POST':
-        try:
-            data = todo.create_linking_term(mesId, medicalTermId)
-            return data, 201
+        data = todo.create_linking_term(mesId, medicalTermId)
+        return data, 201
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
-
-    if request.method == 'DELETE':
-        try:
-            todo.delete_linking_term(mesId, medicalTermId)
-            return '', 204
-
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+    # if request.method == 'DELETE':
+    todo.delete_linking_term(mesId, medicalTermId)
+    return '', 204
 
 
 # medical history
-@app.route('/patients/<int:userId>/medical-history', method=['GET'])
+@app.route('/patients/<int:userId>/medical-history', methods=['GET'])
 def get_medical_history(userId):
-    try:
-        data = todo.get_history(userId)
-        return data, 200
-
-    except DoesNotExist:
-        return {
-            'error': 'instanceNotFoundError',
-            'message': 'The specified item does not exist.'
-        }, 404
+    data = todo.get_history(userId)
+    return data
 
 
-@app.route('/patients/<int:userId>/patient-conditions/<int:termId>', method=['POST', 'PUT', 'DELETE'])
+@app.route('/patients/<int:userId>/patient-conditions/<int:termId>', methods=['POST', 'PUT', 'DELETE'])
 def add_condition(userId, termId):
-
+    data = request.get_json()
     if request.method == 'POST':
-        try:
-            data = request.get_json()
-            newData = todo.add_condition(userId, termId, data)
-            return newData, 201
+        newData = todo.add_condition(userId, termId, data)
+        return newData, 201
 
-        except IntegrityError:
-            return {
-                'error': 'conflictError',
-                'message': 'This medical term already exists.'
-            }, 409
+        # TODO
+
+        # except IntegrityError:
+        #     return {
+        #         'error': 'conflictError',
+        #         'message': 'This medical term already exists.'
+        #     }, 409
 
     if request.method == 'PUT':
-        try:
-            data = request.get_json()
-            newData = todo.update_condition(userId, termId, data)
-            return newData, 200
+        newData = todo.update_condition(userId, termId, data)
+        return newData
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
-
-    # we need body and response ?
-    if request.method == 'DELETE':
-        try:
-            data = todo.delete_condition(userId, termId, data)
-            return data, 200
-
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+    # if request.method == 'DELETE':
+    todo.delete_condition(userId, termId, data)
+    return '', 204
 
 
-@app.route('/patients/<int:userId>/conditions/<int:conditionTermId>/prescriptions/<int:prescriptionTermId>', method=['POST', 'PUT', 'DELETE'])
-def add_condition(userId, conditionTermId, prescriptionTermId):
-
+@app.route('/patients/<int:userId>/conditions/<int:conditionTermId>/prescriptions/<int:prescriptionTermId>', methods=['POST', 'PUT', 'DELETE'])
+def add_patient_prescription(userId, conditionTermId, prescriptionTermId):
+    data = request.get_json()
     if request.method == 'POST':
-        try:
-            data = request.get_json()
-            newData = todo.add_prescription(userId, conditionTermId, prescriptionTermId, data)
-            return newData, 201
+        newData = todo.add_prescription(userId, conditionTermId, prescriptionTermId, data)
+        return newData, 201
 
-        except IntegrityError:
-            return {
-                'error': 'conflictError',
-                'message': 'This medical term already exists.'
-            }, 409
+        # TODO
+        # except IntegrityError:
+        #     return {
+        #         'error': 'conflictError',
+        #         'message': 'This medical term already exists.'
+        #     }, 409
 
     if request.method == 'PUT':
-        try:
-            data = request.get_json()
-            newData = todo.update_prescription(userId, conditionTermId, prescriptionTermId, data)
-            return newData, 200
+        newData = todo.update_prescription(userId, conditionTermId, prescriptionTermId, data)
+        return newData
 
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
-
-    # we need body and response ?
-    if request.method == 'DELETE':
-        try:
-            data = todo.delete_prescription(userId, conditionTermId, prescriptionTermId, data)
-            return data, 200
-
-        except DoesNotExist:
-            return {
-                'error': 'instanceNotFoundError',
-                'message': 'The specified item does not exist.'
-            }, 404
+    # if request.method == 'DELETE':
+    todo.delete_prescription(userId, conditionTermId, prescriptionTermId, data)
+    return '', 204
