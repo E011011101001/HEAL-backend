@@ -53,3 +53,13 @@ def participant_room(userId, roomId):
         Enabled = True
     )
     newDoctorInRoom.save()
+
+def get_rooms_all(userId):
+    baseRooms = Room.select().where(baseRooms.Patient_id == userId)
+    rooms = []
+
+    for baseRoom in baseRooms:
+        room = get_room(baseRoom.id)
+        rooms.append(room)
+
+    return {"rooms": rooms}

@@ -170,7 +170,7 @@ def create_room(userId):
 
 @app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
 @login_required
-def operate_room(userId, roomId):
+def operate_room(_, roomId):
     if request.method == 'GET':
         roomData = db.room_op.get_room(roomId)
         return roomData
@@ -203,8 +203,16 @@ def participant_room(_, roomId, userId):
 
 
 @app.route('/users/<int:userId>/chats', methods=['GET'])
-def get_rooms(userId):
-    data = todo.get_participanting_rooms(userId)
+@login_required
+def get_rooms(_, userId):
+    userData = db.user.get_user_full(userId)
+    if userData.get('type') == 'DOCTOR':
+        return {
+            "error": "forbiddenError",
+            "message": "Only patient can get the rooms."
+        }
+
+    data = db.room_op.get_rooms_all(userId)
     return data
 
 # message manager

@@ -25,15 +25,7 @@ add user information to participants in designated room
 reference
 https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-ade50e58-403e-4f32-bef3-5dc57e06fd9e
 '''
-def participant_room(roomId: int, userId: int) -> dict:
-    pass
 
-'''
-remove user from participants and return room details
-
-reference
-https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-4a9199ea-3a21-42f6-afa5-7f2b3a0c1875
-'''
 def exit_room(roomId: int, userId: int) -> dict:
     pass
 
@@ -43,8 +35,6 @@ get rooms user participants
 reference
 https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-16aebfc5-f0c6-44b5-bf4f-b9e9117def53
 '''
-def get_participanting_rooms(userId: int) -> dict:
-    pass
 
 
 ### chat message ###
