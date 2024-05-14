@@ -14,18 +14,6 @@ def delete_user(userId: int):
     pass
 
 ### chat room ###
-# create new chat room
-def create_room_id():
-    pass
-
-'''
-get room details from room id
-
-reference
-https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-3c1ed2f2-a82a-407a-a3f2-6dc3e597eddf
-'''
-def get_room_details(roomId: int) -> dict:
-    pass
 
 # delete room corresponding to room id
 def delete_room(roomId: int):
@@ -108,20 +96,20 @@ def delete_linking_term(messageId: int, termId: int):
 def get_history(userId: int) -> dict:
     pass
 
-def add_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
+def add_condition(userId: int, termId: int, conditionInfo: dict):
     pass
 
-def update_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
+def update_condition(userId: int, termId: int, conditionInfo: dict):
     pass
 
-def delete_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
+def delete_condition(userId: int, termId: int, conditionInfo: dict):
     pass
 
-def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
+def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
     pass
 
-def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
+def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
     pass
 
-def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
+def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
     pass
