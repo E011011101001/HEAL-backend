@@ -5,6 +5,7 @@ from ..utils import print_info
 from . import data_models
 
 from . import user_ops as user
+from . import condition_op
 
 
 def init_sqlite():

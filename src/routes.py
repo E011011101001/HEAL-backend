@@ -9,6 +9,8 @@ from .utils import salted_hash
 
 from . import database as db
 
+from datetime import datetime
+
 # TODO: remove todo
 from .database import todo
 
@@ -60,23 +62,45 @@ def get_users(userId):
 def update_users(userId):
     data = request.get_json()
 
-    # TODO: why traverse
+    # TODO: why traverse >> modified
 
     # confirm data structure
-    # for field in data:
-    #     if field == 'type':
-    #         if data['type'] != 'PATIENT' or 'DOCTOR':
-    #             return {
-    #                 'error': 'TypeError',
-    #                 'message': 'Invalid type exist.'
-    #             }, 404
+    if data.get('type') is not None:
+        if data.get('type') != "PATIENT" or "DOCTOR":
+            return {
+                'error': 'TypeError',
+                'message': '\'type\' must be either \'PATIENT\' or \'DOCTOR\'.'
+            }, 406
 
-    #     if field == 'height':
-    #         if data['height'] >= 0:
-    #             return {
-    #                 'error': 'TypeError',
-    #                 'message': 'Invalid type exist.'
-    #             }, 404
+    if data.get('email') is not None:
+        if db.user.email_exists(data.get('email')):
+            return {
+                'error': 'conflictError',
+                'message': 'An account with this email address already exists.'
+            }, 409
+
+    if data.get('dateOfBirth') is not None:
+        try:
+            datetime.strptime(data.get('dateOfBirth'), '%Y-%m-%d')
+        except ValueError:
+            return {
+                'error': 'TypeError',
+                'message': '\'dateOfBirth\' must be \'YYYY-MM-DD\'.'
+            }, 406
+
+    if data.get('height') is not None:
+        if data.get('height') > 0:
+            return {
+                'error': 'TypeError',
+                'message': '\'height\' must be positive number'
+            }, 406
+
+    if data.get('weight') is not None:
+        if data.get('weight') > 0:
+            return {
+                'error': 'TypeError',
+                'message': '\'weight\' must be positive number'
+            }, 406
 
     # update user
     todo.update_user(userId, data)
@@ -87,6 +111,7 @@ def update_users(userId):
 
     # return newData
     # TODO
+
     return '', 500
 
 
@@ -220,6 +245,8 @@ def operate_single_term(medicalTermId):
 # linking term manager
 @app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])
 def get_linked_term(mesId):
+    # check messageId
+
     data = todo.get_linking_term(mesId)
     return data
 
@@ -227,6 +254,8 @@ def get_linked_term(mesId):
 @app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', methods=['POST', 'DELETE'])
 def operate_linked_term(mesId, medicalTermId):
     if request.method == 'POST':
+        # check link
+
         data = todo.create_linking_term(mesId, medicalTermId)
         return data, 201
 
@@ -243,10 +272,35 @@ def get_medical_history(userId):
 
 
 @app.route('/patients/<int:userId>/patient-conditions/<int:termId>', methods=['POST', 'PUT', 'DELETE'])
+@login_required
 def add_condition(userId, termId):
     data = request.get_json()
+
+    status = data.get('status')
+    diagDate = data.get('diagnosisDate')
+    if not status in ['current', 'past']:
+        return {
+            'error': 'TypeError',
+            'message': '\'status\' must be either \'current\' or \'past\'.'
+        }, 406
+
+    try:
+        datetime.strptime(diagDate, '%Y-%m-%d')
+    except ValueError:
+        return {
+            'error': 'TypeError',
+            'message': '\'diagnosisDate\' must be \'YYYY-MM-DD\'.'
+        }, 406
+
     if request.method == 'POST':
-        newData = todo.add_condition(userId, termId, data)
+        if(db.condition_op.check_condition(userId, termId)):
+            return {
+            'error': 'conflictError',
+            'message': 'Medical terms already linked to this message.'
+        }, 409
+
+        todo.add_condition(userId, termId, data)
+        newData = todo.get_history(userId)
         return newData, 201
 
         # TODO
@@ -254,11 +308,18 @@ def add_condition(userId, termId):
         # except IntegrityError:
         #     return {
         #         'error': 'conflictError',
-        #         'message': 'This medical term already exists.'
+        #         'message': 'This condition medical term id already exists.'
         #     }, 409
 
     if request.method == 'PUT':
-        newData = todo.update_condition(userId, termId, data)
+        if(db.condition_op.check_condition(userId, termId)):
+            return {
+            'error': 'conflictError',
+            'message': 'Medical terms already linked to this message.'
+        }, 409
+
+        todo.update_condition(userId, termId, data)
+        newData = todo.get_history(userId)
         return newData
 
     # if request.method == 'DELETE':
@@ -267,10 +328,28 @@ def add_condition(userId, termId):
 
 
 @app.route('/patients/<int:userId>/conditions/<int:conditionTermId>/prescriptions/<int:prescriptionTermId>', methods=['POST', 'PUT', 'DELETE'])
+@login_required
 def add_patient_prescription(userId, conditionTermId, prescriptionTermId):
     data = request.get_json()
+
+    prescDate = data.get('prescriptionDate')
+    try:
+        datetime.strptime(prescDate, '%Y-%m-%d')
+    except ValueError:
+        return {
+            'error': 'TypeError',
+            'message': '\'prescriptionDate\' must be \'YYYY-MM-DD\'.'
+        }, 406
+
     if request.method == 'POST':
-        newData = todo.add_prescription(userId, conditionTermId, prescriptionTermId, data)
+        if(db.condition_op.check_prescription(userId, conditionTermId, prescriptionTermId)):
+            return {
+            'error': 'conflictError',
+            'message': 'Medical terms already linked to this message.'
+        }, 409
+
+        todo.add_prescription(userId, conditionTermId, prescriptionTermId, data)
+        newData = todo.get_history(userId)
         return newData, 201
 
         # TODO
@@ -279,9 +358,18 @@ def add_patient_prescription(userId, conditionTermId, prescriptionTermId):
         #         'error': 'conflictError',
         #         'message': 'This medical term already exists.'
         #     }, 409
+        #
+        # already exist prescriptionTermId in conditionTermId, userId -> conflict error
 
     if request.method == 'PUT':
-        newData = todo.update_prescription(userId, conditionTermId, prescriptionTermId, data)
+        if(db.condition_op.check_prescription(userId, conditionTermId, prescriptionTermId)):
+            return {
+            'error': 'conflictError',
+            'message': 'Medical terms already linked to this message.'
+        }, 409
+
+        todo.update_prescription(userId, conditionTermId, prescriptionTermId, data)
+        newData = todo.get_history(userId)
         return newData
 
     # if request.method == 'DELETE':
