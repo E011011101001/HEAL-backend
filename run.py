@@ -8,5 +8,7 @@ if __name__ == '__main__':
         rawFlaskApp,
         host='0.0.0.0',
         port=8888,
-        debug=True
+        debug=True,
+        use_reloader=True,
+        log_output=True
     )
