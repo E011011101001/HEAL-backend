@@ -21,24 +21,24 @@ def create_room(userId):
     return newRoom.id
 
 def get_room(roomId):
-    baseRoom = Room.get(baseRoom.id == roomId)
+    room = Room.get(Room.id == roomId)
     participantList = []
 
     # get patient data
-    patient = get_user_full(baseRoom.Patient_id)
+    patient = get_user_full(room.Patient_id)
     participantList.append(patient)
 
     # get doctor data (n >= 0)
-    baseDoctorsInRoom = DoctorInRoom.select().where(baseDoctorsInRoom.Room_id == baseRoom.id)
+    doctorsInRoom = DoctorInRoom.select().where(DoctorInRoom.Room_id == room.id)
 
-    for doctorsInRoom in baseDoctorsInRoom:
-        doctor = get_user_full(doctorsInRoom.Doctor_id)
+    for doctorInRoom in doctorsInRoom:
+        doctor = get_user_full(doctorInRoom.Doctor_id)
         participantList.append(doctor)
 
     ret = {
-        "roomId": baseRoom.id,
+        "roomId": room.id,
         "roomName": "",
-        "creationTime": baseRoom.Creation_time,
+        "creationTime": room.Creation_time,
         "participants": participantList
     }
 
@@ -55,11 +55,11 @@ def participant_room(userId, roomId):
     newDoctorInRoom.save()
 
 def get_rooms_all(userId):
-    baseRooms = Room.select().where(baseRooms.Patient_id == userId)
-    rooms = []
+    rooms = Room.select().where(Room.Patient_id == userId)
+    roomlist = []
 
-    for baseRoom in baseRooms:
-        room = get_room(baseRoom.id)
-        rooms.append(room)
+    for room in rooms:
+        roomData = get_room(room.id)
+        roomlist.append(roomData)
 
-    return {"rooms": rooms}
+    return {"rooms": roomlist}
