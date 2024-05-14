@@ -154,15 +154,17 @@ def verify_token(userId):
 
 # chat manager
 @app.route('/chats/new', methods=['POST'])
-def create_room():
-    id = todo.create_room_id()
+@login_required
+def create_room(userId):
+    id = db.room_op.create_room(userId)
     return {'roomId': id}, 201
 
 
 @app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
-def operate_room(roomId):
+@login_required
+def operate_room(userId, roomId):
     if request.method == 'GET':
-        roomData = todo.get_room_details(roomId)
+        roomData = db.room_op.get_room(roomId)
         return roomData
 
     # if request.method == 'DELETE':
@@ -171,13 +173,16 @@ def operate_room(roomId):
 
 
 @app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
+@login_required
 def participant_room(roomId, userId):
     if request.method == 'POST':
-        data = todo.participant_room(roomId, userId)
+        todo.participant_room(roomId, userId)
+        data = db.room_op.get_room(roomId)
         return data, 201
 
     # if request.method == 'DELETE':
-    data = todo.exit_room(roomId, userId)
+    todo.exit_room(roomId, userId)
+    data = db.room_op.get_room(roomId)
     return data
 
 
@@ -185,7 +190,6 @@ def participant_room(roomId, userId):
 def get_rooms(userId):
     data = todo.get_participanting_rooms(userId)
     return data
-
 
 # message manager
 @app.route('/chats/<int:roomId>/messages', methods=['GET'])
@@ -209,17 +213,10 @@ def get_message(roomId, mesId):
 @app.route('/medical-terms', methods=['POST'])
 @required_body_items(['name', 'description'])
 def create_term():
-    try:
-        data = request.get_json()
-        newData = todo.create_term(data)
-        return newData, 201
-
-    # need to confirm data['name']??
-    except IntegrityError:
-        return {
-            'error': 'conflictError',
-            'message': 'This medical term already exists.'
-        }, 409
+    data = request.get_json()
+    # check term name
+    newData = todo.create_term(data)
+    return newData, 201
 
 
 @app.route('/medical-terms', methods=['GET'])
@@ -230,6 +227,8 @@ def get_terms():
 
 @app.route('/medical-terms/<int:medicalTermId>', methods=['GET', 'PUT', 'DELETE'])
 def operate_single_term(medicalTermId):
+    #check medicalTermId
+
     if request.method == 'GET':
         data = todo.get_single_term(medicalTermId)
         return data
@@ -244,6 +243,7 @@ def operate_single_term(medicalTermId):
 
 # linking term manager
 @app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])
+@login_required
 def get_linked_term(mesId):
     # check messageId
 
@@ -252,6 +252,7 @@ def get_linked_term(mesId):
 
 
 @app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', methods=['POST', 'DELETE'])
+@login_required
 def operate_linked_term(mesId, medicalTermId):
     if request.method == 'POST':
         # check link
@@ -260,12 +261,14 @@ def operate_linked_term(mesId, medicalTermId):
         return data, 201
 
     # if request.method == 'DELETE':
+    # check link
     todo.delete_linking_term(mesId, medicalTermId)
     return '', 204
 
 
 # medical history
 @app.route('/patients/<int:userId>/medical-history', methods=['GET'])
+@login_required
 def get_medical_history(userId):
     data = todo.get_history(userId)
     return data
