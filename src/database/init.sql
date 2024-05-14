@@ -21,7 +21,7 @@ CREATE TABLE "Session"(
 	"SessionID" Text NOT NULL,
 	"IsValid" Boolean NOT NULL DEFAULT 1,
 	"UserID" Integer,
-	"ValidUntil" DateTime NOT NULL DEFAULT datetime(strftime('%s', 'now') + 172800, 'unixepoch'),
+    "ValidUntil" DateTime NOT NULL DEFAULT (datetime('now', '+172800 seconds')),
 	CONSTRAINT "lnk_User_Session" FOREIGN KEY ( "UserID" ) REFERENCES "User"( "UserID" )
 		ON DELETE Cascade
 		ON UPDATE Cascade
