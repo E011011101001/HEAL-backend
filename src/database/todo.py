@@ -2,7 +2,7 @@
 from peewee import DoesNotExist
 from datetime import datetime, timedelta
 
-from .data_models import BaseUser, Doctor, Patient, Session
+from .data_models import BaseUser, Doctor, Patient, Session, Room, MedicalTerm, PatientCondition, PatientPrescription
 from ..utils import salted_hash, gen_session_token
 from ..glovars import PATIENT, DOCTOR
 from .user_ops import get_user_full
@@ -73,7 +73,9 @@ def get_room_details(roomId: int) -> dict:
 
 # delete room corresponding to room id
 def delete_room(roomId: int):
-    pass
+    room = Room.get(Room.id == roomId)
+    room.delete_instance()
+    return
 
 '''
 add user information to participants in designated room
@@ -136,7 +138,9 @@ def update_term(termId: int) -> dict:
     pass
 
 def delete_term(termId: int):
-    pass
+    term = MedicalTerm.get(MedicalTerm.id == termId)
+    term.delete_instance()
+    return
 
 ### link between message and term ###
 def get_linking_term(messageId: int) -> dict:
@@ -159,7 +163,9 @@ def update_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
     pass
 
 def delete_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
-    pass
+    condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
+    condition.delete_instance()
+    return
 
 def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
     pass
@@ -167,5 +173,8 @@ def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int,
 def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
     pass
 
+# This is wrong it should take UserCondition_id and MedicalTerm_id I think
 def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
-    pass
+    condition = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
+    condition.delete_instance()
+    return

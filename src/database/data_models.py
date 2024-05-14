@@ -44,7 +44,7 @@ class Patient(Model):
 
 class Session(Model):
     id = AutoField()
-    User_id = ForeignKeyField(BaseUser, backref='sessions')
+    User_id = ForeignKeyField(BaseUser, backref='sessions', on_delete="CASCADE")
     Token = TextField(index=True, unique=True)
     Valid_until = DateTimeField()
 
@@ -54,7 +54,7 @@ class Session(Model):
 
 class Room(Model):
     id = AutoField()
-    Patient_id = ForeignKeyField(Patient, backref='room', null=True)
+    Patient_id = ForeignKeyField(Patient, backref='room', null=True, on_delete="CASCADE")
     Creation_time = DateTimeField()
 
     class Meta:
@@ -62,8 +62,8 @@ class Room(Model):
 
 
 class DoctorInRoom(Model):
-    Doctor_id = ForeignKeyField(Doctor, backref='doctorInRoom')
-    Room_id = ForeignKeyField(Room, backref='doctorInRoom')
+    Doctor_id = ForeignKeyField(Doctor, backref='doctorInRoom', on_delete="CASCADE")
+    Room_id = ForeignKeyField(Room, backref='doctorInRoom', on_delete="CASCADE")
     Joined_time = DateTimeField()
     Enabled = BooleanField(default=True)
 
@@ -85,8 +85,8 @@ class MedicalTerm(Model):
 
 class PatientCondition(Model):
     id = AutoField()
-    MedicalTerm_id = ForeignKeyField(MedicalTerm)
-    Patient_id = ForeignKeyField(Patient, backref='patientCondition')
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, on_delete="CASCADE")
+    Patient_id = ForeignKeyField(Patient, backref='patientCondition', on_delete="CASCADE")
     Status = TextField()
     Diagnosis_date = DateField()
     Resolution_date = DateField(null=True)
@@ -97,8 +97,8 @@ class PatientCondition(Model):
 
 class PatientPrescription(Model):
     id = AutoField()
-    UserCondition_id = ForeignKeyField(PatientCondition, backref='patientPrescription')
-    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription')
+    UserCondition_id = ForeignKeyField(PatientCondition, backref='patientPrescription', on_delete="CASCADE")
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription', on_delete="CASCADE")
     Dosage = TextField()
     Frequency = TextField()
 
@@ -108,8 +108,8 @@ class PatientPrescription(Model):
 
 class Message(Model):
     id = AutoField()
-    User_id = ForeignKeyField(BaseUser, backref='message')
-    Room_id = ForeignKeyField(Room, backref='message')
+    User_id = ForeignKeyField(BaseUser, backref='message', on_delete="CASCADE")
+    Room_id = ForeignKeyField(Room, backref='message', on_delete="CASCADE")
     Text = TextField()
 
     class Meta:
@@ -118,7 +118,7 @@ class Message(Model):
 
 class Report(Model):
     id = AutoField()
-    Room_id = ForeignKeyField(Room, backref='report')
+    Room_id = ForeignKeyField(Room, backref='report', on_delete="CASCADE")
     Consultation_date = DateField()
     Report_details = TextField()
 
@@ -127,8 +127,8 @@ class Report(Model):
 
 
 class MessageTermCache(Model):
-    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='messageTermCache')
-    Message_id = ForeignKeyField(Message, backref='messageTermCache')
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='messageTermCache', on_delete="CASCADE")
+    Message_id = ForeignKeyField(Message, backref='messageTermCache', on_delete="CASCADE")
 
     class Meta:
         database = db
