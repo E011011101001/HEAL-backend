@@ -24,7 +24,7 @@ class BaseUser(Model):
 
 
 class Doctor(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', primary_key=True)
+    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', primary_key=True, on_delete='CASCADE')
     Specialisation = TextField(null=True)
     Hospital = TextField(null=True)
 
@@ -33,7 +33,7 @@ class Doctor(Model):
 
 
 class Patient(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='patient', primary_key=True)
+    BaseUser_id = ForeignKeyField(BaseUser, backref='patient', primary_key=True, on_delete='CASCADE')
     Date_of_birth = DateField(null=True)
     Height = IntegerField(null=True)
     Weight = IntegerField(null=True)
