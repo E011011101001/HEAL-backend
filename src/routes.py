@@ -47,9 +47,9 @@ def user_register():
     if not data.get('language'):
         data['language'] = 'en'
 
-    db.user.create_user(data)
-
-    return '', 201
+    return {
+        'userId': db.user.create_user(data)
+    }, 201
 
 
 @app.route('/users/<int:userId>', methods=['GET'])
