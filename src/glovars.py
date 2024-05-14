@@ -19,10 +19,16 @@ DB_PATH = get_env_required('DB_PATH')
 PASSWORD_SALT = get_env_required('PASSWORD_SALT')
 
 
-# normal env
-DEBUG = bool(os.getenv('FLASK_DEBUG'))
+# # normal env
+# DEBUG = bool(os.getenv('FLASK_DEBUG'))
 
 
 # glovars
 PATIENT = 1
 DOCTOR = 2
+
+
+# ENV
+HOST='0.0.0.0'
+PORT=8888
+DEBUG=True

@@ -1,14 +1,4 @@
-from src import app as rawFlaskApp
-from flask_socketio import SocketIO
-
-appRunner = SocketIO(rawFlaskApp)
+from src import app_run
 
 if __name__ == '__main__':
-    appRunner.run(
-        rawFlaskApp,
-        host='0.0.0.0',
-        port=8888,
-        debug=True,
-        use_reloader=True,
-        log_output=True
-    )
+    app_run()
