@@ -4,4 +4,4 @@ flask_cors
 openai
 python-dotenv
 peewee
-
+flask-socketio
