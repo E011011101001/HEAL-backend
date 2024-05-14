@@ -301,8 +301,16 @@ def get_medical_history(userId):
 
 @app.route('/patients/<int:userId>/patient-conditions/<int:termId>', methods=['POST', 'PUT', 'DELETE'])
 @login_required
-def add_condition(userId, termId):
+def add_condition(_, userId, termId):
     data = request.get_json()
+
+    # check user Id type is patient
+    userData = db.user.get_user_full(userId)
+    if userData.get('type') == 'DOCTOR':
+        return {
+            "error": "forbiddenError",
+            "message": "Only patient can add the conditions."
+        }
 
     status = data.get('status')
     diagDate = data.get('diagnosisDate')
