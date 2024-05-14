@@ -1,4 +1,11 @@
 ### user ###
+from peewee import DoesNotExist
+from datetime import datetime, timedelta
+
+from .data_models import BaseUser, Doctor, Patient, Session
+from ..utils import salted_hash, gen_session_token
+from ..glovars import PATIENT, DOCTOR
+from .user_ops import get_user_full
 
 '''
 update user details
@@ -6,12 +13,54 @@ update user details
 reference
 https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-37d7339d-15c4-41a7-91ce-4ee009dbe0b4
 '''
-def update_user(userId: int, userInfo: dict):
-    pass
+def update_user(userId: int, userUpdateInfo: dict):
+    # get user with userid from database
+    baseUser = BaseUser.get(BaseUser.id == userId)
+
+    # update parts of user we need to
+    if 'name' in userUpdateInfo:
+        baseUser.Name = userUpdateInfo.get('name')
+
+    if 'email' in userUpdateInfo:
+        baseUser.Email = userUpdateInfo.get('email')
+
+    if 'language' in userUpdateInfo:
+        baseUser.Language = userUpdateInfo.get('language')
+
+    # HANDLE PATIENT/DOCTOR - currently broken
+    if baseUser.Type == PATIENT:
+        patient = baseUser.patient[0]
+        if 'date0fBirth' in userUpdateInfo:
+            patient.Date0fBirth = userUpdateInfo.get('date0fBirth')
+        if 'height' in userUpdateInfo:
+            patient.Height = userUpdateInfo.get('height')
+        if 'weight' in userUpdateInfo:
+            patient.Weight = userUpdateInfo.get('weight')
+        patient.save()
+    else:
+        doctor = baseUser.doctor[0]
+        if 'hostpial' in userUpdateInfo:
+            doctor.Hostpial = userUpdateInfo.get('hostpial')
+        if 'specialisation' in userUpdateInfo:
+            doctor.Specialisation = userUpdateInfo.get('specialisation')
+        doctor.save()
+
+    # save user back to database
+    baseUser.save()
+
+    return baseUser
 
 # delete user information
 def delete_user(userId: int):
-    pass
+    baseUser = BaseUser.get(BaseUser.id == userId)
+    if baseUser.Type == PATIENT:
+        patient = baseUser.patient[0]
+        patient.delete_instance()
+    else:
+        doctor = baseUser.doctor[0]
+        doctor.delete_instance()
+    baseUser.delete_instance()
+    return
 
 ### chat room ###
 
