@@ -39,7 +39,16 @@ def delete_condition(userId: int, termId: int, conditionInfo: dict):
     pass
 
 def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
-    pass
+    p = PatientCondition.get((PatientCondition.Patient_id == userId) and (PatientCondition.MedicalTerm_id == conditionTermId))
+
+    newPrescription = PatientPrescription.create(
+        UserCondition_id = p.id,
+        MedicalTerm_id = prescriptionTermId,
+        Dosage = prescritptionInfo.get('dosage'),
+        Prescription_date = prescritptionInfo.get('prescriptionDate')
+    )
+
+    newPrescription.save()
 
 def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
     pass

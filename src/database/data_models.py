@@ -100,7 +100,7 @@ class PatientPrescription(Model):
     UserCondition_id = ForeignKeyField(PatientCondition, backref='patientPrescription', on_delete="CASCADE")
     MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription', on_delete="CASCADE")
     Dosage = TextField()
-    Frequency = TextField()
+    PrescriptionDate = TextField()
 
     class Meta:
         database = db
