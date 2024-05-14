@@ -89,14 +89,14 @@ def update_users(userId):
             }, 406
 
     if data.get('height') is not None:
-        if data.get('height') > 0:
+        if data.get('height') < 0:
             return {
                 'error': 'TypeError',
                 'message': '\'height\' must be positive number'
             }, 406
 
     if data.get('weight') is not None:
-        if data.get('weight') > 0:
+        if data.get('weight') < 0:
             return {
                 'error': 'TypeError',
                 'message': '\'weight\' must be positive number'
@@ -112,7 +112,8 @@ def update_users(userId):
     # return newData
     # TODO
 
-    return '', 500
+    userData = db.user.get_user_full(userId)
+    return userData, 200
 
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
