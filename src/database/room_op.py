@@ -43,3 +43,13 @@ def get_room(roomId):
     }
 
     return ret
+
+def participant_room(userId, roomId):
+
+    newDoctorInRoom = DoctorInRoom.create(
+        Doctor_id = userId,
+        Room_id = roomId,
+        Joined_time = datetime.now(),
+        Enabled = True
+    )
+    newDoctorInRoom.save()

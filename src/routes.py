@@ -156,6 +156,14 @@ def verify_token(userId):
 @app.route('/chats/new', methods=['POST'])
 @login_required
 def create_room(userId):
+    userData = db.user.get_user_full(userId)
+    if userData.get('type') == 'DOCTOR':
+        # doctor try to create the room
+        return {
+            "error": "forbiddenError",
+            "message": "Only patient can create the room."
+        }
+
     id = db.room_op.create_room(userId)
     return {'roomId': id}, 201
 
@@ -174,9 +182,17 @@ def operate_room(userId, roomId):
 
 @app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
 @login_required
-def participant_room(roomId, userId):
+def participant_room(_, roomId, userId):
+    userData = db.user.get_user_full(userId)
+    if userData.get('type') == 'PATIENT':
+        # patient try to enter the room
+        return {
+            "error": "forbiddenError",
+            "message": "Only doctor can enter the room."
+        }
+
     if request.method == 'POST':
-        todo.participant_room(roomId, userId)
+        db.room_op.participant_room(userId, roomId)
         data = db.room_op.get_room(roomId)
         return data, 201
 

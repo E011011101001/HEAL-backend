@@ -7,6 +7,7 @@ from . import data_models
 from . import user_ops as user
 from . import chat_ops as chat
 from . import condition_op
+from . import room_op
 
 
 def init_sqlite():
