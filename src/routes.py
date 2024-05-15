@@ -219,18 +219,20 @@ def get_rooms(_, userId):
 # message manager
 @app.route('/chats/<int:roomId>/messages', methods=['GET'])
 @required_params(['page', 'limit'])
-def get_chat_messages(roomId):
+@login_required
+def get_chat_messages(_, roomId):
     pageNum = request.args.get('page'); assert pageNum is not None
 
     limNum = request.args.get('limit'); assert limNum is not None
 
-    data = todo.get_chat_messages(roomId, int(pageNum), int(limNum))
+    data = db.message_op.get_chat_messages(roomId, int(pageNum), int(limNum))
     return data
 
 
 @app.route('/chats/<int:roomId>/messages/<int:mesId>', methods=['GET'])
-def get_message(roomId, mesId):
-    data = todo.get_message(roomId, mesId)
+@login_required
+def get_message(_, roomId, mesId):
+    data = db.message_op.get_message(roomId, mesId)
     return data
 
 
