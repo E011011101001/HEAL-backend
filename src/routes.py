@@ -296,8 +296,8 @@ def operate_linked_term(mesId, medicalTermId):
 # medical history
 @app.route('/patients/<int:userId>/medical-history', methods=['GET'])
 @login_required
-def get_medical_history(userId):
-    data = todo.get_history(userId)
+def get_medical_history(_, userId):
+    data = db.condition_op.get_history(userId)
     return data
 
 
@@ -337,8 +337,8 @@ def add_condition(_, userId, termId):
             'message': 'Medical terms already linked to this message.'
         }, 409
 
-        todo.add_condition(userId, termId, data)
-        newData = todo.get_history(userId)
+        db.condition_op.add_condition(userId, termId, data)
+        newData = db.condition_op.get_history(userId)
         return newData, 201
 
         # TODO
@@ -357,7 +357,7 @@ def add_condition(_, userId, termId):
         }, 409
 
         todo.update_condition(userId, termId, data)
-        newData = todo.get_history(userId)
+        newData = db.condition_op.get_history(userId)
         return newData
 
     # if request.method == 'DELETE':
@@ -386,8 +386,8 @@ def add_patient_prescription(userId, conditionTermId, prescriptionTermId):
             'message': 'Medical terms already linked to this message.'
         }, 409
 
-        todo.add_prescription(userId, conditionTermId, prescriptionTermId, data)
-        newData = todo.get_history(userId)
+        db.condition_op.add_prescription(userId, conditionTermId, prescriptionTermId, data)
+        newData = db.condition_op.get_history(userId)
         return newData, 201
 
         # TODO
@@ -407,7 +407,7 @@ def add_patient_prescription(userId, conditionTermId, prescriptionTermId):
         }, 409
 
         todo.update_prescription(userId, conditionTermId, prescriptionTermId, data)
-        newData = todo.get_history(userId)
+        newData = db.condition_op.get_history(userId)
         return newData
 
     # if request.method == 'DELETE':

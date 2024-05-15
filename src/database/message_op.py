@@ -35,3 +35,9 @@ def get_message(roomId: int, messageId: int) -> dict:
     }
 
     return ret
+
+def get_term(termId):
+    pass
+
+def get_message_terms(messageId):
+    pass
