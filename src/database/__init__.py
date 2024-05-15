@@ -8,6 +8,7 @@ from . import user_ops as user
 from . import chat_ops as chat
 from . import condition_op
 from . import room_op
+from . import message_op
 
 
 def init_sqlite():
