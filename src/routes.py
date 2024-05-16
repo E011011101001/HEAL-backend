@@ -231,7 +231,8 @@ def get_chat_messages(_, roomId):
         pageNum = int(pageNum)
         limNum = int(limNum)
 
-        data = db.message_op.get_chat_messages(roomId, pageNum, limNum)
+        language_code = "en"
+        data = db.message_op.get_chat_messages(roomId, pageNum, limNum, language_code)
         return jsonify(data)
     except Exception as e:
         print(f"Error: {e}")
@@ -241,7 +242,8 @@ def get_chat_messages(_, roomId):
 @app.route('/chats/<int:roomId>/messages/<int:mesId>', methods=['GET'])
 @login_required
 def get_message(_, roomId, mesId):
-    data = db.message_op.get_message(roomId, mesId)
+    language_code = "en"
+    data = db.message_op.get_message(roomId, mesId, language_code)
     return data, 200
 
 
@@ -257,7 +259,8 @@ def create_term():
 
 @app.route('/medical-terms', methods=['GET'])
 def get_terms():
-    data = db.message_op.get_terms_all()
+    language_code = request.args.get('language', 'en')
+    data = db.message_op.get_terms_all(language_code)
     return data
 
 
@@ -265,8 +268,10 @@ def get_terms():
 def operate_single_term(medicalTermId):
     #check medicalTermId
 
+    language_code = request.args.get('language', 'en')
+
     if request.method == 'GET':
-        data = db.message_op.get_term(medicalTermId)
+        data = db.message_op.get_term(medicalTermId, language_code)
         return data
 
     # required check Body
@@ -283,7 +288,8 @@ def operate_single_term(medicalTermId):
 @app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])
 @login_required
 def get_linked_term(_, mesId):
-    data = db.message_op.get_message_terms(mesId)
+    language_code = "en"
+    data = db.message_op.get_message_terms(mesId, language_code)
     return data
 
 

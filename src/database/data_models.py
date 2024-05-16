@@ -1,13 +1,13 @@
 # src/database/data_models.py
-# All Xxx_id fields will be replaced by just id
-from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField,\
+from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField, \
     ForeignKeyField, BooleanField, CompositeKey
 
 from .data_seed import seed_data
 from ..glovars import DB_PATH
 
-# pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
+# Pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
 db = SqliteDatabase(DB_PATH, pragmas=[('foreign_keys', 'on')])
+
 
 class BaseUser(Model):
     id = AutoField()
@@ -15,7 +15,7 @@ class BaseUser(Model):
     Password = TextField()
     Language_code = TextField(default='en')
     Name = TextField()
-    Type = IntegerField() # 1 for Patient, 2 for Doctor. See glovars
+    Type = IntegerField()  # 1 for Patient, 2 for Doctor. See glovars
     Date_of_birth = DateField(null=True)
 
     class Meta:
@@ -72,13 +72,31 @@ class DoctorInRoom(Model):
 
 class MedicalTerm(Model):
     id = AutoField()
-    Term_id = TextField(index=True)
+    MedicalTerm_type = TextField(choices=[('CONDITION', 'CONDITION'), ('PRESCRIPTION', 'PRESCRIPTION'), ('GENERAL', 'GENERAL')], default='GENERAL')
+
+    class Meta:
+        database = db
+
+
+class MedicalTermSynonym(Model):
+    id = AutoField()
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='synonyms', on_delete="CASCADE")
+    Synonym = TextField(index=True)
+
+    class Meta:
+        database = db
+
+
+class MedicalTermTranslation(Model):
+    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='translations', on_delete="CASCADE")
     Language_code = TextField(default='en', index=True)
+    Name = TextField()
     Description = TextField()
     URL = TextField(null=True)
 
     class Meta:
         database = db
+        primary_key = CompositeKey('MedicalTerm_id', 'Language_code')
 
 
 class PatientCondition(Model):
@@ -99,6 +117,7 @@ class PatientPrescription(Model):
     MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription', on_delete="CASCADE")
     Dosage = TextField()
     Prescription_date = DateTimeField()
+    Frequency = TextField()
 
     class Meta:
         database = db
@@ -144,6 +163,8 @@ def init():
         Room,
         DoctorInRoom,
         MedicalTerm,
+        MedicalTermSynonym,
+        MedicalTermTranslation,
         PatientCondition,
         PatientPrescription,
         Message,
@@ -151,6 +172,6 @@ def init():
         MessageTermCache
     ])
     print("Database tables created.")
-    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Message)
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermTranslation, Message, MessageTermCache)
     print("Database seeded with initial data.")
     db.close()

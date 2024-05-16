@@ -1,3 +1,4 @@
+# src/websocket.py
 from functools import wraps
 from datetime import datetime
 from peewee import DoesNotExist
@@ -59,4 +60,6 @@ def connect(auth):
 @socketio.on('disconnect')
 def on_disconnect():
     print(f'User disconnected: {request.sid}')
+    global wsSessions
+    wsSessions = [session for session in wsSessions if session['sid'] != request.sid]
 

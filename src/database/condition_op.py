@@ -22,7 +22,6 @@ def check_prescription(userId, conditionTermId, prescriptionTermId):
 
 ### patient medical history ###
 def get_history(userId: int) -> dict:
-
     patientConditions = PatientCondition.select().where(PatientCondition.Patient_id == userId)
     conditionList = []
 
@@ -30,7 +29,7 @@ def get_history(userId: int) -> dict:
         conditionTermId = patientCondition.MedicalTerm_id
         conditionTermInfo = get_term(conditionTermId)
 
-        patientPrescriptions  = PatientPrescription.select().where(PatientPrescription.UserCondition_id == conditionTermId)
+        patientPrescriptions = PatientPrescription.select().where(PatientPrescription.UserCondition_id == conditionTermId)
         prescriptionList = []
 
         for patientPrescription in patientPrescriptions:
@@ -57,18 +56,18 @@ def get_history(userId: int) -> dict:
         conditionList.append(condition)
 
     ret = {
-        "userId" : userId,
-        "medicalConditions" : conditionList
+        "userId": userId,
+        "medicalConditions": conditionList
     }
 
     return ret
 
 def add_condition(userId: int, termId: int, conditionInfo: dict):
     newCondition = PatientCondition.create(
-        MedicalTerm_id = termId,
-        Patient_id = userId,
-        Status = conditionInfo.get('status'),
-        Diagnosis_date = conditionInfo.get('diagnosisDate'),
+        MedicalTerm_id=termId,
+        Patient_id=userId,
+        Status=conditionInfo.get('status'),
+        Diagnosis_date=conditionInfo.get('diagnosisDate'),
     )
     newCondition.save()
 
@@ -93,10 +92,10 @@ def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int,
     p = PatientCondition.get((PatientCondition.Patient_id == userId) and (PatientCondition.MedicalTerm_id == conditionTermId))
 
     newPrescription = PatientPrescription.create(
-        UserCondition_id = p.id,
-        MedicalTerm_id = prescriptionTermId,
-        Dosage = prescritptionInfo.get('dosage'),
-        Prescription_date = prescritptionInfo.get('prescriptionDate')
+        UserCondition_id=p.id,
+        MedicalTerm_id=prescriptionTermId,
+        Dosage=prescritptionInfo.get('dosage'),
+        Prescription_date=prescritptionInfo.get('prescriptionDate')
     )
 
     newPrescription.save()
@@ -108,7 +107,7 @@ def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: i
         prescription.Dosage = prescriptionInfo.get('dosage')
 
     if 'Prescription_date' in prescriptionInfo:
-        prescription.Perscription_date = prescriptionInfo.get('Prescription_date')
+        prescription.Prescription_date = prescriptionInfo.get('Prescription_date')
 
     prescription.save()
     return prescription
@@ -117,4 +116,3 @@ def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: i
     prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
     prescription.delete_instance()
     return
-

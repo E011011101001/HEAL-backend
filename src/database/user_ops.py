@@ -1,3 +1,4 @@
+# src/database/user_ops.py
 from peewee import DoesNotExist
 from datetime import datetime, timedelta
 
