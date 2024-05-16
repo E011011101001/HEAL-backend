@@ -233,6 +233,7 @@ def get_chat_messages(_, roomId):
 
         language_code = "en"
         data = db.message_op.get_chat_messages(roomId, pageNum, limNum, language_code)
+        print(data)
         return jsonify(data)
     except Exception as e:
         print(f"Error: {e}")

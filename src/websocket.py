@@ -62,4 +62,3 @@ def on_disconnect():
     print(f'User disconnected: {request.sid}')
     global wsSessions
     wsSessions = [session for session in wsSessions if session['sid'] != request.sid]
-

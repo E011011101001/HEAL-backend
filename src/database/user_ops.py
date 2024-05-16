@@ -1,4 +1,3 @@
-# src/database/user_ops.py
 from peewee import DoesNotExist
 from datetime import datetime, timedelta
 
@@ -8,146 +7,130 @@ from ..glovars import PATIENT, DOCTOR
 
 def email_exists(email: str) -> bool:
     try:
-        BaseUser.get(BaseUser.Email == email)
+        BaseUser.get(BaseUser.email == email)
         return True
     except DoesNotExist:
         return False
 
-
 def create_user(data):
-    userType = 0
+    user_type = 0
     if data.get('type') == 'PATIENT':
-        userType = PATIENT
+        user_type = PATIENT
     elif data.get('type') == 'DOCTOR':
-        userType = DOCTOR
+        user_type = DOCTOR
     else:
         raise RuntimeError('user type error')
 
-    newUser = BaseUser.create(
-        Email=data.get('email'),
-        Language_code=data.get('language'),
-        Name=data.get('name'),
-        Password=salted_hash(data.get('password')),
-        Type=userType,
-        Date_of_birth=data.get('dateOfBirth'),
+    new_user = BaseUser.create(
+        email=data.get('email'),
+        language_code=data.get('language'),
+        name=data.get('name'),
+        password=salted_hash(data.get('password')),
+        user_type=user_type,
+        date_of_birth=data.get('dateOfBirth'),
     )
-    newUser.save()
+    new_user.save()
 
-    if userType == PATIENT:
-        newPatient = Patient.create(
-            BaseUser_id=newUser.id,
-            Height=data.get('height'),
-            Weight=data.get('weight')
+    if user_type == PATIENT:
+        new_patient = Patient.create(
+            base_user=new_user.id,
+            height=data.get('height'),
+            weight=data.get('weight')
         )
-        newPatient.save()
-    elif userType == DOCTOR:
-        newDoctor = Doctor.create(
-            BaseUser_id=newUser.id,
-            Specialisation=data.get('specialisation'),
-            Hospital=data.get('hospital')
+        new_patient.save()
+    elif user_type == DOCTOR:
+        new_doctor = Doctor.create(
+            base_user=new_user.id,
+            specialisation=data.get('specialisation'),
+            hospital=data.get('hospital')
         )
-        newDoctor.save()
+        new_doctor.save()
 
-    return newUser.id
+    return new_user.id
 
-
-def get_user_full(userId: int) -> dict:
-    baseUser = BaseUser.get(BaseUser.id == userId)
+def get_user_full(user_id: int) -> dict:
+    base_user = BaseUser.get(BaseUser.id == user_id)
     ret = {
-        'userId': baseUser.id,
-        "email": baseUser.Email,
-        "language": baseUser.Language_code,
-        "name": baseUser.Name,
-        "dateOfBirth": baseUser.Date_of_birth
+        'userId': base_user.id,
+        "email": base_user.email,
+        "language": base_user.language_code,
+        "name": base_user.name,
+        "dateOfBirth": base_user.date_of_birth
     }
 
-    if baseUser.Type == PATIENT:
-        patient = baseUser.patient[0]
+    if base_user.user_type == PATIENT:
+        patient = base_user.patient[0]
         ret['type'] = 'PATIENT'
-        ret['height'] = patient.Height
-        ret['weight'] = patient.Weight
+        ret['height'] = patient.height
+        ret['weight'] = patient.weight
     else:
-        doctor = baseUser.doctor[0]
+        doctor = base_user.doctor[0]
         ret['type'] = 'DOCTOR'
-        ret['hospital'] = doctor.Hospital
-        ret['specialisation'] = doctor.Specialisation
+        ret['hospital'] = doctor.hospital
+        ret['specialisation'] = doctor.specialisation
 
     return ret
 
-
 def get_user_and_password(email: str) -> dict:
-    user = BaseUser.get(BaseUser.Email == email)
+    user = BaseUser.get(BaseUser.email == email)
     return {
         'id': user.id,
-        'password': user.Password
+        'password': user.password
     }
 
-
-'''
-    return
-        session string
-'''
-def new_session_by_id(userId: int) -> str:
+def new_session_by_id(user_id: int) -> str:
     token = gen_session_token()
-    newSession = Session.create(
-        User_id=userId,
-        Token=token,
-        Valid_until=datetime.now() + timedelta(days=2)
+    new_session = Session.create(
+        user=user_id,
+        token=token,
+        valid_until=datetime.now() + timedelta(days=2)
     )
     return token
 
-
 def get_user_by_token(token) -> dict | None:
-
     try:
-        session = Session.get(Session.Token == token)
+        session = Session.get(Session.token == token)
     except DoesNotExist:
-            return None
+        return None
 
     return {
-        'id': session.User_id,
-        'expirationTime': session.Valid_until
+        'id': session.user.id,
+        'expirationTime': session.valid_until
     }
 
-def update_user(userId: int, userUpdateInfo: dict):
-    # get user with userid from database
-    baseUser = BaseUser.get(BaseUser.id == userId)
+def update_user(user_id: int, user_update_info: dict):
+    base_user = BaseUser.get(BaseUser.id == user_id)
 
-    # update parts of user we need to
-    if 'name' in userUpdateInfo:
-        baseUser.Name = userUpdateInfo.get('name')
+    if 'name' in user_update_info:
+        base_user.name = user_update_info.get('name')
 
-    if 'email' in userUpdateInfo:
-        baseUser.Email = userUpdateInfo.get('email')
+    if 'email' in user_update_info:
+        base_user.email = user_update_info.get('email')
 
-    if 'language' in userUpdateInfo:
-        baseUser.Language = userUpdateInfo.get('language')
+    if 'language' in user_update_info:
+        base_user.language_code = user_update_info.get('language')
 
-    # HANDLE PATIENT/DOCTOR - currently broken
-    if baseUser.Type == PATIENT:
-        patient = baseUser.patient[0]
-        if 'date0fBirth' in userUpdateInfo:
-            patient.Date0fBirth = userUpdateInfo.get('date0fBirth')
-        if 'height' in userUpdateInfo:
-            patient.Height = userUpdateInfo.get('height')
-        if 'weight' in userUpdateInfo:
-            patient.Weight = userUpdateInfo.get('weight')
+    if base_user.user_type == PATIENT:
+        patient = base_user.patient[0]
+        if 'dateOfBirth' in user_update_info:
+            patient.date_of_birth = user_update_info.get('dateOfBirth')
+        if 'height' in user_update_info:
+            patient.height = user_update_info.get('height')
+        if 'weight' in user_update_info:
+            patient.weight = user_update_info.get('weight')
         patient.save()
     else:
-        doctor = baseUser.doctor[0]
-        if 'hostpial' in userUpdateInfo:
-            doctor.Hostpial = userUpdateInfo.get('hostpial')
-        if 'specialisation' in userUpdateInfo:
-            doctor.Specialisation = userUpdateInfo.get('specialisation')
+        doctor = base_user.doctor[0]
+        if 'hospital' in user_update_info:
+            doctor.hospital = user_update_info.get('hospital')
+        if 'specialisation' in user_update_info:
+            doctor.specialisation = user_update_info.get('specialisation')
         doctor.save()
 
-    # save user back to database
-    baseUser.save()
+    base_user.save()
+    return base_user
 
-    return baseUser
-
-# delete user information
-def delete_user(userId: int):
-    baseUser = BaseUser.get(BaseUser.id == userId)
-    baseUser.delete_instance()
+def delete_user(user_id: int):
+    base_user = BaseUser.get(BaseUser.id == user_id)
+    base_user.delete_instance()
     return

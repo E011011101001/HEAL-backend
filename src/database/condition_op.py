@@ -1,118 +1,117 @@
-# src/database/condition_op.py
 from peewee import DoesNotExist
 from datetime import datetime
 
 from .data_models import PatientCondition, PatientPrescription
 from .message_op import get_term
 
-def check_condition(userId, termId):
+def check_condition(user_id, term_id):
     try:
-        PatientCondition.get((PatientCondition.Patient_id == userId) and (PatientCondition.MedicalTerm_id == termId))
+        PatientCondition.get((PatientCondition.patient == user_id) & (PatientCondition.medical_term == term_id))
         return True
     except DoesNotExist:
         return False
 
-def check_prescription(userId, conditionTermId, prescriptionTermId):
+def check_prescription(user_id, condition_term_id, prescription_term_id):
     try:
-        p = PatientCondition.get((PatientCondition.Patient_id == userId) and (PatientCondition.MedicalTerm_id == conditionTermId))
-        PatientPrescription.get((PatientPrescription.UserCondition_id == p.id) and (PatientPrescription.MedicalTerm_id == prescriptionTermId))
+        p = PatientCondition.get((PatientCondition.patient == user_id) & (PatientCondition.medical_term == condition_term_id))
+        PatientPrescription.get((PatientPrescription.user_condition == p.id) & (PatientPrescription.medical_term == prescription_term_id))
         return True
     except DoesNotExist:
         return False
 
 ### patient medical history ###
-def get_history(userId: int) -> dict:
-    patientConditions = PatientCondition.select().where(PatientCondition.Patient_id == userId)
-    conditionList = []
+def get_history(user_id: int) -> dict:
+    patient_conditions = PatientCondition.select().where(PatientCondition.patient == user_id)
+    condition_list = []
 
-    for patientCondition in patientConditions:
-        conditionTermId = patientCondition.MedicalTerm_id
-        conditionTermInfo = get_term(conditionTermId)
+    for patient_condition in patient_conditions:
+        condition_term_id = patient_condition.medical_term.id
+        condition_term_info = get_term(condition_term_id, patient_condition.patient.language_code)
 
-        patientPrescriptions = PatientPrescription.select().where(PatientPrescription.UserCondition_id == conditionTermId)
-        prescriptionList = []
+        patient_prescriptions = PatientPrescription.select().where(PatientPrescription.user_condition == condition_term_id)
+        prescription_list = []
 
-        for patientPrescription in patientPrescriptions:
-            prescriptionTermId = patientPrescription.MedicalTerm_id
-            prescriptionInfo = get_term(prescriptionTermId)
+        for patient_prescription in patient_prescriptions:
+            prescription_term_id = patient_prescription.medical_term.id
+            prescription_info = get_term(prescription_term_id, patient_condition.patient.language_code)
 
             prescription = {
-                "userPrescriptionId": patientPrescription.id,
-                "medicalTerm": prescriptionInfo,
-                "dosage": patientPrescription.Dosage,
-                "prescriptionDate": patientPrescription.Prescription_date
+                "userPrescriptionId": patient_prescription.id,
+                "medicalTerm": prescription_info,
+                "dosage": patient_prescription.dosage,
+                "prescriptionDate": patient_prescription.prescription_date
             }
 
-            prescriptionList.append(prescription)
+            prescription_list.append(prescription)
 
         condition = {
-            "userConditionId": conditionTermId,
-            "medicalTerm": conditionTermInfo,
-            "status": patientCondition.Status,
-            "diagnosisDate": patientCondition.Diagnosis_date,
-            "prescriptions": prescriptionList
+            "userConditionId": condition_term_id,
+            "medicalTerm": condition_term_info,
+            "status": patient_condition.status,
+            "diagnosisDate": patient_condition.diagnosis_date,
+            "prescriptions": prescription_list
         }
 
-        conditionList.append(condition)
+        condition_list.append(condition)
 
     ret = {
-        "userId": userId,
-        "medicalConditions": conditionList
+        "userId": user_id,
+        "medicalConditions": condition_list
     }
 
     return ret
 
-def add_condition(userId: int, termId: int, conditionInfo: dict):
-    newCondition = PatientCondition.create(
-        MedicalTerm_id=termId,
-        Patient_id=userId,
-        Status=conditionInfo.get('status'),
-        Diagnosis_date=conditionInfo.get('diagnosisDate'),
+def add_condition(user_id: int, term_id: int, condition_info: dict):
+    new_condition = PatientCondition.create(
+        medical_term=term_id,
+        patient=user_id,
+        status=condition_info.get('status'),
+        diagnosis_date=condition_info.get('diagnosis_date'),
     )
-    newCondition.save()
+    new_condition.save()
 
-def update_condition(userId: int, termId: int, conditionInfo: dict):
-    condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
+def update_condition(user_id: int, term_id: int, condition_info: dict):
+    condition = PatientCondition.get(PatientCondition.medical_term == term_id, PatientCondition.patient == user_id)
 
-    if 'status' in conditionInfo:
-        condition.Status = conditionInfo.get('status')
+    if 'status' in condition_info:
+        condition.status = condition_info.get('status')
 
-    if 'diagnosis_date' in conditionInfo:
-        condition.Diagnosis_date = conditionInfo.get('diagnosis_date')
+    if 'diagnosis_date' in condition_info:
+        condition.diagnosis_date = condition_info.get('diagnosis_date')
 
     condition.save()
     return condition
 
-def delete_condition(userId: int, termId: int, conditionInfo: dict):
-    condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
+def delete_condition(user_id: int, term_id: int, condition_info: dict):
+    condition = PatientCondition.get(PatientCondition.medical_term == term_id, PatientCondition.patient == user_id)
     condition.delete_instance()
     return
 
-def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
-    p = PatientCondition.get((PatientCondition.Patient_id == userId) and (PatientCondition.MedicalTerm_id == conditionTermId))
+def add_prescription(user_id: int, condition_term_id: int, prescription_term_id: int, prescription_info: dict):
+    p = PatientCondition.get((PatientCondition.patient == user_id) & (PatientCondition.medical_term == condition_term_id))
 
-    newPrescription = PatientPrescription.create(
-        UserCondition_id=p.id,
-        MedicalTerm_id=prescriptionTermId,
-        Dosage=prescritptionInfo.get('dosage'),
-        Prescription_date=prescritptionInfo.get('prescriptionDate')
+    new_prescription = PatientPrescription.create(
+        user_condition=p.id,
+        medical_term=prescription_term_id,
+        dosage=prescription_info.get('dosage'),
+        prescription_date=prescription_info.get('prescription_date')
     )
 
-    newPrescription.save()
+    new_prescription.save()
 
-def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict):
-    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
+def update_prescription(user_id: int, condition_term_id: int, prescription_term_id: int, prescription_info: dict):
+    prescription = PatientPrescription.get(PatientPrescription.user_condition == condition_term_id, PatientPrescription.medical_term == prescription_term_id)
 
-    if 'dosage' in prescriptionInfo:
-        prescription.Dosage = prescriptionInfo.get('dosage')
+    if 'dosage' in prescription_info:
+        prescription.dosage = prescription_info.get('dosage')
 
-    if 'Prescription_date' in prescriptionInfo:
-        prescription.Prescription_date = prescriptionInfo.get('Prescription_date')
+    if 'prescription_date' in prescription_info:
+        prescription.prescription_date = prescription_info.get('prescription_date')
 
     prescription.save()
     return prescription
 
-def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict):
-    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
+def delete_prescription(user_id: int, condition_term_id: int, prescription_term_id: int, prescription_info: dict):
+    prescription = PatientPrescription.get(PatientPrescription.user_condition == condition_term_id, PatientPrescription.medical_term == prescription_term_id)
     prescription.delete_instance()
     return
