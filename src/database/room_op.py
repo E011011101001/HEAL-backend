@@ -54,7 +54,7 @@ def participant_room(userId, roomId):
     )
     newDoctorInRoom.save()
 
-def get_rooms_all(userId):
+def get_rooms_all(userId) -> dict[str, dict[]]:
     rooms = Room.select().where(Room.Patient_id == userId)
     roomlist = []
 
