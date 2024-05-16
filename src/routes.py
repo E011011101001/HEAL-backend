@@ -103,7 +103,7 @@ def update_users(userId):
             }, 406
 
     # update user
-    todo.update_user(userId, data)
+    db.user_ops.update_user(userId, data)
 
     # TODO: logic wrong. Check the user type and use the corresponding getter
     # # get user details
@@ -118,7 +118,7 @@ def update_users(userId):
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
 def delete_users(userId):
-    todo.delete_user(userId)
+    db.user_ops.delete_user(userId)
     return '', 204
 
 
@@ -356,12 +356,12 @@ def add_condition(_, userId, termId):
             'message': 'Medical terms already linked to this message.'
         }, 409
 
-        todo.update_condition(userId, termId, data)
+        db.condition_op.update_condition(userId, termId, data)
         newData = db.condition_op.get_history(userId)
         return newData
 
     # if request.method == 'DELETE':
-    todo.delete_condition(userId, termId, data)
+    db.condition_op.delete_condition(userId, termId, data)
     return '', 204
 
 

@@ -107,3 +107,46 @@ def get_user_by_token(token) -> dict | None:
         'id': session.User_id,
         'expirationTime': session.Valid_until
     }
+
+def update_user(userId: int, userUpdateInfo: dict):
+    # get user with userid from database
+    baseUser = BaseUser.get(BaseUser.id == userId)
+
+    # update parts of user we need to
+    if 'name' in userUpdateInfo:
+        baseUser.Name = userUpdateInfo.get('name')
+
+    if 'email' in userUpdateInfo:
+        baseUser.Email = userUpdateInfo.get('email')
+
+    if 'language' in userUpdateInfo:
+        baseUser.Language = userUpdateInfo.get('language')
+
+    # HANDLE PATIENT/DOCTOR - currently broken
+    if baseUser.Type == PATIENT:
+        patient = baseUser.patient[0]
+        if 'date0fBirth' in userUpdateInfo:
+            patient.Date0fBirth = userUpdateInfo.get('date0fBirth')
+        if 'height' in userUpdateInfo:
+            patient.Height = userUpdateInfo.get('height')
+        if 'weight' in userUpdateInfo:
+            patient.Weight = userUpdateInfo.get('weight')
+        patient.save()
+    else:
+        doctor = baseUser.doctor[0]
+        if 'hostpial' in userUpdateInfo:
+            doctor.Hostpial = userUpdateInfo.get('hostpial')
+        if 'specialisation' in userUpdateInfo:
+            doctor.Specialisation = userUpdateInfo.get('specialisation')
+        doctor.save()
+
+    # save user back to database
+    baseUser.save()
+
+    return baseUser
+
+# delete user information
+def delete_user(userId: int):
+    baseUser = BaseUser.get(BaseUser.id == userId)
+    baseUser.delete_instance()
+    return

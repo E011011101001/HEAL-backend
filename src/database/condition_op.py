@@ -72,10 +72,21 @@ def add_condition(userId: int, termId: int, conditionInfo: dict):
     newCondition.save()
 
 def update_condition(userId: int, termId: int, conditionInfo: dict):
-    pass
+    condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
+
+    if 'status' in conditionInfo:
+        condition.Status = conditionInfo.get('status')
+
+    if 'diagnosis_date' in conditionInfo:
+        condition.Diagnosis_date = conditionInfo.get('diagnosis_date')
+
+    condition.save()
+    return condition
 
 def delete_condition(userId: int, termId: int, conditionInfo: dict):
-    pass
+    condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
+    condition.delete_instance()
+    return
 
 def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
     p = PatientCondition.get((PatientCondition.Patient_id == userId) and (PatientCondition.MedicalTerm_id == conditionTermId))
