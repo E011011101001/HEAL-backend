@@ -27,14 +27,14 @@ def create_user(data):
         Language_code=data.get('language'),
         Name=data.get('name'),
         Password=salted_hash(data.get('password')),
-        Type=userType
+        Type=userType,
+        Date_of_birth=data.get('dateOfBirth'),
     )
     newUser.save()
 
     if userType == PATIENT:
         newPatient = Patient.create(
             BaseUser_id=newUser.id,
-            Date_of_birth=data.get('dateOfBirth'),
             Height=data.get('height'),
             Weight=data.get('weight')
         )
@@ -56,13 +56,13 @@ def get_user_full(userId: int) -> dict:
         'user_id': baseUser.id,
         "email": baseUser.Email,
         "language": baseUser.Language_code,
-        "name" : baseUser.Name
+        "name": baseUser.Name,
+        "dateOfBirth": patient.Date_of_birth
     }
 
     if baseUser.Type == PATIENT:
         patient = baseUser.patient[0]
         ret['type'] = 'PATIENT'
-        ret['dateOfBirth'] = patient.Date_of_birth
         ret['height'] = patient.Height
         ret['weight'] = patient.Weight
     else:
