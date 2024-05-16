@@ -263,11 +263,11 @@ def operate_single_term(medicalTermId):
     # required check Body
     if request.method == 'PUT':
         medicalTermInfo = request.get_json()
-        data = todo.update_term(medicalTermId, medicalTermInfo)
+        data = db.message_op.update_term(medicalTermId, medicalTermInfo)
         return data
 
     # if request.method == 'DELETE':
-    todo.delete_term(medicalTermId)
+    db.message_op.delete_term(medicalTermId)
     return '', 204
 
 # linking term manager

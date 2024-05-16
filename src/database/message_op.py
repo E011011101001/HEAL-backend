@@ -84,6 +84,28 @@ def get_terms_all():
 
     return ret
 
+def update_term(termId: int, termUpdateInfo: dict):
+    term = MedicalTerm.get(MedicalTerm.id == termId)
+
+    if 'term_id' in termUpdateInfo:
+        term.Term_id = termUpdateInfo.get('term_id')
+
+    if 'language_code' in termUpdateInfo:
+        term.Language_code = termUpdateInfo.get('language_code')
+
+    if 'discription' in termUpdateInfo:
+        term.Discription = termUpdateInfo.get('discription')
+
+    if 'URL' in termUpdateInfo:
+        term.URL = termUpdateInfo.get('URL')
+
+    term.save()
+    return term
+
+def delete_term(termId: int):
+    term = MedicalTerm.get(MedicalTerm.id == termId)
+    term.delete_instance()
+    return
 
 def create_link(messageId, termId):
     newCache = MessageTermCache.create(

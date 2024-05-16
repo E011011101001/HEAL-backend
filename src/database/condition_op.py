@@ -100,9 +100,20 @@ def add_prescription(userId: int, conditionTermId: int, prescriptionTermId: int,
 
     newPrescription.save()
 
-def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
-    pass
+def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict):
+    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
 
-def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict):
-    pass
+    if 'dosage' in prescriptionInfo:
+        prescription.Dosage = prescriptionInfo.get('dosage')
+
+    if 'Prescription_date' in prescriptionInfo:
+        prescription.Perscription_date = prescriptionInfo.get('Prescription_date')
+
+    prescription.save()
+    return prescription
+
+def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict):
+    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
+    prescription.delete_instance()
+    return
 
