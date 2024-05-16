@@ -1,11 +1,13 @@
 # data_seed.py
 from datetime import datetime, date
 
+from ..utils import salted_hash, gen_session_token
+
 def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Message):
     # Create Users
     patient_user = BaseUser.create(
-        Email="email@gmail.com",
-        Password="hashed_password",
+        Email="test@gmail.com",
+        Password=salted_hash("password"),
         Language_code="en",
         Name="John Doe",
         Type=1,  # PATIENT
@@ -14,7 +16,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Messag
 
     doctor_user_1 = BaseUser.create(
         Email="doctor@gmail.com",
-        Password="hashed_password",
+        Password=salted_hash("password"),
         Language_code="jp",
         Name="Dr. Smith",
         Type=2,  # DOCTOR
@@ -23,7 +25,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Messag
 
     doctor_user_2 = BaseUser.create(
         Email="english_doctor@gmail.com",
-        Password="hashed_password",
+        Password=salted_hash("password"),
         Language_code="en",
         Name="Dr. Jones",
         Type=2,  # DOCTOR
