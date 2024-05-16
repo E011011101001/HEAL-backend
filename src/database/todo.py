@@ -87,18 +87,37 @@ def delete_linking_term(messageId: int, termId: int):
 ### patient medical history ###
 
 def update_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
-    pass
+    condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
+
+    if 'status' in conditionInfo:
+        condition.Status = conditionInfo.get('status')
+
+    if 'diagnosis_date' in conditionInfo:
+        condition.Diagnosis_date = conditionInfo.get('diagnosis_date')
+
+    condition.save()
+    return condition
+
 
 def delete_condition(userId: int, termId: int, conditionInfo: dict) -> dict:
     condition = PatientCondition.get(PatientCondition.MedicalTerm_id == termId, PatientCondition.Patient_id == userId)
     condition.delete_instance()
     return
 
-def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
-    pass
+def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict) -> dict:
+    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
+
+    if 'dosage' in prescriptionInfo:
+        prescription.Dosage = prescriptionInfo.get('dosage')
+
+    if 'Prescription_date' in prescriptionInfo:
+        prescription.Perscription_date = prescriptionInfo.get('Prescription_date')
+
+    prescription.save()
+    return prescription
 
 # This is wrong it should take UserCondition_id and MedicalTerm_id I think
-def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescritptionInfo: dict) -> dict:
-    condition = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
-    condition.delete_instance()
+def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict) -> dict:
+    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
+    prescription.delete_instance()
     return
