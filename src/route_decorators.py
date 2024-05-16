@@ -58,7 +58,11 @@ def required_params(itemList: list[str]):
 def login_required(func):
     @wraps(func)
     def new_func(*args, **kwargs):
-        token = request.headers.get('Authorization', '').split(' ')[1]
+        try:
+            token = request.headers.get('Authorization', '').split(' ')[1]
+        except TypeError:
+            return '', 401
+
         user = db.user.get_user_by_token(token)
         if user is None or user['expirationTime'] < datetime.now():
             return '', 401
