@@ -45,7 +45,7 @@ def connect(auth):
 
     if roomId not in roomIds:
         unauthError['message'] = 'Room invalid'
-        emit('error', 'unauthError')
+        emit('error', unauthError)
         disconnect()
         return
 
