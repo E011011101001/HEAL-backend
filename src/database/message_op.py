@@ -124,7 +124,7 @@ def create_link(messageId, termId):
     ret = {
         "message" : {
             "messageId" : messageId,
-            "senderUserId": message.get('User_id'),
+            "senderUserId": message.get('userId'),
             "sendTime": message.get('Send_time'),
             "message": message.get('Text'),
             "medicalTerms": termsInfoInCache
