@@ -90,7 +90,7 @@ class MedicalTermSynonym(Model):
         database = db
 
 
-class MedicalTermTranslation(Model):
+class MedicalTermInfo(Model):
     medical_term = ForeignKeyField(MedicalTerm, backref='translations', on_delete="CASCADE")
     language_code = TextField(default='en', index=True)
     name = TextField()
@@ -179,7 +179,7 @@ def init():
         DoctorInRoom,
         MedicalTerm,
         MedicalTermSynonym,
-        MedicalTermTranslation,
+        MedicalTermInfo,
         PatientCondition,
         PatientPrescription,
         Message,
@@ -188,6 +188,6 @@ def init():
         MessageTranslationCache
     ])
     print("Database tables created.")
-    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermTranslation, Message, MessageTermCache, MessageTranslationCache)
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache)
     print("Database seeded with initial data.")
     db.close()

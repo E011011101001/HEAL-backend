@@ -2,7 +2,7 @@ from peewee import DoesNotExist
 from datetime import datetime
 
 from .data_models import Room, DoctorInRoom
-from .user_ops import get_user_full
+from .user_op import get_user_full
 
 def check_room(room_id):
     try:

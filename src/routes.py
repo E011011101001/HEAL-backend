@@ -104,7 +104,7 @@ def update_users(userId):
             }, 406
 
     # update user
-    db.user_ops.update_user(userId, data)
+    db.user_op.update_user(userId, data)
 
     # TODO: logic wrong. Check the user type and use the corresponding getter
     # # get user details
@@ -119,7 +119,7 @@ def update_users(userId):
 
 @app.route('/users/<int:userId>', methods=['DELETE'])
 def delete_users(userId):
-    db.user_ops.delete_user(userId)
+    db.user_op.delete_user(userId)
     return '', 204
 
 
@@ -250,12 +250,28 @@ def get_message(_, roomId, mesId):
 
 # medical term manager
 @app.route('/medical-terms', methods=['POST'])
-@required_body_items(['name', 'description'])
+@required_body_items(['term_type', 'term_info_list'])
 def create_term():
     data = request.get_json()
-    # check term name
-    newData = db.message_op.create_term(data)
-    return newData, 201
+    term_type = data.get('term_type')
+    term_info_list = data.get('term_info_list')
+
+    # Check for required fields in term_info_list
+    for term_info in term_info_list:
+        if not term_info.get('name') or not term_info.get('description'):
+            return {
+                'error': 'Missing items.',
+                'message': 'Each term_info must include "name" and "description".'
+            }, 406
+
+    try:
+        new_term_id = db.message_op.create_term(term_type, term_info_list)
+        return {'termId': new_term_id}, 201
+    except Exception as e:
+        return {
+            'error': 'ServerError',
+            'message': str(e)
+        }, 500
 
 
 @app.route('/medical-terms', methods=['GET'])

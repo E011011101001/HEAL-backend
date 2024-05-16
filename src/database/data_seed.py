@@ -2,7 +2,7 @@ from datetime import datetime, date
 
 from ..utils import salted_hash
 
-def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermTranslation, Message, MessageTermCache, MessageTranslationCache):
+def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache):
     # Create Users
     patient_user = BaseUser.create(
         email="test@gmail.com",
@@ -74,7 +74,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
             language_code="jp"
         )
 
-    MedicalTermTranslation.create(
+    MedicalTermInfo.create(
         medical_term=medical_term.id,
         language_code="en",
         name="COVID-19",
@@ -82,7 +82,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
         url="https://www.nhs.uk/conditions/coronavirus-covid-19/"
     )
     
-    MedicalTermTranslation.create(
+    MedicalTermInfo.create(
         medical_term=medical_term.id,
         language_code="jp",
         name="コロナウイルス",

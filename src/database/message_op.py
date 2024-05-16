@@ -2,7 +2,7 @@
 from peewee import DoesNotExist
 from datetime import datetime
 
-from .data_models import MedicalTerm, MedicalTermTranslation, Message, MessageTermCache, MedicalTermSynonym, MessageTranslationCache
+from .data_models import MedicalTerm, MedicalTermInfo, Message, MessageTermCache, MedicalTermSynonym, MessageTranslationCache
 
 def get_chat_messages(room_id: int, page_num: int, limit_num: int, language_code: str) -> dict:
     offset = (page_num - 1) * limit_num
@@ -23,13 +23,12 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
     except DoesNotExist:
         translated_text = message.text
 
-    terms = MessageTermCache.select().where(MessageTermCache.message == message_id)
+    message_terms = MessageTermCache.select().where(MessageTermCache.message == message_id)
     medical_terms = [
         {
-            'id': term.medical_term.id,
-            'synonym': term.translated_synonym.synonym if term.translated_synonym else term.original_synonym.synonym,
-            'termInfo': get_term(term.medical_term.id, language_code)
-        } for term in terms
+            'synonym': message_term.translated_synonym.synonym if message_term.translated_synonym else message_term.original_synonym.synonym,
+            'termInfo': get_term(message_term.medical_term.id, language_code)
+        } for message_term in message_terms
     ]
 
     ret = {
@@ -49,42 +48,93 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
     return ret
 
 
-def create_term(term_info):
-    new_term = MedicalTerm.create(term_type=term_info.get('term_type', 'GENERAL'))
+def create_term(term_type, term_info_list):
+    """
+    Create a new medical term with translations and synonyms.
+
+    Parameters:
+    term_type (str): The type of the medical term (e.g., "CONDITION", "PRESCRIPTION", "GENERAL").
+    term_info_list (list): A list of dictionaries, each containing the term information and synonyms for a specific language.
+        Each dictionary should have the following keys:
+        - language_code (str): The language code for the translation (default is 'en').
+        - name (str): The name of the medical term in the specified language.
+        - description (str): The description of the medical term in the specified language.
+        - url (str): A URL with more information about the medical term (optional).
+        - synonyms (list): A list of dictionaries, each containing a synonym and optionally a language_code.
+
+    Example input:
+    {
+        "term_type": "CONDITION",
+        "term_info_list": [
+            {
+                "language_code": "en",
+                "name": "COVID-19",
+                "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+                "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/",
+                "synonyms": [
+                    {"synonym": "COVID"},
+                    {"synonym": "COVID-19"},
+                    {"synonym": "Corona"},
+                    {"synonym": "COVID 19"}
+                ]
+            },
+            {
+                "language_code": "jp",
+                "name": "コロナウイルス",
+                "description": "COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
+                "url": "https://www3.nhk.or.jp/nhkworld/en/news/tags/82/",
+                "synonyms": [
+                    {"synonym": "コロナ"},
+                    {"synonym": "新型コロナウイルス"}
+                ]
+            }
+        ]
+    }
+
+    Returns:
+    int: The ID of the newly created medical term.
+    """
+    if not term_info_list:
+        raise ValueError("term_info_list cannot be empty")
+
+    # Create the main term entry
+    new_term = MedicalTerm.create(term_type=term_type)
     new_term.save()
 
-    new_translation = MedicalTermTranslation.create(
-        medical_term=new_term.id,
-        language_code=term_info.get('language_code', 'en'),
-        name=term_info.get('name'),
-        description=term_info.get('description'),
-        url=term_info.get('url')
-    )
-    new_translation.save()
-
-    for synonym in term_info.get('synonyms', []):
-        MedicalTermSynonym.create(
+    # Create term info entries for each language
+    for term_info in term_info_list:
+        MedicalTermInfo.create(
             medical_term=new_term.id,
-            synonym=synonym.get('synonym'),
-            language_code=synonym.get('language_code', 'en')
+            language_code=term_info.get('language_code', 'en'),
+            name=term_info.get('name'),
+            description=term_info.get('description'),
+            url=term_info.get('url')
         )
+
+        # Create synonyms for each language
+        for synonym in term_info.get('synonyms', []):
+            MedicalTermSynonym.create(
+                medical_term=new_term.id,
+                synonym=synonym.get('synonym'),
+                language_code=synonym.get('language_code', term_info.get('language_code', 'en'))
+            )
 
     return new_term.id
 
 def get_term(term_id, language_code):
     medical_term = MedicalTerm.get(MedicalTerm.id == term_id)
-    translation = MedicalTermTranslation.get(
-        (MedicalTermTranslation.medical_term == term_id) & 
-        (MedicalTermTranslation.language_code == language_code)
+    medical_term_info = MedicalTermInfo.get(
+        (MedicalTermInfo.medical_term == term_id) & 
+        (MedicalTermInfo.language_code == language_code)
     )
 
     ret = {
         "medicalTermId": term_id,
         "medicalTermType": medical_term.term_type,
-        "name": translation.name,
-        "description": translation.description,
+        "name": medical_term_info.name,
+        "description": medical_term_info.description,
         "medicalTermLinks": [
-            translation.url
+            medical_term_info.url
         ]
     }
 
@@ -107,7 +157,7 @@ def get_terms_all(language_code: str):
 
 def update_term(term_id: int, term_update_info: dict):
     term = MedicalTerm.get(MedicalTerm.id == term_id)
-    translation = MedicalTermTranslation.get(MedicalTermTranslation.medical_term == term_id)
+    translation = MedicalTermInfo.get(MedicalTermInfo.medical_term == term_id)
 
     if 'term_type' in term_update_info:
         term.term_type = term_update_info.get('term_type')
@@ -177,7 +227,7 @@ def search_medical_terms(query):
 
     results = []
     for term in medical_terms:
-        term_translations = MedicalTermTranslation.select().where(MedicalTermTranslation.medical_term == term.id)
+        term_translations = MedicalTermInfo.select().where(MedicalTermInfo.medical_term == term.id)
         translations = [{
             "language": trans.language_code,
             "default_name": trans.name,
