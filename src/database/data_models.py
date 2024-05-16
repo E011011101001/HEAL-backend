@@ -1,12 +1,9 @@
 # All Xxx_id fields will be replaced by just id
-
-import sys
-
 from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField,\
     ForeignKeyField, BooleanField, CompositeKey
 
+from .data_seed import seed_data
 from ..glovars import DB_PATH
-
 
 # pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
 db = SqliteDatabase(DB_PATH, pragmas=[('foreign_keys', 'on')])
@@ -152,4 +149,7 @@ def init():
         Report,
         MessageTermCache
     ])
+    print("Database tables created.")
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Message)
+    print("Database seeded with initial data.")
     db.close()
