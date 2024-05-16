@@ -36,6 +36,21 @@ def get_message(roomId: int, messageId: int) -> dict:
 
     return ret
 
+def create_term(termInfo):
+
+    # Language_code is default
+    newTerm = MedicalTerm.create(
+        Term_id = termInfo.get('name'),
+        Language_code = "en",
+        Discription = termInfo.get('description'),
+        URL = termInfo.get('medical_term_links')
+    )
+
+    newTerm.save()
+
+    return newTerm.id
+
+
 def get_term(termId):
     pass
 
