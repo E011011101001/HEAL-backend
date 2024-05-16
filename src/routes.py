@@ -262,6 +262,7 @@ def operate_single_term(medicalTermId):
 
     # required check Body
     if request.method == 'PUT':
+        medicalTermInfo = request.get_json()
         data = todo.update_term(medicalTermId, medicalTermInfo)
         return data
 
