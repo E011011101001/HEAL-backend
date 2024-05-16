@@ -1,3 +1,4 @@
+from functools import wraps
 from datetime import datetime
 
 from flask import request
@@ -6,18 +7,14 @@ from flask_socketio import emit, disconnect
 from . import socketio
 from . import database as db
 
+
+wsSessions = []
+
 @socketio.on('connect')
-def connect():
-    print(f'New client connected: {request.sid}')
-
-@socketio.on('disconnect')
-def disconnect():
-    print(f'Client disconnected: {request.sid}')
-
-@socketio.on('auth')
-def auth(json):
-    token = json.get('token')
-    roomId = json.get('roomId')
+def connect(auth):
+    token = auth.get('token')
+    roomId = auth.get('roomId')
+    sid = request.sid
 
     try:
         user = db.user.get_user_by_token(token)
@@ -25,9 +22,16 @@ def auth(json):
         user = None
     finally:
         if user is None or user['expirationTime'] < datetime.now():
-            emit('auth', {
-                'error': 'Forbidden'
-            })
+            disconnect()
 
-    emit('auth', user)
+    wsSessions.append({
+        'user': user,
+        'roomId': roomId,
+        'sid': sid
+    })
+
+
+@socketio.on('disconnect')
+def on_disconnect():
+    print(f'Client disconnected: {request.sid}')
 
