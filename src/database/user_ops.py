@@ -53,7 +53,7 @@ def create_user(data):
 def get_user_full(userId: int) -> dict:
     baseUser = BaseUser.get(BaseUser.id == userId)
     ret = {
-        'userId': baseUser.id,
+        'user_id': baseUser.id,
         "email": baseUser.Email,
         "language": baseUser.Language_code,
         "name": baseUser.Name,
