@@ -240,22 +240,15 @@ def create_link(message_id, term_id, original_synonym_id=None, translated_synony
     )
     new_cache.save()
 
-    message = Message.get(Message.id == message_id)
-    term_info = get_term(term_id, message.language_code)
-    terms_info_in_cache = get_message_terms(message_id, message.language_code)
+    return message_id, term_id
 
-    ret = {
-        "message": {
-            "messageId": message_id,
-            "senderUserId": message.user.id,
-            "sendTime": message.send_time,
-            "message": message.text,
-            "medicalTerms": terms_info_in_cache
-        },
-        "MedicalTerm": term_info
-    }
-
-    return ret
+def delete_linking_term(message_id, term_id):
+    try:
+        term_link = MessageTermCache.get((MessageTermCache.message == message_id) & (MessageTermCache.medical_term == term_id))
+        term_link.delete_instance()
+        return True
+    except DoesNotExist:
+        return False
 
 def get_message_terms(message_id, language_code):
     message_term_cache = MessageTermCache.select().where(MessageTermCache.message == message_id)

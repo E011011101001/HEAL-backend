@@ -308,19 +308,17 @@ def get_linked_term(_, mesId):
     return data
 
 
-@app.route('/messages/<int:mesId>/medical-terms/<int:medicalTermId>', methods=['POST', 'DELETE'])
+@app.route('/messages/<int:mes_id>/medical-terms/<int:medical_term_id>', methods=['POST', 'DELETE'])
 @login_required
-def operate_linked_term(mesId, medicalTermId):
+def operate_linked_term(_, mes_id, medical_term_id):
     if request.method == 'POST':
-        # check link
+        db.message_op.create_link(mes_id, medical_term_id)
+        return '', 201
 
-        data = db.message_op.create_link(mesId, medicalTermId)
-        return data, 201
+    if request.method == 'DELETE':
+        db.message_op.delete_linking_term(mes_id, medical_term_id)
+        return '', 204
 
-    # if request.method == 'DELETE':
-    # check link
-    todo.delete_linking_term(mesId, medicalTermId)
-    return '', 204
 
 
 # medical history
