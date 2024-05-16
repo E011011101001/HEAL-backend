@@ -52,10 +52,38 @@ def create_term(termInfo):
 
 
 def get_term(termId):
-    pass
+    medicalTerm = MedicalTerm.get(MedicalTerm.id == termId)
+
+    # where are medicalTermType and Context
+    ret = {
+        "medicalTermId": termId,
+        "medicalTermType": "CONDITION",
+        "medicalTermContext": "MENTION",
+        "name": medicalTerm.get('Term_id'),
+        "description": medicalTerm.get('Discription'),
+        "medicalTermLinks": [
+            medicalTerm.get('URL')
+        ]
+    }
+
+    return ret
 
 def get_terms_all():
-    pass
+    medicalTermAll = MedicalTerm.select()
+    termList = []
+
+    for medicalTerm in medicalTermAll:
+        termId = medicalTerm.get('id')
+        termInfo = get_term(termId)
+
+        termList.append(termInfo)
+
+    ret = {
+        "medicalTerms" : termList
+    }
+
+    return ret
+
 
 def create_link(messageId, termId):
     newCache = MessageTermCache.create(

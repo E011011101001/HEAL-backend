@@ -242,13 +242,13 @@ def get_message(_, roomId, mesId):
 def create_term():
     data = request.get_json()
     # check term name
-    newData = todo.create_term(data)
+    newData = db.message_op.create_term(data)
     return newData, 201
 
 
 @app.route('/medical-terms', methods=['GET'])
 def get_terms():
-    data = todo.get_terms()
+    data = db.message_op.get_terms_all()
     return data
 
 
@@ -257,7 +257,7 @@ def operate_single_term(medicalTermId):
     #check medicalTermId
 
     if request.method == 'GET':
-        data = todo.get_single_term(medicalTermId)
+        data = db.message_op.get_term(medicalTermId)
         return data
 
     if request.method == 'PUT':
