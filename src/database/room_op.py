@@ -63,3 +63,9 @@ def get_rooms_all(userId):
         roomlist.append(roomData)
 
     return {"rooms": roomlist}
+
+# delete room corresponding to room id
+def delete_room(roomId: int):
+    room = Room.get(Room.id == roomId)
+    room.delete_instance()
+    return

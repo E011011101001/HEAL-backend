@@ -177,7 +177,7 @@ def operate_room(_, roomId):
         return roomData
 
     # if request.method == 'DELETE':
-    todo.delete_room(roomId)
+    db.room_op.delete_room(roomId)
     return '', 204
 
 
