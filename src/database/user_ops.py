@@ -57,7 +57,7 @@ def get_user_full(userId: int) -> dict:
         "email": baseUser.Email,
         "language": baseUser.Language_code,
         "name": baseUser.Name,
-        "dateOfBirth": patient.Date_of_birth
+        "dateOfBirth": baseUser.Date_of_birth
     }
 
     if baseUser.Type == PATIENT:
