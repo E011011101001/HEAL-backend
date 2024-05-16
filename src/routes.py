@@ -125,11 +125,7 @@ def delete_users(userId):
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['email', 'password'])
 def login():
-    print("HIHIHI")
-    print(request)
-    print("alskdjaklsdj")
     data = request.get_json()
-    print(data)
     failed = False
     try:
         user = db.user.get_user_and_password(data['email'])
