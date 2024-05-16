@@ -6,6 +6,8 @@ from .data_models import BaseUser, Doctor, Patient, Session, Room, MedicalTerm, 
 from ..utils import salted_hash, gen_session_token
 from ..glovars import PATIENT, DOCTOR
 from .user_ops import get_user_full
+from playhouse.shortcuts import model_to_dict
+
 
 '''
 update user details
@@ -69,8 +71,18 @@ reference
 https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-3c1ed2f2-a82a-407a-a3f2-6dc3e597eddf
 '''
 def get_room_details(roomId: int) -> dict:
-    roomdetails = Room.get(Room.id == roomId)
-    return
+    try:
+        roomdetails = Room.get(Room.id == roomId)
+        room_dict = model_to_dict(roomdetails)
+
+        # get patient information and add to dictionary
+        if roomdetails.Patient_id:
+            patient_details = BaseUser.get(BaseUser.id == roomdetails.Patient_id.id)
+            room_dict['Patient'] = model_to_dict(patient_details)
+
+        return room_dict
+    except Room.DoesNotExist:
+        return {"error": "Room not found"}
 
 
 # delete room corresponding to room id
@@ -78,7 +90,6 @@ def delete_room(roomId: int):
     room = Room.get(Room.id == roomId)
     room.delete_instance()
     return
-
 
 '''
 add user information to participants in designated room
@@ -88,6 +99,7 @@ https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-ade
 '''
 def participant_room(roomId: int, userId: int) -> dict:
     participantroom = Room.get(Room.id == roomId, Room.Patient_id == userId)
+
     return
 
 
@@ -128,15 +140,26 @@ reference
 https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-e04a3e92-bb53-45f4-b557-e1fdaa52ec7a
 '''
 def get_message(roomId: int, messageId: int) -> dict:
-    message = Message.get(Message.id == messageId)
-    return
+    try:
+        message = Message.get(Message.Room_id == roomId, Message.id == messageId)
+        room_dict = model_to_dict(message)
+
+        # get patient information and add to dictionary
+        if message.Patient_id:
+            patient_details = BaseUser.get(BaseUser.id == message.Patient_id.id)
+            room_dict['Patient'] = model_to_dict(patient_details)
+
+        return room_dict
+    except Room.DoesNotExist:
+        return {"error": "message not found"}
 
 ### medical term ###
 def create_term(termInfo: dict) -> dict:
     pass
 
-def get_terms() -> dict:
-    pass
+def get_terms(termId:int) -> dict:
+    terms = MedicalTerm.get(MedicalTerm.id == termId)
+    return
 
 def get_single_term(termId: int) -> dict:
     pass
