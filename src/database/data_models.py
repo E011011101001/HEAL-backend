@@ -18,6 +18,7 @@ class BaseUser(Model):
     Language_code = TextField(default='en')
     Name = TextField()
     Type = IntegerField() # 1 for Patient, 2 for Doctor. See glovars
+    Date_of_birth = DateField(null=True)
 
     class Meta:
         database = db
@@ -34,7 +35,6 @@ class Doctor(Model):
 
 class Patient(Model):
     BaseUser_id = ForeignKeyField(BaseUser, backref='patient', primary_key=True, on_delete='CASCADE')
-    Date_of_birth = DateField(null=True)
     Height = IntegerField(null=True)
     Weight = IntegerField(null=True)
 
