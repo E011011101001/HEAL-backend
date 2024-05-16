@@ -260,8 +260,9 @@ def operate_single_term(medicalTermId):
         data = db.message_op.get_term(medicalTermId)
         return data
 
+    # required check Body
     if request.method == 'PUT':
-        data = todo.update_term(medicalTermId)
+        data = todo.update_term(medicalTermId, medicalTermInfo)
         return data
 
     # if request.method == 'DELETE':

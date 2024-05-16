@@ -24,7 +24,7 @@ def get_message(roomId: int, messageId: int) -> dict:
         "messageId": message.id,
         "roomId": message.Room_id,
         "senderUserId": message.User_id,
-        "timestamp": "",
+        "timestamp": message.Send_time,
         "content": {
             "text": message.Text,
             "metadata": {
@@ -103,7 +103,7 @@ def create_link(messageId, termId):
         "message" : {
             "messageId" : messageId,
             "senderUserId": message.get('User_id'),
-            "sendTime": "",
+            "sendTime": message.get('Send_time'),
             "message": message.get('Text'),
             "medicalTerms": termsInfoInCache
         },

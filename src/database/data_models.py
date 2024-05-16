@@ -100,7 +100,7 @@ class PatientPrescription(Model):
     UserCondition_id = ForeignKeyField(PatientCondition, backref='patientPrescription', on_delete="CASCADE")
     MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription', on_delete="CASCADE")
     Dosage = TextField()
-    PrescriptionDate = TextField()
+    Prescription_date = DateTimeField()
 
     class Meta:
         database = db
@@ -111,6 +111,7 @@ class Message(Model):
     User_id = ForeignKeyField(BaseUser, backref='message', on_delete="CASCADE")
     Room_id = ForeignKeyField(Room, backref='message', on_delete="CASCADE")
     Text = TextField()
+    Send_time = DateTimeField()
 
     class Meta:
         database = db

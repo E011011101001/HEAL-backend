@@ -13,7 +13,7 @@ def check_room(roomId):
 
 def create_room(userId):
     newRoom = Room.create(
-        Patient_id = userId, #check whether userId is patient
+        Patient_id = userId,
         Creation_time = datetime.now()
     )
     newRoom.save()
