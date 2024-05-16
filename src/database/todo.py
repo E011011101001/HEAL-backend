@@ -19,20 +19,4 @@ https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-37d
 def delete_linking_term(messageId: int, termId: int):
     pass
 
-def update_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict) -> dict:
-    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
 
-    if 'dosage' in prescriptionInfo:
-        prescription.Dosage = prescriptionInfo.get('dosage')
-
-    if 'Prescription_date' in prescriptionInfo:
-        prescription.Perscription_date = prescriptionInfo.get('Prescription_date')
-
-    prescription.save()
-    return prescription
-
-# This is wrong it should take UserCondition_id and MedicalTerm_id I think
-def delete_prescription(userId: int, conditionTermId: int, prescriptionTermId: int, prescriptionInfo: dict) -> dict:
-    prescription = PatientPrescription.get(PatientPrescription.UserCondition_id == prescriptionTermId, PatientPrescription.MedicalTerm_id == conditionTermId)
-    prescription.delete_instance()
-    return
