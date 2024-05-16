@@ -1,14 +1,22 @@
 import connect_gpt
 
-def translate(lan, speak, user='PATIENT'):
+def translate(lan, speak, user='PATIENT', errorString="error"):
 
     # DOCTOR -> PATIENT translate
     if user=='PATIENT':
-        prompt = "Following sentence is directed from a doctor to a patient." + "Translate the following sentences accurately into "+lan+"."
-
+        prompt = f"""
+Following sentence is directed from a doctor to a patient.
+Translate the following sentences accurately into {lan}.
+No more extra output. Just simply translated output.
+ the interaction, if there is anything unexpected or any other error, please only output "{errorString}"
+"""
     if user=='DOCTOR':
-        prompt = "Following sentence is directed from a patient to a doctor." + "Translate the following sentences accurately into "+lan+"."
-
+        prompt = f"""
+Following sentence is directed from a patient to a doctor.
+Translate the following sentences accurately into {lan}.
+No more extra output. Just simply translated output.
+ the interaction, if there is anything unexpected or any other error, please only output "{errorString}"
+"""
     # Creating Chatbot Instances
     tl = connect_gpt.ChatBot(lan, prompt)
     res = tl.speak_to_gpt(speak)
