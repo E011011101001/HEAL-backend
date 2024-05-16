@@ -243,6 +243,7 @@ def create_term():
     data = request.get_json()
     # check term name
     newData = db.message_op.create_term(data)
+
     return newData, 201
 
 

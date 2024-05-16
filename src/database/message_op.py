@@ -48,7 +48,9 @@ def create_term(termInfo):
 
     newTerm.save()
 
-    return newTerm.id
+    newData = get_term(newTerm.id)
+
+    return newData
 
 
 def get_term(termId):
