@@ -250,11 +250,11 @@ def get_message(_, roomId, mesId):
 
 # medical term manager
 @app.route('/medical-terms', methods=['POST'])
-@required_body_items(['term_type', 'term_info_list'])
+@required_body_items(['termType', 'termInfoList'])
 def create_term():
     data = request.get_json()
-    term_type = data.get('term_type')
-    term_info_list = data.get('term_info_list')
+    term_type = data.get('termType')
+    term_info_list = data.get('termInfoList')
 
     # Check for required fields in term_info_list
     for term_info in term_info_list:
@@ -283,23 +283,21 @@ def get_terms():
 
 @app.route('/medical-terms/<int:medicalTermId>', methods=['GET', 'PUT', 'DELETE'])
 def operate_single_term(medicalTermId):
-    #check medicalTermId
-
-    language_code = request.args.get('language', 'en')
+    # Get the user's language code
+    language_code = 'en';
 
     if request.method == 'GET':
         data = db.message_op.get_term(medicalTermId, language_code)
         return data
 
-    # required check Body
     if request.method == 'PUT':
         medicalTermInfo = request.get_json()
-        data = db.message_op.update_term(medicalTermId, medicalTermInfo)
+        data = db.message_op.update_term(medicalTermId, medicalTermInfo, language_code)
         return data
 
-    # if request.method == 'DELETE':
-    db.message_op.delete_term(medicalTermId)
-    return '', 204
+    if request.method == 'DELETE':
+        db.message_op.delete_term(medicalTermId)
+        return '', 204
 
 # linking term manager
 @app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])

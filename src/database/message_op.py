@@ -95,7 +95,7 @@ def create_term(term_type, term_info_list):
     int: The ID of the newly created medical term.
     """
     if not term_info_list:
-        raise ValueError("term_info_list cannot be empty")
+        raise ValueError("termInfoList cannot be empty")
 
     # Create the main term entry
     new_term = MedicalTerm.create(term_type=term_type)
@@ -105,7 +105,7 @@ def create_term(term_type, term_info_list):
     for term_info in term_info_list:
         MedicalTermInfo.create(
             medical_term=new_term.id,
-            language_code=term_info.get('language_code', 'en'),
+            language_code=term_info.get('languageCode', 'en'),
             name=term_info.get('name'),
             description=term_info.get('description'),
             url=term_info.get('url')
@@ -116,7 +116,7 @@ def create_term(term_type, term_info_list):
             MedicalTermSynonym.create(
                 medical_term=new_term.id,
                 synonym=synonym.get('synonym'),
-                language_code=synonym.get('language_code', term_info.get('language_code', 'en'))
+                language_code=synonym.get('languageCode', term_info.get('languageCode', 'en'))
             )
 
     return new_term.id
@@ -155,25 +155,76 @@ def get_terms_all(language_code: str):
 
     return ret
 
-def update_term(term_id: int, term_update_info: dict):
+def update_term(term_id: int, term_update_info: dict, language_code: str):
+    """
+    Update a medical term and its translation in a specified language.
+
+    Parameters:
+    - term_id: ID of the medical term to be updated
+    - term_update_info: Dictionary containing updated term information and synonyms
+      - Expected structure:
+        {
+            "termType": "CONDITION",  # Optional
+            "name": "COVID-19",
+            "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+            "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/",
+            "synonyms": [
+                {"synonym": "COVID"},
+                {"synonym": "COVID-19"},
+                {"synonym": "Corona"},
+                {"synonym": "COVID 19"},
+                {"synonym": "Scary COVID"}
+            ]
+        }
+    - language_code: Language code for the translation
+
+    Returns:
+    - Updated term information
+    """
     term = MedicalTerm.get(MedicalTerm.id == term_id)
-    translation = MedicalTermInfo.get(MedicalTermInfo.medical_term == term_id)
 
-    if 'term_type' in term_update_info:
-        term.term_type = term_update_info.get('term_type')
+    if 'termType' in term_update_info:
+        term.term_type = term_update_info.get('termType')
 
-    if 'language_code' in term_update_info:
-        translation.language_code = term_update_info.get('language_code')
+    translation, created = MedicalTermInfo.get_or_create(
+        medical_term=term_id,
+        language_code=language_code,
+        defaults={
+            'name': term_update_info.get('name'),
+            'description': term_update_info.get('description'),
+            'url': term_update_info.get('url')
+        }
+    )
 
-    if 'description' in term_update_info:
-        translation.description = term_update_info.get('description')
+    if not created:
+        if 'name' in term_update_info:
+            translation.name = term_update_info.get('name')
 
-    if 'url' in term_update_info:
-        translation.url = term_update_info.get('url')
+        if 'description' in term_update_info:
+            translation.description = term_update_info.get('description')
+
+        if 'url' in term_update_info:
+            translation.url = term_update_info.get('url')
+
+        translation.save()
+
+    if 'synonyms' in term_update_info:
+        # Delete existing synonyms for this term and language
+        MedicalTermSynonym.delete().where(
+            (MedicalTermSynonym.medical_term == term_id) &
+            (MedicalTermSynonym.language_code == language_code)
+        ).execute()
+
+        # Add new synonyms
+        for synonym in term_update_info.get('synonyms', []):
+            MedicalTermSynonym.create(
+                medical_term=term_id,
+                synonym=synonym.get('synonym'),
+                language_code=language_code
+            )
 
     term.save()
-    translation.save()
-    return term
+    return get_term(term_id, language_code)
 
 def delete_term(term_id: int):
     term = MedicalTerm.get(MedicalTerm.id == term_id)
