@@ -55,7 +55,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Messag
     # Create Medical Term
     medical_term = MedicalTerm.create(
         Term_id="1",
-        Discription="COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+        Description="COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
         URL="https://www.nhs.uk/conditions/coronavirus-covid-19/"
     )
 

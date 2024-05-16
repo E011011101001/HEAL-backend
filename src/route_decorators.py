@@ -37,7 +37,6 @@ def required_params(itemList: list[str]):
         @wraps(func)
         def new_func(*args, **kwargs):
             missedItemList = []
-            data = request.get_json()
             for item in itemList:
                 if request.args.get(item) is None:
                     missedItemList.append(item)
@@ -53,7 +52,6 @@ def required_params(itemList: list[str]):
         return new_func
 
     return decorator
-
 
 def login_required(func):
     @wraps(func)

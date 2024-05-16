@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, request, make_response
+# src/routes.py
+from flask import Blueprint, redirect, request, make_response, jsonify
 import traceback
 from peewee import IntegrityError
 
@@ -200,7 +201,7 @@ def participant_room(_, roomId, userId):
     # if request.method == 'DELETE':
     todo.exit_room(roomId, userId)
     data = db.room_op.get_room(roomId)
-    return data
+    return data, 200
 
 
 @app.route('/users/<int:userId>/chats', methods=['GET'])
@@ -214,26 +215,34 @@ def get_rooms(_, userId):
         }
 
     data = db.room_op.get_rooms_all(userId)
-    return data
+    return data, 200
 
 # message manager
 @app.route('/chats/<int:roomId>/messages', methods=['GET'])
 @required_params(['page', 'limit'])
 @login_required
 def get_chat_messages(_, roomId):
-    pageNum = request.args.get('page'); assert pageNum is not None
+    try:
+        pageNum = request.args.get('page')
+        limNum = request.args.get('limit')
+        if pageNum is None or limNum is None:
+            return jsonify({'error': 'Missing required parameters'}), 400
+        
+        pageNum = int(pageNum)
+        limNum = int(limNum)
 
-    limNum = request.args.get('limit'); assert limNum is not None
-
-    data = db.message_op.get_chat_messages(roomId, int(pageNum), int(limNum))
-    return data
+        data = db.message_op.get_chat_messages(roomId, pageNum, limNum)
+        return jsonify(data)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 
 @app.route('/chats/<int:roomId>/messages/<int:mesId>', methods=['GET'])
 @login_required
 def get_message(_, roomId, mesId):
     data = db.message_op.get_message(roomId, mesId)
-    return data
+    return data, 200
 
 
 # medical term manager

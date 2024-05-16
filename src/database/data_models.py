@@ -1,3 +1,4 @@
+# src/database/data_models.py
 # All Xxx_id fields will be replaced by just id
 from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField,\
     ForeignKeyField, BooleanField, CompositeKey
@@ -73,7 +74,7 @@ class MedicalTerm(Model):
     id = AutoField()
     Term_id = TextField(index=True)
     Language_code = TextField(default='en', index=True)
-    Discription = TextField()
+    Description = TextField()
     URL = TextField(null=True)
 
     class Meta:

@@ -1,3 +1,4 @@
+# src/database/message_op.py
 from peewee import DoesNotExist
 from datetime import datetime
 
@@ -22,8 +23,8 @@ def get_message(roomId: int, messageId: int) -> dict:
     # timestamp and content.metadata.translations are ignored
     ret = {
         "messageId": message.id,
-        "roomId": message.Room_id,
-        "senderUserId": message.User_id,
+        "roomId": message.Room_id.id,
+        "senderUserId": message.User_id.id,
         "timestamp": message.Send_time,
         "content": {
             "text": message.Text,
@@ -42,7 +43,7 @@ def create_term(termInfo):
     newTerm = MedicalTerm.create(
         Term_id = termInfo.get('name'),
         Language_code = "en",
-        Discription = termInfo.get('description'),
+        Description = termInfo.get('description'),
         URL = termInfo.get('medical_term_links')
     )
 
@@ -60,7 +61,7 @@ def get_term(termId):
         "medicalTermType": "CONDITION",
         "medicalTermContext": "MENTION",
         "name": medicalTerm.get('Term_id'),
-        "description": medicalTerm.get('Discription'),
+        "description": medicalTerm.get('Description'),
         "medicalTermLinks": [
             medicalTerm.get('URL')
         ]
@@ -93,8 +94,8 @@ def update_term(termId: int, termUpdateInfo: dict):
     if 'language_code' in termUpdateInfo:
         term.Language_code = termUpdateInfo.get('language_code')
 
-    if 'discription' in termUpdateInfo:
-        term.Discription = termUpdateInfo.get('discription')
+    if 'description' in termUpdateInfo:
+        term.Description = termUpdateInfo.get('description')
 
     if 'URL' in termUpdateInfo:
         term.URL = termUpdateInfo.get('URL')
@@ -140,8 +141,7 @@ def get_message_terms(messageId):
     termsList = []
 
     for cache in messageTermCache:
-        termIdInCache = cache.get('MedicalTerm_id')
-
+        termIdInCache = cache.MedicalTerm_id.id
         term = get_term(termIdInCache)
         termsList.append(term)
 
