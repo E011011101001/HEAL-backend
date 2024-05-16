@@ -271,10 +271,8 @@ def operate_single_term(medicalTermId):
 # linking term manager
 @app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])
 @login_required
-def get_linked_term(mesId):
-    # check messageId
-
-    data = todo.get_linking_term(mesId)
+def get_linked_term(_, mesId):
+    data = db.message_op.get_message_terms(mesId)
     return data
 
 
@@ -284,7 +282,7 @@ def operate_linked_term(mesId, medicalTermId):
     if request.method == 'POST':
         # check link
 
-        data = todo.create_linking_term(mesId, medicalTermId)
+        data = db.message_op.create_link(mesId, medicalTermId)
         return data, 201
 
     # if request.method == 'DELETE':
