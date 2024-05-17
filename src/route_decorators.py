@@ -73,7 +73,7 @@ def login_required(func):
 
         user_data = db.user.get_user_full(user['id'])
         language_code = user_data.get('language', 'en')
-        
+
         return func(user['id'], language_code, *args, **kwargs)
 
     return new_func

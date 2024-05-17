@@ -1,43 +1,48 @@
 # src/routes.py
-from flask import Blueprint, redirect, request, make_response, jsonify
-import traceback
+from flask import request, jsonify
 from peewee import IntegrityError
+from datetime import datetime
 
 from . import app
 from .route_decorators import required_body_items, required_params, login_required
-
 from .utils import salted_hash
-
 from . import database as db
 
-from datetime import datetime
-
-# TODO: remove todo
-from .database import todo
-from .database.data_models import BaseUser
-
-
-_todo = '', 500
-
+# User Management
 @app.route('/users/register', methods=['POST'])
 @required_body_items(['type', 'email', 'password', 'name'])
 def user_register():
-    PATIENT = 'PATIENT'
-    DOCTOR = 'DOCTOR'
+    """
+    Register a new user.
+
+    Request JSON body example:
+    {
+        "type": "PATIENT",
+        "email": "new_patient@gmail.com",
+        "password": "securepassword",
+        "name": "Jane Doe",
+        "language": "en"
+    }
+
+    Response:
+    {
+        "userId": 1
+    }
+    201 Created
+    """
     data = request.get_json()
-    userType = data.get('type')
-    if not userType in [PATIENT, DOCTOR]:
+    user_type = data.get('type')
+    if user_type not in ['PATIENT', 'DOCTOR']:
         return {
             'error': 'TypeError',
-            'message': f'"type" must be either "{PATIENT}" or "{DOCTOR}".'
+            'message': '"type" must be either "PATIENT" or "DOCTOR".'
         }, 406
 
-    if userType is DOCTOR:
-        if not data.get('specialisation'):
-            return {
-                'error': 'Missing items.',
-                'missing': ['specialisation']
-            }, 406
+    if user_type == 'DOCTOR' and not data.get('specialisation'):
+        return {
+            'error': 'Missing items.',
+            'missing': ['specialisation']
+        }, 406
 
     if db.user.email_exists(data.get('email')):
         return {
@@ -45,88 +50,146 @@ def user_register():
             'message': 'An account with this email address already exists.'
         }, 409
 
-    # language default to 'en'
-    if not data.get('language'):
-        data['language'] = 'en'
-
+    data.setdefault('language', 'en')
     return {
         'userId': db.user.create_user(data)
     }, 201
 
 
 @app.route('/users/<int:user_id>', methods=['GET'])
-def get_users(user_id):
-    userData = db.user.get_user_full(user_id)
-    return userData
+@login_required
+def get_user(_, __, user_id):
+    """
+    Get user details.
+
+    URL Parameters:
+    user_id: int - ID of the user
+
+    Response:
+    {
+        "id": 1,
+        "email": "test@gmail.com",
+        "language_code": "en",
+        "name": "John Doe",
+        "user_type": 1,
+        "date_of_birth": "1990-12-25"
+    }
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    return user_data
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
-def update_users(user_id):
+@login_required
+def update_user(_, __, user_id):
+    """
+    Update user details.
+
+    URL Parameters:
+    user_id: int - ID of the user
+
+    Request JSON body example:
+    {
+        "email": "updated_patient@gmail.com",
+        "name": "John Updated",
+        "dateOfBirth": "1990-12-26",
+        "height": 180,
+        "weight": 75
+    }
+
+    Response:
+    {
+        "id": 1,
+        "email": "updated_patient@gmail.com",
+        "language_code": "en",
+        "name": "John Updated",
+        "user_type": 1,
+        "date_of_birth": "1990-12-26"
+    }
+    200 OK
+    """
     data = request.get_json()
 
-    # TODO: why traverse >> modified
+    if data.get('type') and data['type'] not in ['PATIENT', 'DOCTOR']:
+        return {
+            'error': 'TypeError',
+            'message': "'type' must be either 'PATIENT' or 'DOCTOR'."
+        }, 406
 
-    # confirm data structure
-    if data.get('type') is not None:
-        if data.get('type') != "PATIENT" and data.get('type') != "DOCTOR":
-            return {
-                'error': 'TypeError',
-                'message': '\'type\' must be either \'PATIENT\' or \'DOCTOR\'.'
-            }, 406
+    if data.get('email') and db.user.email_exists(data['email']) and db.user.get_user_full(user_id)['email'] != data['email']:
+        return {
+            'error': 'conflictError',
+            'message': 'An account with this email address already exists.'
+        }, 409
 
-    if data.get('email') is not None:
-        if db.user.email_exists(data.get('email')) and db.user.get_user_full(user_id).get('email') != data.get('email'):
-            return {
-                'error': 'conflictError',
-                'message': 'An account with this email address already exists.'
-            }, 409
-
-    if data.get('dateOfBirth') is not None:
+    if data.get('dateOfBirth'):
         try:
-            datetime.strptime(data.get('dateOfBirth'), '%Y-%m-%d')
+            datetime.strptime(data['dateOfBirth'], '%Y-%m-%d')
         except ValueError:
             return {
                 'error': 'TypeError',
-                'message': '\'dateOfBirth\' must be \'YYYY-MM-DD\'.'
+                'message': "'dateOfBirth' must be 'YYYY-MM-DD'."
             }, 406
 
-    if data.get('height') is not None:
-        if data.get('height') < 0:
-            return {
-                'error': 'TypeError',
-                'message': '\'height\' must be positive number'
-            }, 406
+    if data.get('height') is not None and data['height'] < 0:
+        return {
+            'error': 'TypeError',
+            'message': "'height' must be a positive number"
+        }, 406
 
-    if data.get('weight') is not None:
-        if data.get('weight') < 0:
-            return {
-                'error': 'TypeError',
-                'message': '\'weight\' must be positive number'
-            }, 406
+    if data.get('weight') is not None and data['weight'] < 0:
+        return {
+            'error': 'TypeError',
+            'message': "'weight' must be a positive number"
+        }, 406
 
-    # update user
     db.user_op.update_user(user_id, data)
-
-    # TODO: logic wrong. Check the user type and use the corresponding getter
-    # # get user details
-    # newData = todo.get_user(user_id)
-
-    # return newData
-    # TODO
-
-    userData = db.user.get_user_full(user_id)
-    return userData, 200
+    user_data = db.user.get_user_full(user_id)
+    return user_data, 200
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])
-def delete_users(user_id):
+@login_required
+def delete_user(_, __, user_id):
+    """
+    Delete a user.
+
+    URL Parameters:
+    user_id: int - ID of the user
+
+    Response:
+    204 No Content
+    """
     db.user_op.delete_user(user_id)
     return '', 204
-
 
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['email', 'password'])
 def login():
+    """
+    Log in a user.
+
+    Request JSON body example:
+    {
+        "email": "test@gmail.com",
+        "password": "password"
+    }
+
+    Response:
+    {
+        "user": {
+            "id": 1,
+            "email": "test@gmail.com",
+            "language_code": "en",
+            "name": "John Doe",
+            "user_type": 1,
+            "date_of_birth": "1990-12-25"
+        },
+        "token": "example_token"
+    }
+    200 OK
+    """
     data = request.get_json()
     failed = False
     try:
@@ -134,63 +197,134 @@ def login():
         failed = user['password'] != salted_hash(data['password'])
     except Exception:
         failed = True
-    finally:
-        if failed:
-            forbiddenError = {
-                "error": "forbiddenError",
-                "message": "You do not have enough permissions to perform this action."
-            }
-            return forbiddenError, 403
-        else:
-            token = db.user.new_session_by_id(user['id'])
-            return {
-                'user': get_users(user['id']),
-                'token': token
-            }
 
+    if failed:
+        return {
+            "error": "forbiddenError",
+            "message": "You do not have enough permissions to perform this action."
+        }, 403
+    else:
+        token = db.user.new_session_by_id(user['id'])
+        return {
+            'user': get_user(None, None, user['id']),
+            'token': token
+        }
 
 
 @app.route('/users/verify-token', methods=['GET'])
 @login_required
 def verify_token(user_id, language_code):
-    return get_users(user_id)
+    """
+    Verify user token.
 
-# chat manager
+    Response:
+    {
+        "id": 1,
+        "email": "test@gmail.com",
+        "language_code": "en",
+        "name": "John Doe",
+        "user_type": 1,
+        "date_of_birth": "1990-12-25"
+    }
+    200 OK
+    """
+    return get_user(user_id, language_code)
+
+
+# Chat Manager
 @app.route('/chats/new', methods=['POST'])
 @login_required
-def create_room(user_id, language_code):
-    userData = db.user.get_user_full(user_id)
-    if userData.get('type') == 'DOCTOR':
-        # doctor try to create the room
+def create_room(user_id, _):
+    """
+    Create a new chat room.
+
+    Request:
+    {}
+
+    Response:
+    {
+        "roomId": 1
+    }
+    201 Created
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] == 'DOCTOR':
         return {
             "error": "forbiddenError",
-            "message": "Only patient can create the room."
+            "message": "Only patients can create rooms."
         }
 
-    id = db.room_op.create_room(user_id)
-    return {'roomId': id}, 201
+    room_id = db.room_op.create_room(user_id)
+    return {'roomId': room_id}, 201
 
 
-@app.route('/chats/<int:roomId>', methods=['GET','DELETE'])
+@app.route('/chats/<int:room_id>', methods=['GET', 'DELETE'])
 @login_required
-def operate_room(user_id, language_code, roomId):
-    if request.method == 'GET':
-        roomData = db.room_op.get_room(roomId)
-        return roomData
+def operate_room(_, __, room_id):
+    """
+    Get or delete a chat room.
 
-    # if request.method == 'DELETE':
-    db.room_op.delete_room(roomId)
+    URL Parameters:
+    room_id: int - ID of the room
+
+    GET Response:
+    {
+        "roomId": 1,
+        "roomName": "",
+        "creationTime": "2023-01-01T12:00:00",
+        "participants": [
+            {
+                "id": 1,
+                "email": "test@gmail.com",
+                "language_code": "en",
+                "name": "John Doe",
+                "user_type": 1,
+                "date_of_birth": "1990-12-25"
+            },
+            {
+                "id": 2,
+                "email": "doctor@gmail.com",
+                "language_code": "jp",
+                "name": "Dr. Smith",
+                "user_type": 2,
+                "date_of_birth": "1980-02-15"
+            }
+        ]
+    }
+    200 OK
+
+    DELETE Response:
+    204 No Content
+    """
+    if request.method == 'GET':
+        room_data = db.room_op.get_room(room_id)
+        return room_data
+
+    db.room_op.delete_room(room_id)
     return '', 204
 
-@app.route('/chats/<int:room_id>/participants/<int:user_id>', methods=['POST', 'DELETE'])
+
+@app.route('/chats/<int:room_id>/participants/<int:participant_id>', methods=['POST', 'DELETE'])
 @login_required
-def participant_room(user_id, language_code, room_id, participant_id):
+def participant_room(_, __, room_id, participant_id):
+    """
+    Add or remove a participant from a chat room.
+
+    URL Parameters:
+    room_id: int - ID of the room
+    participant_id: int - ID of the participant
+
+    POST Response:
+    201 Created
+
+    DELETE Response:
+    204 No Content
+    """
     user_data = db.user.get_user_full(participant_id)
-    if user_data.get('type') == 'PATIENT':
-        # patient try to enter or leave the room
+    if user_data['type'] == 'PATIENT':
         return {
             "error": "forbiddenError",
-            "message": "Only doctor can enter and leave the room."
+            "message": "Only doctors can enter and leave rooms."
         }
 
     if request.method == 'POST':
@@ -204,57 +338,155 @@ def participant_room(user_id, language_code, room_id, participant_id):
         data = db.room_op.get_room(room_id)
         return data, 201
 
-    if request.method == 'DELETE':
-        db.room_op.leave_room(participant_id, room_id)
-        data = db.room_op.get_room(room_id)
-        return data, 200
+    db.room_op.leave_room(participant_id, room_id)
+    data = db.room_op.get_room(room_id)
+    return data, 200
 
 @app.route('/users/<int:user_id>/chats', methods=['GET'])
 @login_required
-def get_rooms(user_id, language_code):
-    userData = db.user.get_user_full(user_id)
-    if userData.get('type') == 'DOCTOR':
+def get_rooms(user_id, _):
+    """
+    Get all chat rooms for a user.
+
+    URL Parameters:
+    user_id: int - ID of the user
+
+    Response:
+    {
+        "rooms": [
+            {
+                "roomId": 1,
+                "roomName": "",
+                "creationTime": "2023-01-01T12:00:00",
+                "participants": [
+                    {
+                        "id": 1,
+                        "email": "test@gmail.com",
+                        "language_code": "en",
+                        "name": "John Doe",
+                        "user_type": 1,
+                        "date_of_birth": "1990-12-25"
+                    },
+                    {
+                        "id": 2,
+                        "email": "doctor@gmail.com",
+                        "language_code": "jp",
+                        "name": "Dr. Smith",
+                        "user_type": 2,
+                        "date_of_birth": "1980-02-15"
+                    }
+                ]
+            }
+        ]
+    }
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] == 'DOCTOR':
         return {
             "error": "forbiddenError",
-            "message": "Only patient can get the rooms."
+            "message": "Only patients can get rooms."
         }
 
     data = db.room_op.get_rooms_all(user_id)
     return data, 200
 
-# message manager
-@app.route('/chats/<int:roomId>/messages', methods=['GET'])
+
+# Message Management
+@app.route('/chats/<int:room_id>/messages', methods=['GET'])
 @required_params(['page', 'limit'])
 @login_required
-def get_chat_messages(user_id, language_code, roomId):
-    try:
-        pageNum = request.args.get('page')
-        limNum = request.args.get('limit')
-        if pageNum is None or limNum is None:
-            return jsonify({'error': 'Missing required parameters'}), 400
-        
-        pageNum = int(pageNum)
-        limNum = int(limNum)
+def get_chat_messages(_, language_code, room_id):
+    """
+    Get messages in a chat room.
 
-        data = db.message_op.get_chat_messages(roomId, pageNum, limNum, language_code)
-        print(data)
+    URL Parameters:
+    room_id: int - ID of the room
+
+    Request Parameters:
+    page: int - Page number
+    limit: int - Number of messages per page
+
+    Response:
+    {
+        "messages": [
+            {
+                "id": 1,
+                "user": {
+                    "id": 1,
+                    "email": "test@gmail.com",
+                    "language_code": "en",
+                    "name": "John Doe",
+                    "user_type": 1,
+                    "date_of_birth": "1990-12-25"
+                },
+                "room": 1,
+                "text": "Hi, I've lost my sense of taste and I'm coughing a lot.",
+                "send_time": "2023-01-01T12:00:00"
+            },
+            {
+                "id": 2,
+                "user": {
+                    "id": 2,
+                    "email": "doctor@gmail.com",
+                    "language_code": "jp",
+                    "name": "Dr. Smith",
+                    "user_type": 2,
+                    "date_of_birth": "1980-02-15"
+                },
+                "room": 1,
+                "text": "新型コロナウイルス感染症に感染している場合は家にいてください",
+                "send_time": "2023-01-01T12:05:00"
+            }
+        ]
+    }
+    200 OK
+    """
+    try:
+        page_num = int(request.args.get('page'))
+        limit_num = int(request.args.get('limit'))
+        data = db.message_op.get_chat_messages(room_id, page_num, limit_num, language_code)
         return jsonify(data)
     except Exception as e:
-        print(f"Error: {e}")
         return jsonify({'error': 'Internal Server Error'}), 500
 
 
-@app.route('/chats/<int:roomId>/messages/<int:mesId>', methods=['GET'])
+@app.route('/chats/<int:room_id>/messages/<int:mes_id>', methods=['GET'])
 @login_required
-def get_message(user_id, language_code, roomId, mesId):
-    data = db.message_op.get_message(roomId, mesId, language_code)
+def get_message(_, language_code, room_id, mes_id):
+    """
+    Get a single message.
+
+    URL Parameters:
+    room_id: int - ID of the room
+    mes_id: int - ID of the message
+
+    Response:
+    {
+        "id": 1,
+        "user": {
+            "id": 1,
+            "email": "test@gmail.com",
+            "language_code": "en",
+            "name": "John Doe",
+            "user_type": 1,
+            "date_of_birth": "1990-12-25"
+        },
+        "room": 1,
+        "text": "Hi, I've lost my sense of taste and I'm coughing a lot.",
+        "send_time": "2023-01-01T12:00:00"
+    }
+    200 OK
+    """
+    data = db.message_op.get_message(room_id, mes_id, language_code)
     return data, 200
 
 
-# medical term manager
+# Medical Term Management
 @app.route('/medical-terms', methods=['POST'])
+@login_required
 @required_body_items(['termType', 'termInfoList'])
-def create_term():
+def create_term(_, __):
     """
     Create a new medical term.
 
@@ -289,13 +521,15 @@ def create_term():
     }
 
     Response:
+    {
+        "termId": 1
+    }
     201 Created
     """
     data = request.get_json()
-    term_type = data.get('termType')
-    term_info_list = data.get('termInfoList')
+    term_type = data['termType']
+    term_info_list = data['termInfoList']
 
-    # Check for required fields in term_info_list
     for term_info in term_info_list:
         if not term_info.get('name') or not term_info.get('description'):
             return {
@@ -312,9 +546,9 @@ def create_term():
             'message': str(e)
         }, 500
 
-
 @app.route('/medical-terms', methods=['GET'])
-def get_terms():
+@login_required
+def get_terms(_, language_code):
     """
     Get all medical terms.
 
@@ -322,14 +556,37 @@ def get_terms():
     language: str - Language code for the term information (default: 'en')
 
     Response:
+    {
+        "terms": [
+            {
+                "id": 1,
+                "term_type": "CONDITION",
+                "translations": [
+                    {
+                        "language_code": "en",
+                        "name": "COVID-19",
+                        "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+                        "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/"
+                    },
+                    {
+                        "language_code": "jp",
+                        "name": "コロナウイルス",
+                        "description": "COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
+                        "url": "https://www3.nhk.or.jp/nhkworld/en/news/tags/82/"
+                    }
+                ]
+            }
+        ]
+    }
     200 OK
     """
-    language_code = request.args.get('language', 'en')
     data = db.message_op.get_terms_all(language_code)
     return data
 
+
 @app.route('/medical-terms/<int:medical_term_id>', methods=['GET', 'PUT', 'DELETE'])
-def operate_single_term(medical_term_id):
+@login_required
+def operate_single_term(_, language_code, medical_term_id):
     """
     Operate on a single medical term.
 
@@ -337,6 +594,24 @@ def operate_single_term(medical_term_id):
     medical_term_id: int - ID of the medical term
 
     GET Response:
+    {
+        "id": 1,
+        "term_type": "CONDITION",
+        "translations": [
+            {
+                "language_code": "en",
+                "name": "COVID-19",
+                "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+                "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/"
+            },
+            {
+                "language_code": "jp",
+                "name": "コロナウイルス",
+                "description": "COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
+                "url": "https://www3.nhk.or.jp/nhkworld/en/news/tags/82/"
+            }
+        ]
+    }
     200 OK
 
     PUT Request JSON body example:
@@ -353,9 +628,6 @@ def operate_single_term(medical_term_id):
     DELETE Response:
     204 No Content
     """
-    # Get the user's language code from the request headers or other authentication mechanism
-    language_code = request.headers.get('Language-Code', 'en')
-
     if request.method == 'GET':
         data = db.message_op.get_term(medical_term_id, language_code)
         return data
@@ -369,25 +641,49 @@ def operate_single_term(medical_term_id):
         db.message_op.delete_term(medical_term_id)
         return '', 204
 
-# linking term manager
-@app.route('/messages/<int:mesId>/medical-terms', methods=['GET'])
+
+# Linking Term Management
+@app.route('/messages/<int:mes_id>/medical-terms', methods=['GET'])
 @login_required
-def get_linked_term(user_id, language_code, mesId):
+def get_linked_term(_, language_code, mes_id):
     """
     Get all medical terms linked to a message.
 
     URL Parameters:
-    mesId: int - ID of the message
+    mes_id: int - ID of the message
 
     Response:
+    {
+        "terms": [
+            {
+                "id": 1,
+                "term_type": "CONDITION",
+                "translations": [
+                    {
+                        "language_code": "en",
+                        "name": "COVID-19",
+                        "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+                        "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/"
+                    },
+                    {
+                        "language_code": "jp",
+                        "name": "コロナウイルス",
+                        "description": "COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
+                        "url": "https://www3.nhk.or.jp/nhkworld/en/news/tags/82/"
+                    }
+                ]
+            }
+        ]
+    }
     200 OK
     """
-    data = db.message_op.get_message_terms(mesId, language_code)
+    data = db.message_op.get_message_terms(mes_id, language_code)
     return data
+
 
 @app.route('/messages/<int:mes_id>/medical-terms/<int:medical_term_id>', methods=['POST', 'DELETE'])
 @login_required
-def operate_linked_term(user_id, language_code, mes_id, medical_term_id):
+def operate_linked_term(_, __, mes_id, medical_term_id):
     """
     Operate on medical terms linked to a message.
 
@@ -410,13 +706,10 @@ def operate_linked_term(user_id, language_code, mes_id, medical_term_id):
         return '', 204
 
 
-
-
-
-# medical history
+# Medical History Management
 @app.route('/patients/<int:patient_id>/medical-history', methods=['GET'])
 @login_required
-def get_medical_history(user_id, language_code, patient_id):
+def get_medical_history(_, __, patient_id):
     """
     Get the medical history of a patient.
 
@@ -424,6 +717,60 @@ def get_medical_history(user_id, language_code, patient_id):
     patient_id: int - ID of the patient
 
     Response:
+    {
+        "userId": 1,
+        "medicalConditions": [
+            {
+                "userConditionId": 1,
+                "medicalTerm": {
+                    "id": 1,
+                    "term_type": "CONDITION",
+                    "translations": [
+                        {
+                            "language_code": "en",
+                            "name": "COVID-19",
+                            "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+                            "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/"
+                        },
+                        {
+                            "language_code": "jp",
+                            "name": "コロナウイルス",
+                            "description": "COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
+                            "url": "https://www3.nhk.or.jp/nhkworld/en/news/tags/82/"
+                        }
+                    ]
+                },
+                "status": "current",
+                "diagnosisDate": "2022-01-01",
+                "prescriptions": [
+                    {
+                        "userPrescriptionId": 1,
+                        "medicalTerm": {
+                            "id": 2,
+                            "term_type": "PRESCRIPTION",
+                            "translations": [
+                                {
+                                    "language_code": "en",
+                                    "name": "Paracetamol",
+                                    "description": "Paracetamol is used to treat pain and fever.",
+                                    "url": "https://www.nhs.uk/medicines/paracetamol/"
+                                },
+                                {
+                                    "language_code": "jp",
+                                    "name": "パラセタモール",
+                                    "description": "パラセタモールは痛みと発熱を治療するために使用されます。",
+                                    "url": "https://www.nhs.uk/medicines/paracetamol/"
+                                }
+                            ]
+                        },
+                        "dosage": "500mg",
+                        "prescriptionDate": "2023-01-01T12:00:00",
+                        "frequency": "twice a day"
+                    }
+                ]
+            }
+        ]
+    }
     200 OK
     """
     data = db.condition_op.get_history(patient_id)
@@ -432,7 +779,7 @@ def get_medical_history(user_id, language_code, patient_id):
 
 @app.route('/patients/<int:patient_id>/conditions/<int:medical_term_id>', methods=['POST'])
 @login_required
-def create_patient_condition(user_id, language_code, patient_id, medical_term_id):
+def create_patient_condition(user_id, __, patient_id, medical_term_id):
     """
     Create a new condition for a patient.
 
@@ -453,14 +800,14 @@ def create_patient_condition(user_id, language_code, patient_id, medical_term_id
     data = request.get_json()
 
     user_data = db.user.get_user_full(user_id)
-    if user_data.get('type') != 'DOCTOR':
+    if user_data['type'] != 'DOCTOR':
         return {
             "error": "forbiddenError",
             "message": "Only doctors can add conditions."
         }
 
     patient_data = db.user.get_user_full(patient_id)
-    if patient_data.get('type') != 'PATIENT':
+    if patient_data['type'] != 'PATIENT':
         return {
             "error": "forbiddenError",
             "message": "Conditions can only be added to patients."
@@ -494,12 +841,36 @@ def update_patient_condition(user_id, language_code, condition_id, medical_term_
     }
 
     Response:
+    {
+        "userConditionId": 1,
+        "medicalTerm": {
+            "id": 1,
+            "term_type": "CONDITION",
+            "translations": [
+                {
+                    "language_code": "en",
+                    "name": "COVID-19",
+                    "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
+                    "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/"
+                },
+                {
+                    "language_code": "jp",
+                    "name": "コロナウイルス",
+                    "description": "COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
+                    "url": "https://www3.nhk.or.jp/nhkworld/en/news/tags/82/"
+                }
+            ]
+        },
+        "status": "resolved",
+        "diagnosisDate": "2022-01-01",
+        "resolutionDate": "2022-02-01"
+    }
     200 OK
     """
     data = request.get_json()
 
     user_data = db.user.get_user_full(user_id)
-    if user_data.get('type') != 'DOCTOR':
+    if user_data['type'] != 'DOCTOR':
         return {
             "error": "forbiddenError",
             "message": "Only doctors can update conditions."
@@ -511,7 +882,7 @@ def update_patient_condition(user_id, language_code, condition_id, medical_term_
 
 @app.route('/patients/conditions/<int:condition_id>', methods=['DELETE'])
 @login_required
-def delete_patient_condition(user_id, language_code, condition_id):
+def delete_patient_condition(user_id, __, condition_id):
     """
     Delete a condition for a patient.
 
@@ -522,7 +893,7 @@ def delete_patient_condition(user_id, language_code, condition_id):
     204 No Content
     """
     user_data = db.user.get_user_full(user_id)
-    if user_data.get('type') != 'DOCTOR':
+    if user_data['type'] != 'DOCTOR':
         return {
             "error": "forbiddenError",
             "message": "Only doctors can delete conditions."
@@ -534,7 +905,7 @@ def delete_patient_condition(user_id, language_code, condition_id):
 
 @app.route('/patients/conditions/<int:condition_id>/prescriptions/<int:medical_term_id>', methods=['POST'])
 @login_required
-def create_patient_prescription(user_id, language_code, condition_id, medical_term_id):
+def create_patient_prescription(user_id, __, condition_id, medical_term_id):
     """
     Create a new prescription for a patient's condition.
 
@@ -555,7 +926,7 @@ def create_patient_prescription(user_id, language_code, condition_id, medical_te
     data = request.get_json()
 
     user_data = db.user.get_user_full(user_id)
-    if user_data.get('type') != 'DOCTOR':
+    if user_data['type'] != 'DOCTOR':
         return {
             "error": "forbiddenError",
             "message": "Only doctors can add prescriptions."
@@ -573,7 +944,7 @@ def create_patient_prescription(user_id, language_code, condition_id, medical_te
 
 @app.route('/patients/prescriptions/<int:prescription_id>', methods=['PUT'])
 @login_required
-def update_patient_prescription(user_id, language_code, prescription_id):
+def update_patient_prescription(user_id, __, prescription_id):
     """
     Update a prescription for a patient's condition.
 
@@ -588,12 +959,36 @@ def update_patient_prescription(user_id, language_code, prescription_id):
     }
 
     Response:
+    {
+        "userPrescriptionId": 1,
+        "medicalTerm": {
+            "id": 2,
+            "term_type": "PRESCRIPTION",
+            "translations": [
+                {
+                    "language_code": "en",
+                    "name": "Paracetamol",
+                    "description": "Paracetamol is used to treat pain and fever.",
+                    "url": "https://www.nhs.uk/medicines/paracetamol/"
+                },
+                {
+                    "language_code": "jp",
+                    "name": "パラセタモール",
+                    "description": "パラセタモールは痛みと発熱を治療するために使用されます。",
+                    "url": "https://www.nhs.uk/medicines/paracetamol/"
+                }
+            ]
+        },
+        "dosage": "1000mg",
+        "prescriptionDate": "2023-01-01T12:00:00",
+        "frequency": "once a day"
+    }
     200 OK
     """
     data = request.get_json()
 
     user_data = db.user.get_user_full(user_id)
-    if user_data.get('type') != 'DOCTOR':
+    if user_data['type'] != 'DOCTOR':
         return {
             "error": "forbiddenError",
             "message": "Only doctors can update prescriptions."
@@ -605,7 +1000,7 @@ def update_patient_prescription(user_id, language_code, prescription_id):
 
 @app.route('/patients/prescriptions/<int:prescription_id>', methods=['DELETE'])
 @login_required
-def delete_patient_prescription(user_id, language_code, prescription_id):
+def delete_patient_prescription(user_id, __, prescription_id):
     """
     Delete a prescription for a patient's condition.
 
@@ -616,7 +1011,7 @@ def delete_patient_prescription(user_id, language_code, prescription_id):
     204 No Content
     """
     user_data = db.user.get_user_full(user_id)
-    if user_data.get('type') != 'DOCTOR':
+    if user_data['type'] != 'DOCTOR':
         return {
             "error": "forbiddenError",
             "message": "Only doctors can delete prescriptions."

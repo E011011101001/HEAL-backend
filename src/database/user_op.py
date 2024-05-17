@@ -75,6 +75,7 @@ def get_user_and_password(email: str) -> dict:
     user = BaseUser.get(BaseUser.email == email)
     return {
         'id': user.id,
+        'language_code': user.language_code,
         'password': user.password
     }
 
