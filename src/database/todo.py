@@ -18,5 +18,3 @@ https://www.postman.com/winter-capsule-599080/workspace/heal/request/1136812-37d
 
 def delete_linking_term(messageId: int, termId: int):
     pass
-
-
