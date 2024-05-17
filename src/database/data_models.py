@@ -102,30 +102,6 @@ class MedicalTermInfo(Model):
         primary_key = CompositeKey('medical_term', 'language_code')
 
 
-class PatientCondition(Model):
-    id = AutoField()
-    medical_term = ForeignKeyField(MedicalTerm, on_delete="CASCADE")
-    patient = ForeignKeyField(Patient, backref='patient_conditions', on_delete="CASCADE")
-    status = TextField()
-    diagnosis_date = DateField()
-    resolution_date = DateField(null=True)
-
-    class Meta:
-        database = db
-
-
-class PatientPrescription(Model):
-    id = AutoField()
-    user_condition = ForeignKeyField(PatientCondition, backref='patient_prescriptions', on_delete="CASCADE")
-    medical_term = ForeignKeyField(MedicalTerm, backref='patient_prescriptions', on_delete="CASCADE")
-    dosage = TextField()
-    prescription_date = DateTimeField()
-    frequency = TextField()
-
-    class Meta:
-        database = db
-
-
 class Message(Model):
     id = AutoField()
     user = ForeignKeyField(BaseUser, backref='messages', on_delete="CASCADE")
@@ -168,6 +144,30 @@ class MessageTranslationCache(Model):
         primary_key = CompositeKey('message', 'language_code')
 
 
+class PatientCondition(Model):
+    id = AutoField()
+    medical_term = ForeignKeyField(MedicalTerm, on_delete="CASCADE")
+    patient = ForeignKeyField(Patient, backref='patient_conditions', on_delete="CASCADE")
+    status = TextField()
+    diagnosis_date = DateField()
+    resolution_date = DateField(null=True)
+
+    class Meta:
+        database = db
+
+
+class PatientPrescription(Model):
+    id = AutoField()
+    user_condition = ForeignKeyField(PatientCondition, backref='patient_prescriptions', on_delete="CASCADE")
+    medical_term = ForeignKeyField(MedicalTerm, backref='patient_prescriptions', on_delete="CASCADE")
+    dosage = TextField()
+    prescription_date = DateTimeField()
+    frequency = TextField()
+
+    class Meta:
+        database = db
+
+
 def init():
     db.connect()
     db.create_tables([
@@ -180,14 +180,14 @@ def init():
         MedicalTerm,
         MedicalTermSynonym,
         MedicalTermInfo,
-        PatientCondition,
-        PatientPrescription,
         Message,
         Report,
         MessageTermCache,
-        MessageTranslationCache
+        MessageTranslationCache,
+        PatientCondition,
+        PatientPrescription
     ])
     print("Database tables created.")
-    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache)
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache, PatientCondition, PatientPrescription)
     print("Database seeded with initial data.")
     db.close()

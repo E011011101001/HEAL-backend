@@ -2,7 +2,7 @@ from datetime import datetime, date
 
 from ..utils import salted_hash
 
-def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache):
+def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache, PatientCondition, PatientPrescription):
     # Create Users
     patient_user = BaseUser.create(
         email="test@gmail.com",
@@ -51,31 +51,31 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
         hospital="St Pauls Hospital"
     )
 
-    # Create Medical Term
-    medical_term = MedicalTerm.create(
+    # Create Medical Term for Condition
+    condition_term = MedicalTerm.create(
         term_type="CONDITION"
     )
 
-    # Add Synonyms
+    # Add Synonyms for Condition
     synonyms_en = ["covid", "covid-19", "corona", "covid 19", "coronavirus"]
     synonyms_jp = ["コロナ", "新型コロナウイルス"]
     
     for synonym in synonyms_en:
         MedicalTermSynonym.create(
-            medical_term=medical_term.id,
+            medical_term=condition_term.id,
             synonym=synonym,
             language_code="en"
         )
     
     for synonym in synonyms_jp:
         MedicalTermSynonym.create(
-            medical_term=medical_term.id,
+            medical_term=condition_term.id,
             synonym=synonym,
             language_code="jp"
         )
 
     MedicalTermInfo.create(
-        medical_term=medical_term.id,
+        medical_term=condition_term.id,
         language_code="en",
         name="COVID-19",
         description="COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
@@ -83,11 +83,50 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
     )
     
     MedicalTermInfo.create(
-        medical_term=medical_term.id,
+        medical_term=condition_term.id,
         language_code="jp",
         name="コロナウイルス",
         description="COVID-19は新型コロナウイルスによって引き起こされる重篤な呼吸器疾患です。",
         url="https://www3.nhk.or.jp/nhkworld/en/news/tags/82/"
+    )
+
+    # Create Medical Term for Prescription
+    prescription_term = MedicalTerm.create(
+        term_type="PRESCRIPTION"
+    )
+
+    # Add Synonyms for Prescription
+    synonyms_en_prescription = ["paracetamol", "acetaminophen", "tylenol", "panadol"]
+    synonyms_jp_prescription = ["パラセタモール", "アセトアミノフェン", "タイレノール", "パナドール"]
+    
+    for synonym in synonyms_en_prescription:
+        MedicalTermSynonym.create(
+            medical_term=prescription_term.id,
+            synonym=synonym,
+            language_code="en"
+        )
+    
+    for synonym in synonyms_jp_prescription:
+        MedicalTermSynonym.create(
+            medical_term=prescription_term.id,
+            synonym=synonym,
+            language_code="jp"
+        )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term.id,
+        language_code="en",
+        name="Paracetamol",
+        description="Paracetamol is used to treat pain and fever.",
+        url="https://www.nhs.uk/medicines/paracetamol/"
+    )
+    
+    MedicalTermInfo.create(
+        medical_term=prescription_term.id,
+        language_code="jp",
+        name="パラセタモール",
+        description="パラセタモールは痛みと発熱を治療するために使用されます。",
+        url="https://www.nhs.uk/medicines/paracetamol/"
     )
 
     # Create Room
@@ -128,7 +167,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
 
     # Link the medical term to the second message
     MessageTermCache.create(
-        medical_term=medical_term.id,
+        medical_term=condition_term.id,
         message=message_2.id,
         original_synonym=MedicalTermSynonym.get(MedicalTermSynonym.synonym == "新型コロナウイルス").id,
         translated_synonym=MedicalTermSynonym.get(MedicalTermSynonym.synonym == "coronavirus").id
@@ -145,6 +184,23 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
         message=message_2.id,
         language_code="en",
         translated_text="Please stay home if you have been infected with the novel coronavirus."
+    )
+
+    # Create Patient Condition for COVID-19
+    patient_condition = PatientCondition.create(
+        medical_term=condition_term.id,
+        patient=patient_user.id,
+        status="current",
+        diagnosis_date=date(2022, 1, 1)
+    )
+
+    # Create Prescription for the COVID-19 Condition
+    PatientPrescription.create(
+        user_condition=patient_condition.id,
+        medical_term=prescription_term.id,
+        dosage="500mg",
+        prescription_date=datetime.now(),
+        frequency="twice a day"
     )
 
     print("Initial data seeded.")

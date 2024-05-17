@@ -1,3 +1,4 @@
+# src/route_decorators.py
 from functools import wraps
 
 from flask import request
@@ -70,7 +71,9 @@ def login_required(func):
             unauthError['message'] = 'User invalid'
             return unauthError, 401
 
-        return func(user['id'], *args, **kwargs)
+        user_data = db.user.get_user_full(user['id'])
+        language_code = user_data.get('language', 'en')
+        
+        return func(user['id'], language_code, *args, **kwargs)
 
     return new_func
-
