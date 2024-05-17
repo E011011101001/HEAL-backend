@@ -213,7 +213,7 @@ def login():
 
 @app.route('/users/verify-token', methods=['GET'])
 @login_required
-def verify_token(user_id, language_code):
+def verify_token(user_id, __):
     """
     Verify user token.
 
@@ -228,7 +228,7 @@ def verify_token(user_id, language_code):
     }
     200 OK
     """
-    return get_user(user_id, language_code)
+    return get_user(user_id)
 
 
 # Chat Manager
@@ -342,14 +342,11 @@ def participant_room(_, __, room_id, participant_id):
     data = db.room_op.get_room(room_id)
     return data, 200
 
-@app.route('/users/<int:user_id>/chats', methods=['GET'])
+@app.route('/users/chats', methods=['GET'])
 @login_required
 def get_rooms(user_id, _):
     """
     Get all chat rooms for a user.
-
-    URL Parameters:
-    user_id: int - ID of the user
 
     Response:
     {
