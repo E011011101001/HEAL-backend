@@ -1,39 +1,41 @@
-# All Xxx_id fields will be replaced by just id
-from peewee import SqliteDatabase, Model, AutoField, DateField, DateTimeField, TextField, IntegerField,\
-    ForeignKeyField, BooleanField, CompositeKey
+from peewee import (
+    SqliteDatabase, Model, AutoField, DateField, DateTimeField, 
+    TextField, IntegerField, ForeignKeyField, BooleanField, CompositeKey
+)
 
 from .data_seed import seed_data
 from ..glovars import DB_PATH
 
-# pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
+# Pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
 db = SqliteDatabase(DB_PATH, pragmas=[('foreign_keys', 'on')])
+
 
 class BaseUser(Model):
     id = AutoField()
-    Email = TextField()
-    Password = TextField()
-    Language_code = TextField(default='en')
-    Name = TextField()
-    Type = IntegerField() # 1 for Patient, 2 for Doctor. See glovars
-    Date_of_birth = DateField(null=True)
+    email = TextField(unique=True)
+    password = TextField()
+    language_code = TextField(default='en')
+    name = TextField()
+    user_type = IntegerField()  # 1 for Patient, 2 for Doctor. See glovars
+    date_of_birth = DateField(null=True)
 
     class Meta:
         database = db
 
 
 class Doctor(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='doctor', primary_key=True, on_delete='CASCADE')
-    Specialisation = TextField(null=True)
-    Hospital = TextField(null=True)
+    base_user = ForeignKeyField(BaseUser, backref='doctor', primary_key=True, on_delete='CASCADE')
+    specialisation = TextField(null=True)
+    hospital = TextField(null=True)
 
     class Meta:
         database = db
 
 
 class Patient(Model):
-    BaseUser_id = ForeignKeyField(BaseUser, backref='patient', primary_key=True, on_delete='CASCADE')
-    Height = IntegerField(null=True)
-    Weight = IntegerField(null=True)
+    base_user = ForeignKeyField(BaseUser, backref='patient', primary_key=True, on_delete='CASCADE')
+    height = IntegerField(null=True)
+    weight = IntegerField(null=True)
 
     class Meta:
         database = db
@@ -41,9 +43,9 @@ class Patient(Model):
 
 class Session(Model):
     id = AutoField()
-    User_id = ForeignKeyField(BaseUser, backref='sessions', on_delete="CASCADE")
-    Token = TextField(index=True, unique=True)
-    Valid_until = DateTimeField()
+    user = ForeignKeyField(BaseUser, backref='sessions', on_delete="CASCADE")
+    token = TextField(index=True, unique=True)
+    valid_until = DateTimeField()
 
     class Meta:
         database = db
@@ -51,64 +53,60 @@ class Session(Model):
 
 class Room(Model):
     id = AutoField()
-    Patient_id = ForeignKeyField(Patient, backref='room', null=True, on_delete="CASCADE")
-    Creation_time = DateTimeField()
+    patient = ForeignKeyField(Patient, backref='rooms', null=True, on_delete="CASCADE")
+    creation_time = DateTimeField()
 
     class Meta:
         database = db
 
 
 class DoctorInRoom(Model):
-    Doctor_id = ForeignKeyField(Doctor, backref='doctorInRoom', on_delete="CASCADE")
-    Room_id = ForeignKeyField(Room, backref='doctorInRoom', on_delete="CASCADE")
-    Joined_time = DateTimeField()
-    Enabled = BooleanField(default=True)
+    doctor = ForeignKeyField(Doctor, backref='doctor_in_rooms', on_delete="CASCADE")
+    room = ForeignKeyField(Room, backref='doctor_in_rooms', on_delete="CASCADE")
+    joined_time = DateTimeField()
+    enabled = BooleanField(default=True)
 
     class Meta:
         database = db
-        primary_key = CompositeKey('Doctor_id', 'Room_id', 'Joined_time')
+        primary_key = CompositeKey('doctor', 'room', 'joined_time')
 
 
 class MedicalTerm(Model):
     id = AutoField()
-    Term_id = TextField(index=True)
-    Language_code = TextField(default='en', index=True)
-    Discription = TextField()
-    URL = TextField(null=True)
+    term_type = TextField(choices=[('CONDITION', 'CONDITION'), ('PRESCRIPTION', 'PRESCRIPTION'), ('GENERAL', 'GENERAL')], default='GENERAL')
 
     class Meta:
         database = db
 
 
-class PatientCondition(Model):
+class MedicalTermSynonym(Model):
     id = AutoField()
-    MedicalTerm_id = ForeignKeyField(MedicalTerm, on_delete="CASCADE")
-    Patient_id = ForeignKeyField(Patient, backref='patientCondition', on_delete="CASCADE")
-    Status = TextField()
-    Diagnosis_date = DateField()
-    Resolution_date = DateField(null=True)
+    medical_term = ForeignKeyField(MedicalTerm, backref='synonyms', on_delete="CASCADE")
+    synonym = TextField(index=True)
+    language_code = TextField(default='en')
 
     class Meta:
         database = db
 
 
-class PatientPrescription(Model):
-    id = AutoField()
-    UserCondition_id = ForeignKeyField(PatientCondition, backref='patientPrescription', on_delete="CASCADE")
-    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='patientPrescription', on_delete="CASCADE")
-    Dosage = TextField()
-    Prescription_date = DateTimeField()
+class MedicalTermInfo(Model):
+    medical_term = ForeignKeyField(MedicalTerm, backref='translations', on_delete="CASCADE")
+    language_code = TextField(default='en', index=True)
+    name = TextField()
+    description = TextField()
+    url = TextField(null=True)
 
     class Meta:
         database = db
+        primary_key = CompositeKey('medical_term', 'language_code')
 
 
 class Message(Model):
     id = AutoField()
-    User_id = ForeignKeyField(BaseUser, backref='message', on_delete="CASCADE")
-    Room_id = ForeignKeyField(Room, backref='message', on_delete="CASCADE")
-    Text = TextField()
-    Send_time = DateTimeField()
+    user = ForeignKeyField(BaseUser, backref='messages', on_delete="CASCADE")
+    room = ForeignKeyField(Room, backref='messages', on_delete="CASCADE")
+    text = TextField()
+    send_time = DateTimeField()
 
     class Meta:
         database = db
@@ -116,21 +114,57 @@ class Message(Model):
 
 class Report(Model):
     id = AutoField()
-    Room_id = ForeignKeyField(Room, backref='report', on_delete="CASCADE")
-    Consultation_date = DateField()
-    Report_details = TextField()
+    room = ForeignKeyField(Room, backref='reports', on_delete="CASCADE")
+    consultation_date = DateField()
+    report_details = TextField()
 
     class Meta:
         database = db
 
 
 class MessageTermCache(Model):
-    MedicalTerm_id = ForeignKeyField(MedicalTerm, backref='messageTermCache', on_delete="CASCADE")
-    Message_id = ForeignKeyField(Message, backref='messageTermCache', on_delete="CASCADE")
+    medical_term = ForeignKeyField(MedicalTerm, backref='message_term_caches', on_delete="CASCADE")
+    message = ForeignKeyField(Message, backref='message_term_caches', on_delete="CASCADE")
+    original_synonym = ForeignKeyField(MedicalTermSynonym, backref='original_message_term_caches', null=True, on_delete="CASCADE")
+    translated_synonym = ForeignKeyField(MedicalTermSynonym, backref='translated_message_term_caches', null=True, on_delete="CASCADE")
 
     class Meta:
         database = db
-        primary_key = CompositeKey('MedicalTerm_id', 'Message_id')
+        primary_key = CompositeKey('medical_term', 'message')
+
+
+class MessageTranslationCache(Model):
+    message = ForeignKeyField(Message, backref='message_translation_caches', on_delete="CASCADE")
+    language_code = TextField(default='en', index=True)
+    translated_text = TextField()
+
+    class Meta:
+        database = db
+        primary_key = CompositeKey('message', 'language_code')
+
+
+class PatientCondition(Model):
+    id = AutoField()
+    medical_term = ForeignKeyField(MedicalTerm, on_delete="CASCADE")
+    patient = ForeignKeyField(Patient, backref='patient_conditions', on_delete="CASCADE")
+    status = TextField()
+    diagnosis_date = DateField()
+    resolution_date = DateField(null=True)
+
+    class Meta:
+        database = db
+
+
+class PatientPrescription(Model):
+    id = AutoField()
+    user_condition = ForeignKeyField(PatientCondition, backref='patient_prescriptions', on_delete="CASCADE")
+    medical_term = ForeignKeyField(MedicalTerm, backref='patient_prescriptions', on_delete="CASCADE")
+    dosage = TextField()
+    prescription_date = DateTimeField()
+    frequency = TextField()
+
+    class Meta:
+        database = db
 
 
 def init():
@@ -143,13 +177,16 @@ def init():
         Room,
         DoctorInRoom,
         MedicalTerm,
-        PatientCondition,
-        PatientPrescription,
+        MedicalTermSynonym,
+        MedicalTermInfo,
         Message,
         Report,
-        MessageTermCache
+        MessageTermCache,
+        MessageTranslationCache,
+        PatientCondition,
+        PatientPrescription
     ])
     print("Database tables created.")
-    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Message)
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache, PatientCondition, PatientPrescription)
     print("Database seeded with initial data.")
     db.close()

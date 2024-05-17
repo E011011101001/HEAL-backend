@@ -1,3 +1,4 @@
+# src/route_decorators.py
 from functools import wraps
 
 from flask import request
@@ -37,7 +38,6 @@ def required_params(itemList: list[str]):
         @wraps(func)
         def new_func(*args, **kwargs):
             missedItemList = []
-            data = request.get_json()
             for item in itemList:
                 if request.args.get(item) is None:
                     missedItemList.append(item)
@@ -53,7 +53,6 @@ def required_params(itemList: list[str]):
         return new_func
 
     return decorator
-
 
 def login_required(func):
     @wraps(func)
@@ -72,7 +71,9 @@ def login_required(func):
             unauthError['message'] = 'User invalid'
             return unauthError, 401
 
-        return func(user['id'], *args, **kwargs)
+        user_data = db.user.get_user_full(user['id'])
+        language_code = user_data.get('language', 'en')
+
+        return func(user['id'], language_code, *args, **kwargs)
 
     return new_func
-

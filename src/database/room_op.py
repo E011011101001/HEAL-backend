@@ -2,70 +2,144 @@ from peewee import DoesNotExist
 from datetime import datetime
 
 from .data_models import Room, DoctorInRoom
-from .user_ops import get_user_full
+from .user_op import get_user_full
 
-def check_room(roomId):
+
+def check_room(room_id):
+    """
+    Check if a room exists.
+
+    Parameters:
+    room_id (int): ID of the room
+
+    Returns:
+    bool: True if the room exists, False otherwise
+    """
     try:
-        Room.get(Room.id == roomId)
+        Room.get(Room.id == room_id)
         return True
     except DoesNotExist:
         return False
 
-def create_room(userId):
-    newRoom = Room.create(
-        Patient_id = userId,
-        Creation_time = datetime.now()
+
+def create_room(user_id):
+    """
+    Create a new room.
+
+    Parameters:
+    user_id (int): ID of the patient creating the room
+
+    Returns:
+    int: ID of the newly created room
+    """
+    new_room = Room.create(
+        patient=user_id,
+        creation_time=datetime.now()
     )
-    newRoom.save()
+    new_room.save()
+    return new_room.id
 
-    return newRoom.id
 
-def get_room(roomId):
-    room = Room.get(Room.id == roomId)
-    participantList = []
+def get_room(room_id):
+    """
+    Get details of a room.
 
-    # get patient data
-    patient = get_user_full(room.Patient_id)
-    participantList.append(patient)
+    Parameters:
+    room_id (int): ID of the room
 
-    # get doctor data (n >= 0)
-    doctorsInRoom = DoctorInRoom.select().where(DoctorInRoom.Room_id == room.id)
+    Returns:
+    dict: Details of the room including participants
+    """
+    room = Room.get(Room.id == room_id)
+    participant_list = []
 
-    for doctorInRoom in doctorsInRoom:
-        doctor = get_user_full(doctorInRoom.Doctor_id)
-        participantList.append(doctor)
+    patient = get_user_full(room.patient.base_user_id)
+    participant_list.append(patient)
 
-    ret = {
+    doctors_in_room = DoctorInRoom.select().where(DoctorInRoom.room == room.id)
+
+    for doctor_in_room in doctors_in_room:
+        doctor = get_user_full(doctor_in_room.doctor.base_user_id)
+        participant_list.append(doctor)
+
+    return {
         "roomId": room.id,
         "roomName": "",
-        "creationTime": room.Creation_time,
-        "participants": participantList
+        "creationTime": room.creation_time,
+        "participants": participant_list
     }
 
-    return ret
 
-def participant_room(userId, roomId):
+def participant_room(user_id, room_id):
+    """
+    Add a doctor to a room.
 
-    newDoctorInRoom = DoctorInRoom.create(
-        Doctor_id = userId,
-        Room_id = roomId,
-        Joined_time = datetime.now(),
-        Enabled = True
+    Parameters:
+    user_id (int): ID of the doctor
+    room_id (int): ID of the room
+
+    Returns:
+    bool: True if the doctor was added, False if already in the room
+    """
+    existing_entry = DoctorInRoom.select().where((DoctorInRoom.doctor == user_id) & (DoctorInRoom.room == room_id)).first()
+    if existing_entry:
+        return False
+
+    new_doctor_in_room = DoctorInRoom.create(
+        doctor=user_id,
+        room=room_id,
+        joined_time=datetime.now(),
+        enabled=True
     )
-    newDoctorInRoom.save()
+    new_doctor_in_room.save()
+    return True
 
-def get_rooms_all(userId) -> dict[str, dict]:
-    rooms = Room.select().where(Room.Patient_id == userId)
-    roomlist = []
+
+def leave_room(user_id, room_id):
+    """
+    Remove a doctor from a room.
+
+    Parameters:
+    user_id (int): ID of the doctor
+    room_id (int): ID of the room
+
+    Returns:
+    bool: True if the doctor was removed, False otherwise
+    """
+    try:
+        doctor_in_room = DoctorInRoom.get((DoctorInRoom.doctor == user_id) & (DoctorInRoom.room == room_id))
+        doctor_in_room.delete_instance()
+        return True
+    except DoesNotExist:
+        return False
+
+
+def get_rooms_all(user_id) -> dict:
+    """
+    Get all rooms for a patient.
+
+    Parameters:
+    user_id (int): ID of the patient
+
+    Returns:
+    dict: List of rooms
+    """
+    rooms = Room.select().where(Room.patient == user_id)
+    room_list = []
 
     for room in rooms:
-        roomData = get_room(room.id)
-        roomlist.append(roomData)
+        room_data = get_room(room.id)
+        room_list.append(room_data)
 
-    return {"rooms": roomlist}
+    return {"rooms": room_list}
 
-# delete room corresponding to room id
-def delete_room(roomId: int):
-    room = Room.get(Room.id == roomId)
+
+def delete_room(room_id: int):
+    """
+    Delete a room.
+
+    Parameters:
+    room_id (int): ID of the room
+    """
+    room = Room.get(Room.id == room_id)
     room.delete_instance()
-    return

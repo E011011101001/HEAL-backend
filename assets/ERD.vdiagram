@@ -1738,7 +1738,7 @@ Message_id"/>
 								<Default_Value value=""/>
 								<Field_Position value="0"/>
 								<Indexed value="0"/>
-								<Name value="Discription"/>
+								<Name value="Description"/>
 								<Nullable value="0"/>
 								<Type value="Text"/>
 								<Unique value="0"/>
@@ -1747,7 +1747,7 @@ Message_id"/>
 							</Properties>
 							<control value=""/>
 							<delete value="0"/>
-							<name value="Discription"/>
+							<name value="Description"/>
 							<virtual value="0"/>
 						</o3>
 						<o4>

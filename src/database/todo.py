@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from .data_models import BaseUser, Doctor, Patient, Session, Room, MedicalTerm, PatientCondition, PatientPrescription, Message
 from ..utils import salted_hash, gen_session_token
 from ..glovars import PATIENT, DOCTOR
-from .user_ops import get_user_full
+from .user_op import get_user_full
 from playhouse.shortcuts import model_to_dict
 
 

@@ -4,8 +4,8 @@ from ..glovars import DB_PATH
 from ..utils import print_info
 from . import data_models
 
-from . import user_ops as user
-from . import chat_ops as chat
+from . import user_op as user
+from . import chat_op as chat
 from . import condition_op
 from . import room_op
 from . import message_op
