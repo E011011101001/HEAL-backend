@@ -95,6 +95,14 @@ def on_disconnect():
     wsSessions = [session for session in wsSessions if session['sid'] != request.sid]
 
 
+def make_message(message: str) -> dict:
+    pass
+
+
+def save_client_message(user_id, text, timestamp) -> None:
+    pass
+
+
 @socketio.on('message')
 @get_session
 def message(session, json):
@@ -112,3 +120,25 @@ def message(session, json):
     4. After 2&3, store the terms in the chat history
 
     """
+
+    global chatBots
+
+    if json.get('message') is None or json.get('timestamp') is None:
+        emit('error', {
+            'error': 'missing items',
+            'message': '"message" and "timestamp" are required'
+        })
+        return
+
+    save_client_message(session['user']['userId'], json['text'], json['timestamp'].split('Z')[0])
+
+    roomId = session['roomId']
+    doctors = db.room_op.get_room_doctor_ids(roomId)
+    if len(doctors) == 0:
+        # stage == 1
+        if chatBots.get(roomId) is None:
+            # TODO: implement chat bot
+            chatBots[roomId] = ChatBot(lan=session['user']['language'])
+        chatBot = chatBots[roomId]
+        emit('message', make_message(chatBot.reply_with(json.text)))
+        return
