@@ -143,3 +143,11 @@ def delete_room(room_id: int):
     """
     room = Room.get(Room.id == room_id)
     room.delete_instance()
+
+
+def get_room_doctor_ids(roomId: int) -> list[int]:
+    """
+    :return: All the active doctor's ids in a room. If none active, return []
+    """
+
+    return [doctor.id for doctor in DoctorInRoom.select().where(DoctorInRoom.room == roomId and DoctorInRoom.enabled)]
