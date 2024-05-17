@@ -142,7 +142,7 @@ def new_session_by_id(user_id: int) -> str:
     str: New session token
     """
     token = gen_session_token()
-    new_session = Session.create(
+    Session.create(
         user=user_id,
         token=token,
         valid_until=datetime.now() + timedelta(days=2)
@@ -150,15 +150,9 @@ def new_session_by_id(user_id: int) -> str:
     return token
 
 
-def get_user_by_token(token) -> dict | None:
+def get_session_by_token(token) -> dict | None:
     """
-    Get user details by session token.
-
-    Parameters:
-    token (str): Session token
-
-    Returns:
-    dict | None: User details if token is valid, None otherwise
+    Get (user id, expiration time)
     """
     try:
         session = Session.get(Session.token == token)
@@ -166,7 +160,7 @@ def get_user_by_token(token) -> dict | None:
         return None
 
     return {
-        'id': session.user.id,
+        'userId': session.user.id,
         'expirationTime': session.valid_until
     }
 

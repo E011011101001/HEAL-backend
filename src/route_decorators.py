@@ -98,13 +98,13 @@ def login_required(func):
             unauth_error['message'] = 'No Authorization Token'
             return unauth_error, 401
 
-        user = db.user.get_user_by_token(token)
-        if user is None or user['expirationTime'] < datetime.now():
+        session = db.user.get_session_by_token(token)
+        if session is None or session['expirationTime'] < datetime.now():
             unauth_error['message'] = 'User invalid'
             return unauth_error, 401
 
-        user_data = db.user.get_user_full(user['id'])
+        user_data = db.user.get_user_full(session['userId'])
         language_code = user_data.get('language', 'en')
 
-        return func(user['id'], language_code, *args, **kwargs)
+        return func(session['userId'], language_code, *args, **kwargs)
     return new_func

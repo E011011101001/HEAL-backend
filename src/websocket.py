@@ -10,7 +10,23 @@ from . import socketio
 from . import database as db
 
 
+"""
+wsSession = [{
+    'user': db.user.get_user_full(user_id),
+    'roomId': roomId,
+    'sid': sid
+}]
+"""
 wsSessions = []
+
+"""
+chatBots = {
+    3: <ChatBot>,
+    16: <ChatBot>,
+    ...
+}
+"""
+chatBots = {}
 
 
 def get_session(func):
@@ -45,26 +61,19 @@ def connect(auth):
     }
 
     # Check if logged in
-    try:
-        user = db.user.get_user_by_token(token)
-        if user and user['expirationTime'] < datetime.now():
-            user = None
-    except DoesNotExist:
-        user = None
+    session = db.user.get_session_by_token(token)
+    if session and session['expirationTime'] < datetime.now():
+        session = None
 
-    if user is None:
+    if session is None:
         unauthError['message'] = 'User invalid'
         emit('error', unauthError)
         disconnect()
         return
 
     # Check if in room
-    try:
-        rooms = db.room_op.get_rooms_all(user['id'])['rooms']
-        roomIds = list(map(lambda room: room.get('roomId'), rooms))
-
-    except DoesNotExist:
-        roomIds = []
+    rooms = db.room_op.get_rooms_all(session['userId'])['rooms']
+    roomIds = list(map(lambda room: room.get('roomId'), rooms))
 
     if roomId not in roomIds:
         unauthError['message'] = 'Room invalid'
@@ -73,7 +82,7 @@ def connect(auth):
         return
 
     wsSessions.append({
-        'user': user,
+        'user': db.user.get_user_full(session['userId']),
         'roomId': roomId,
         'sid': sid
     })

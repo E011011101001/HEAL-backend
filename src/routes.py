@@ -8,6 +8,7 @@ from .route_decorators import required_body_items, required_params, login_requir
 from .utils import salted_hash
 from . import database as db
 
+
 # User Management
 @app.route('/users/register', methods=['POST'])
 @required_body_items(['type', 'email', 'password', 'name'])
@@ -117,7 +118,9 @@ def update_user(_, __, user_id):
             'message': "'type' must be either 'PATIENT' or 'DOCTOR'."
         }, 406
 
-    if data.get('email') and db.user.email_exists(data['email']) and db.user.get_user_full(user_id)['email'] != data['email']:
+    if (data.get('email') and
+            db.user.email_exists(data['email']) and
+            db.user.get_user_full(user_id)['email'] != data['email']):
         return {
             'error': 'conflictError',
             'message': 'An account with this email address already exists.'
@@ -163,6 +166,7 @@ def delete_user(_, __, user_id):
     """
     db.user_op.delete_user(user_id)
     return '', 204
+
 
 @app.route('/users/login', methods=['POST'])
 @required_body_items(['email', 'password'])
@@ -341,6 +345,7 @@ def participant_room(_, __, room_id, participant_id):
     db.room_op.leave_room(participant_id, room_id)
     data = db.room_op.get_room(room_id)
     return data, 200
+
 
 @app.route('/users/chats', methods=['GET'])
 @login_required
@@ -542,6 +547,7 @@ def create_term(_, __):
             'error': 'ServerError',
             'message': str(e)
         }, 500
+
 
 @app.route('/medical-terms', methods=['GET'])
 @login_required
