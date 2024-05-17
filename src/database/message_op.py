@@ -1,10 +1,21 @@
-# src/database/message_op.py
 from peewee import DoesNotExist
 from datetime import datetime
 
 from .data_models import MedicalTerm, MedicalTermInfo, Message, MessageTermCache, MedicalTermSynonym, MessageTranslationCache
 
 def get_chat_messages(room_id: int, page_num: int, limit_num: int, language_code: str) -> dict:
+    """
+    Get messages from a chat room.
+
+    Parameters:
+    room_id (int): ID of the room
+    page_num (int): Page number for pagination
+    limit_num (int): Number of messages per page
+    language_code (str): Language code for translations
+
+    Returns:
+    dict: List of messages with translations and medical terms
+    """
     offset = (page_num - 1) * limit_num
     room_messages = Message.select().where(Message.room == room_id).order_by(Message.id).limit(limit_num).offset(offset)
     room_message_list = []
@@ -14,7 +25,19 @@ def get_chat_messages(room_id: int, page_num: int, limit_num: int, language_code
 
     return room_message_list
 
+
 def get_message(room_id: int, message_id: int, language_code: str) -> dict:
+    """
+    Get a message from a chat room.
+
+    Parameters:
+    room_id (int): ID of the room
+    message_id (int): ID of the message
+    language_code (str): Language code for translations
+
+    Returns:
+    dict: Message with translation and medical terms
+    """
     message = Message.get((Message.room == room_id) & (Message.id == message_id))
 
     try:
@@ -31,7 +54,7 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
         } for message_term in message_terms
     ]
 
-    ret = {
+    return {
         "messageId": message.id,
         "roomId": message.room.id,
         "senderUserId": message.user.id,
@@ -44,8 +67,6 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
             }
         }
     }
-
-    return ret
 
 
 def create_term(term_type, term_info_list):
@@ -97,11 +118,9 @@ def create_term(term_type, term_info_list):
     if not term_info_list:
         raise ValueError("termInfoList cannot be empty")
 
-    # Create the main term entry
     new_term = MedicalTerm.create(term_type=term_type)
     new_term.save()
 
-    # Create term info entries for each language
     for term_info in term_info_list:
         MedicalTermInfo.create(
             medical_term=new_term.id,
@@ -111,7 +130,6 @@ def create_term(term_type, term_info_list):
             url=term_info.get('url')
         )
 
-        # Create synonyms for each language
         for synonym in term_info.get('synonyms', []):
             MedicalTermSynonym.create(
                 medical_term=new_term.id,
@@ -121,14 +139,25 @@ def create_term(term_type, term_info_list):
 
     return new_term.id
 
+
 def get_term(term_id, language_code):
+    """
+    Get information about a medical term.
+
+    Parameters:
+    term_id (int): ID of the medical term
+    language_code (str): Language code for the response
+
+    Returns:
+    dict: Information about the medical term
+    """
     medical_term = MedicalTerm.get(MedicalTerm.id == term_id)
     medical_term_info = MedicalTermInfo.get(
         (MedicalTermInfo.medical_term == term_id) & 
         (MedicalTermInfo.language_code == language_code)
     )
 
-    ret = {
+    return {
         "medicalTermId": term_id,
         "medicalTermType": medical_term.term_type,
         "name": medical_term_info.name,
@@ -138,9 +167,17 @@ def get_term(term_id, language_code):
         ]
     }
 
-    return ret
 
 def get_terms_all(language_code: str):
+    """
+    Get all medical terms.
+
+    Parameters:
+    language_code (str): Language code for the response
+
+    Returns:
+    dict: List of all medical terms
+    """
     medical_terms = MedicalTerm.select()
     term_list = []
 
@@ -149,37 +186,34 @@ def get_terms_all(language_code: str):
         term_info = get_term(term_id, language_code)
         term_list.append(term_info)
 
-    ret = {
+    return {
         "medicalTerms": term_list
     }
 
-    return ret
 
 def update_term(term_id: int, term_update_info: dict, language_code: str):
     """
     Update a medical term and its translation in a specified language.
 
     Parameters:
-    - term_id: ID of the medical term to be updated
-    - term_update_info: Dictionary containing updated term information and synonyms
-      - Expected structure:
-        {
-            "termType": "CONDITION",  # Optional
-            "name": "COVID-19",
-            "description": "COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
-            "url": "https://www.nhs.uk/conditions/coronavirus-covid-19/",
-            "synonyms": [
-                {"synonym": "COVID"},
-                {"synonym": "COVID-19"},
-                {"synonym": "Corona"},
-                {"synonym": "COVID 19"},
-                {"synonym": "Scary COVID"}
-            ]
-        }
-    - language_code: Language code for the translation
+    term_id (int): ID of the medical term to be updated
+    term_update_info (dict): Updated information about the term and synonyms
+    language_code (str): Language code for the translation
+
+    Example input:
+    {
+        "termType": "CONDITION",
+        "name": "COVID-19 Updated",
+        "description": "Updated description.",
+        "url": "https://updated-url.com",
+        "synonyms": [
+            {"synonym": "Updated COVID"},
+            {"synonym": "Updated Corona"}
+        ]
+    }
 
     Returns:
-    - Updated term information
+    dict: Updated information about the medical term
     """
     term = MedicalTerm.get(MedicalTerm.id == term_id)
 
@@ -209,13 +243,11 @@ def update_term(term_id: int, term_update_info: dict, language_code: str):
         translation.save()
 
     if 'synonyms' in term_update_info:
-        # Delete existing synonyms for this term and language
         MedicalTermSynonym.delete().where(
             (MedicalTermSynonym.medical_term == term_id) &
             (MedicalTermSynonym.language_code == language_code)
         ).execute()
 
-        # Add new synonyms
         for synonym in term_update_info.get('synonyms', []):
             MedicalTermSynonym.create(
                 medical_term=term_id,
@@ -226,12 +258,31 @@ def update_term(term_id: int, term_update_info: dict, language_code: str):
     term.save()
     return get_term(term_id, language_code)
 
+
 def delete_term(term_id: int):
+    """
+    Delete a medical term.
+
+    Parameters:
+    term_id (int): ID of the medical term
+    """
     term = MedicalTerm.get(MedicalTerm.id == term_id)
     term.delete_instance()
-    return
+
 
 def create_link(message_id, term_id, original_synonym_id=None, translated_synonym_id=None):
+    """
+    Create a link between a message and a medical term.
+
+    Parameters:
+    message_id (int): ID of the message
+    term_id (int): ID of the medical term
+    original_synonym_id (int): ID of the original synonym (optional)
+    translated_synonym_id (int): ID of the translated synonym (optional)
+
+    Returns:
+    tuple: IDs of the message and the term
+    """
     new_cache = MessageTermCache.create(
         medical_term=term_id,
         message=message_id,
@@ -239,10 +290,20 @@ def create_link(message_id, term_id, original_synonym_id=None, translated_synony
         translated_synonym=translated_synonym_id
     )
     new_cache.save()
-
     return message_id, term_id
 
+
 def delete_linking_term(message_id, term_id):
+    """
+    Delete a link between a message and a medical term.
+
+    Parameters:
+    message_id (int): ID of the message
+    term_id (int): ID of the medical term
+
+    Returns:
+    bool: True if the link was deleted, False otherwise
+    """
     try:
         term_link = MessageTermCache.get((MessageTermCache.message == message_id) & (MessageTermCache.medical_term == term_id))
         term_link.delete_instance()
@@ -250,7 +311,18 @@ def delete_linking_term(message_id, term_id):
     except DoesNotExist:
         return False
 
+
 def get_message_terms(message_id, language_code):
+    """
+    Get all medical terms linked to a message.
+
+    Parameters:
+    message_id (int): ID of the message
+    language_code (str): Language code for the response
+
+    Returns:
+    list: List of medical terms linked to the message
+    """
     message_term_cache = MessageTermCache.select().where(MessageTermCache.message == message_id)
     terms_list = []
 
@@ -261,9 +333,17 @@ def get_message_terms(message_id, language_code):
 
     return terms_list
 
-# TODO: THis is just a template. Please get the right information and put it in
+
 def search_medical_terms(query):
-    # Search for the term directly or by synonyms
+    """
+    Search for medical terms by name or synonym.
+
+    Parameters:
+    query (str): Search query
+
+    Returns:
+    list: List of medical terms matching the query
+    """
     medical_terms = MedicalTerm.select().join(MedicalTermSynonym).where(
         (MedicalTerm.term_type.contains(query)) |
         (MedicalTermSynonym.synonym.contains(query))
@@ -294,36 +374,50 @@ def search_medical_terms(query):
 
     return results
 
-# TODO: THis is just a template. Please get the right information and put it in
-def save_message(roomId, userId, original_text, translated_text, medical_terms, translated_medical_terms):
+
+def save_message(room_id, user_id, original_text, translated_text, medical_terms, translated_medical_terms):
+    """
+    Save a new message and its translations and medical terms.
+
+    Parameters:
+    room_id (int): ID of the room
+    user_id (int): ID of the user
+    original_text (str): Original message text
+    translated_text (str): Translated message text
+    medical_terms (list): List of original medical terms
+    translated_medical_terms (list): List of translated medical terms
+
+    Returns:
+    Message: The newly created message
+    """
     message = Message.create(
-        User_id=userId,
-        Room_id=roomId,
-        Text=original_text,
-        Send_time=datetime.now()
+        user=user_id,
+        room=room_id,
+        text=original_text,
+        send_time=datetime.now()
     )
     message.save()
-    
+
     MessageTranslationCache.create(
-        Message_id=message.id,
-        Language_code=user_language,
-        Translated_text=translated_text
+        message=message.id,
+        language_code=user.language_code,
+        translated_text=translated_text
     ).save()
 
     for term in medical_terms:
         MessageTermCache.create(
-            Message_id=message.id,
-            MedicalTerm_id=term['id'],
-            Original_language_synonym=term['synonym'],
-            Translated_language_synonym=None
+            message=message.id,
+            medical_term=term['id'],
+            original_synonym=term['synonym'],
+            translated_synonym=None
         ).save()
 
     for term in translated_medical_terms:
         cache = MessageTermCache.get(
-            MessageTermCache.Message_id == message.id,
-            MessageTermCache.MedicalTerm_id == term['id']
+            MessageTermCache.message == message.id,
+            MessageTermCache.medical_term == term['id']
         )
-        cache.Translated_language_synonym = term['synonym']
+        cache.translated_synonym = term['synonym']
         cache.save()
 
     return message

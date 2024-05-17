@@ -5,14 +5,45 @@ from .data_models import BaseUser, Doctor, Patient, Session
 from ..utils import salted_hash, gen_session_token
 from ..glovars import PATIENT, DOCTOR
 
+
 def email_exists(email: str) -> bool:
+    """
+    Check if an email already exists.
+
+    Parameters:
+    email (str): Email address
+
+    Returns:
+    bool: True if the email exists, False otherwise
+    """
     try:
         BaseUser.get(BaseUser.email == email)
         return True
     except DoesNotExist:
         return False
 
+
 def create_user(data):
+    """
+    Create a new user.
+
+    Parameters:
+    data (dict): User information
+
+    Example:
+    {
+        "type": "PATIENT",
+        "email": "test@gmail.com",
+        "password": "password",
+        "name": "John Doe",
+        "dateOfBirth": "1990-12-25",
+        "height": 190,
+        "weight": 115
+    }
+
+    Returns:
+    int: ID of the newly created user
+    """
     user_type = 0
     if data.get('type') == 'PATIENT':
         user_type = PATIENT
@@ -48,7 +79,17 @@ def create_user(data):
 
     return new_user.id
 
+
 def get_user_full(user_id: int) -> dict:
+    """
+    Get full details of a user.
+
+    Parameters:
+    user_id (int): ID of the user
+
+    Returns:
+    dict: User details
+    """
     base_user = BaseUser.get(BaseUser.id == user_id)
     ret = {
         'userId': base_user.id,
@@ -71,7 +112,17 @@ def get_user_full(user_id: int) -> dict:
 
     return ret
 
+
 def get_user_and_password(email: str) -> dict:
+    """
+    Get user ID and password by email.
+
+    Parameters:
+    email (str): Email address
+
+    Returns:
+    dict: User ID, language code, and password
+    """
     user = BaseUser.get(BaseUser.email == email)
     return {
         'id': user.id,
@@ -79,7 +130,17 @@ def get_user_and_password(email: str) -> dict:
         'password': user.password
     }
 
+
 def new_session_by_id(user_id: int) -> str:
+    """
+    Create a new session token for a user.
+
+    Parameters:
+    user_id (int): ID of the user
+
+    Returns:
+    str: New session token
+    """
     token = gen_session_token()
     new_session = Session.create(
         user=user_id,
@@ -88,7 +149,17 @@ def new_session_by_id(user_id: int) -> str:
     )
     return token
 
+
 def get_user_by_token(token) -> dict | None:
+    """
+    Get user details by session token.
+
+    Parameters:
+    token (str): Session token
+
+    Returns:
+    dict | None: User details if token is valid, None otherwise
+    """
     try:
         session = Session.get(Session.token == token)
     except DoesNotExist:
@@ -99,7 +170,30 @@ def get_user_by_token(token) -> dict | None:
         'expirationTime': session.valid_until
     }
 
+
 def update_user(user_id: int, user_update_info: dict):
+    """
+    Update user details.
+
+    Parameters:
+    user_id (int): ID of the user
+    user_update_info (dict): Updated user information
+
+    Example:
+    {
+        "name": "John Doe Updated",
+        "email": "newemail@gmail.com",
+        "language": "jp",
+        "dateOfBirth": "1990-12-25",
+        "height": 190,
+        "weight": 115,
+        "hospital": "New Hospital",
+        "specialisation": "New Specialisation"
+    }
+
+    Returns:
+    BaseUser: Updated user object
+    """
     base_user = BaseUser.get(BaseUser.id == user_id)
 
     if 'name' in user_update_info:
@@ -131,7 +225,13 @@ def update_user(user_id: int, user_update_info: dict):
     base_user.save()
     return base_user
 
+
 def delete_user(user_id: int):
+    """
+    Delete a user.
+
+    Parameters:
+    user_id (int): ID of the user
+    """
     base_user = BaseUser.get(BaseUser.id == user_id)
     base_user.delete_instance()
-    return

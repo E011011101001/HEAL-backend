@@ -1,4 +1,3 @@
-# src/database/data_models.py
 from peewee import (
     SqliteDatabase, Model, AutoField, DateField, DateTimeField, 
     TextField, IntegerField, ForeignKeyField, BooleanField, CompositeKey
