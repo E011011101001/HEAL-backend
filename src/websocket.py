@@ -29,25 +29,19 @@ chatBots = {
 chatBots = {}
 
 
-def get_session(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        global wsSessions
-        # get session from wsSession by session[sid]
-        sid = request.sid
-        try:
-            session = list(filter(lambda session : session['sid'] == sid, wsSessions))[0]
-        except IndexError:
-            emit ('error', {
-                'error': 'InternalServerError',
-                'message': 'User is authenticated. However, no registered sid is found.'
-            })
-            disconnect()
-            return
-
-        return func(session, *args, **kwargs)
-
-    return inner
+def get_session() -> dict:
+    global wsSessions
+    # get session from wsSession by session[sid]
+    sid = request.sid
+    try:
+        return list(filter(lambda session : session['sid'] == sid, wsSessions))[0]
+    except IndexError:
+        emit('error', {
+            'error': 'InternalServerError',
+            'message': 'User is authenticated. However, no registered sid is found.'
+        })
+        disconnect()
+        raise
 
 
 @socketio.on('connect')
@@ -104,8 +98,7 @@ def save_client_message(user_id, text, timestamp) -> None:
 
 
 @socketio.on('message')
-@get_session
-def message(session, json):
+def message(json):
     """
     1. Get room stage.
     2. If there is no active doctor in the room, stage = 1, and message sent to chatbot;
@@ -122,6 +115,7 @@ def message(session, json):
     """
 
     global chatBots
+    session = get_session()
 
     if json.get('message') is None or json.get('timestamp') is None:
         emit('error', {
