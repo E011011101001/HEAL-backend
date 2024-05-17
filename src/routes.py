@@ -206,7 +206,7 @@ def login():
     else:
         token = db.user.new_session_by_id(user['id'])
         return {
-            'user': get_user(None, None, user['id']),
+            'user': db.user.get_user_full(user['id']),
             'token': token
         }
 
