@@ -17,7 +17,6 @@ def create_room(user_id):
         creation_time=datetime.now()
     )
     new_room.save()
-
     return new_room.id
 
 def get_room(room_id):
@@ -45,6 +44,12 @@ def get_room(room_id):
     return ret
 
 def participant_room(user_id, room_id):
+    # Check if the doctor is already in the room
+    existing_entry = DoctorInRoom.select().where((DoctorInRoom.doctor == user_id) & (DoctorInRoom.room == room_id)).first()
+    if existing_entry:
+        return False  # Return False if the doctor is already in the room
+
+    # Add the doctor to the room
     new_doctor_in_room = DoctorInRoom.create(
         doctor=user_id,
         room=room_id,
@@ -52,6 +57,15 @@ def participant_room(user_id, room_id):
         enabled=True
     )
     new_doctor_in_room.save()
+    return True
+
+def leave_room(user_id, room_id):
+    try:
+        doctor_in_room = DoctorInRoom.get((DoctorInRoom.doctor == user_id) & (DoctorInRoom.room == room_id))
+        doctor_in_room.delete_instance()
+        return True
+    except DoesNotExist:
+        return False
 
 def get_rooms_all(user_id) -> dict:
     rooms = Room.select().where(Room.patient == user_id)

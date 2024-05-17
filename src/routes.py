@@ -14,6 +14,7 @@ from datetime import datetime
 
 # TODO: remove todo
 from .database import todo
+from .database.data_models import BaseUser
 
 
 _todo = '', 500
@@ -67,14 +68,14 @@ def update_users(userId):
 
     # confirm data structure
     if data.get('type') is not None:
-        if data.get('type') != "PATIENT" or "DOCTOR":
+        if data.get('type') != "PATIENT" and data.get('type') != "DOCTOR":
             return {
                 'error': 'TypeError',
                 'message': '\'type\' must be either \'PATIENT\' or \'DOCTOR\'.'
             }, 406
 
     if data.get('email') is not None:
-        if db.user.email_exists(data.get('email')):
+        if db.user.email_exists(data.get('email')) and db.user.get_user_full(userId).get('email') != data.get('email'):
             return {
                 'error': 'conflictError',
                 'message': 'An account with this email address already exists.'
@@ -181,28 +182,32 @@ def operate_room(_, roomId):
     db.room_op.delete_room(roomId)
     return '', 204
 
-
-@app.route('/chats/<int:roomId>/participants/<int:userId>', methods=['POST', 'DELETE'])
+@app.route('/chats/<int:room_id>/participants/<int:user_id>', methods=['POST', 'DELETE'])
 @login_required
-def participant_room(_, roomId, userId):
-    userData = db.user.get_user_full(userId)
-    if userData.get('type') == 'PATIENT':
-        # patient try to enter the room
+def participant_room(_, room_id, user_id):
+    user_data = db.user.get_user_full(user_id)
+    if user_data.get('type') == 'PATIENT':
+        # patient try to enter or leave the room
         return {
             "error": "forbiddenError",
-            "message": "Only doctor can enter the room."
+            "message": "Only doctor can enter and leave the room."
         }
 
     if request.method == 'POST':
-        db.room_op.participant_room(userId, roomId)
-        data = db.room_op.get_room(roomId)
+        added = db.room_op.participant_room(user_id, room_id)
+        if not added:
+            return {
+                "error": "conflictError",
+                "message": "The doctor is already in the room."
+            }, 409
+
+        data = db.room_op.get_room(room_id)
         return data, 201
 
-    # if request.method == 'DELETE':
-    todo.exit_room(roomId, userId)
-    data = db.room_op.get_room(roomId)
-    return data, 200
-
+    if request.method == 'DELETE':
+        db.room_op.leave_room(user_id, room_id)
+        data = db.room_op.get_room(room_id)
+        return data, 200
 
 @app.route('/users/<int:userId>/chats', methods=['GET'])
 @login_required
@@ -280,23 +285,22 @@ def get_terms():
     data = db.message_op.get_terms_all(language_code)
     return data
 
-
-@app.route('/medical-terms/<int:medicalTermId>', methods=['GET', 'PUT', 'DELETE'])
-def operate_single_term(medicalTermId):
-    # Get the user's language code
-    language_code = 'en';
+@app.route('/medical-terms/<int:medical_term_id>', methods=['GET', 'PUT', 'DELETE'])
+def operate_single_term(medical_term_id):
+    # Get the user's language code from the request headers or other authentication mechanism
+    language_code = request.headers.get('Language-Code', 'en')
 
     if request.method == 'GET':
-        data = db.message_op.get_term(medicalTermId, language_code)
+        data = db.message_op.get_term(medical_term_id, language_code)
         return data
 
     if request.method == 'PUT':
-        medicalTermInfo = request.get_json()
-        data = db.message_op.update_term(medicalTermId, medicalTermInfo, language_code)
+        medical_term_info = request.get_json()
+        data = db.message_op.update_term(medical_term_id, medical_term_info, language_code)
         return data
 
     if request.method == 'DELETE':
-        db.message_op.delete_term(medicalTermId)
+        db.message_op.delete_term(medical_term_id)
         return '', 204
 
 # linking term manager
@@ -306,7 +310,6 @@ def get_linked_term(_, mesId):
     language_code = "en"
     data = db.message_op.get_message_terms(mesId, language_code)
     return data
-
 
 @app.route('/messages/<int:mes_id>/medical-terms/<int:medical_term_id>', methods=['POST', 'DELETE'])
 @login_required
@@ -318,8 +321,6 @@ def operate_linked_term(_, mes_id, medical_term_id):
     if request.method == 'DELETE':
         db.message_op.delete_linking_term(mes_id, medical_term_id)
         return '', 204
-
-
 
 # medical history
 @app.route('/patients/<int:userId>/medical-history', methods=['GET'])
