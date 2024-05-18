@@ -6,7 +6,7 @@ from flask_socketio import emit, disconnect, join_room
 
 from . import socketio
 from . import database as db
-from GPT import get_ai_doctor
+from src.GPT import get_ai_doctor
 
 """
 wsSession = [{
