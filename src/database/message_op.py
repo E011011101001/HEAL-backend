@@ -1,3 +1,4 @@
+# src/database/message_op.py
 from peewee import DoesNotExist
 from datetime import datetime
 
@@ -59,7 +60,7 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
         "messageId": message.id,
         "roomId": message.room.id,
         "senderUserId": message.user.id,
-        "timestamp": message.send_time,
+        "timestamp": message.send_time.isoformat(),
         "content": {
             "text": message.text,
             "metadata": {

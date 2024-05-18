@@ -107,7 +107,6 @@ def make_message(text: str, translation: str | None) -> dict:
     """
     return text
 
-
 def save_client_message(session: dict, text: str, time_iso_format: str) -> None:
     db.message_op.save_message_only(
         session['user']['userId'],
@@ -137,7 +136,7 @@ def message(json: dict):
         })
         return
 
-    save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
+    message_id = save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
 
     roomId = session['roomId']
     doctors = db.room_op.get_room_doctor_ids(roomId)
@@ -145,6 +144,8 @@ def message(json: dict):
         # stage == 1
         if chatBots.get(roomId) is None:
             # TODO: implement chat bot
+            # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
+            # So have the system save their message, enhacne it and send it.
             chatBots[roomId] = ChatBot(lan=session['user']['language'])
         chatBot = chatBots[roomId]
         emit('message', make_message(chatBot.reply_with(json.text)))
@@ -155,8 +156,10 @@ def message(json: dict):
     # Warning: Only handling the last joined doctor's language
     doctor_lan = db.user_op.get_user_full(doctors[-1])['language']
 
-    # if speaks the same language, do not translate
-    if doctor_lan == session['user']['language']:
-        doctor_lan = None
+    # Retrieve message and enhancments from db
+    # Mock message_id for now
+    message_id = 2
+    enahnced_message = db.message_op.get_message(roomId, message_id, doctor_lan)
 
-    emit('message', make_message(json['text'], doctor_lan), to=roomId)
+    # Forward enchanced message on to receiving client
+    emit('message', enahnced_message, to=roomId)
