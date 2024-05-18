@@ -69,7 +69,7 @@ def questioner_chat(lan, str, log):
     string - response text by chat bot
     """
 
-    Qst = questioner.questioner(lan, log)
-    res = Qst.communicate_qst(str)
+    Qst = questioner.AIDoctor(lan, log)
+    res = Qst.send_and_get_reply(str)
 
     return res

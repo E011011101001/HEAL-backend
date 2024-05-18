@@ -7,7 +7,6 @@ from flask_socketio import emit, disconnect, join_room
 from . import socketio
 from . import database as db
 
-
 """
 wsSession = [{
     'user': db.user.get_user_full(user_id),
@@ -32,7 +31,7 @@ def get_session() -> dict:
     # get session from wsSession by session[sid]
     sid = request.sid  # type: ignore
     try:
-        return list(filter(lambda session : session['sid'] == sid, wsSessions))[0]
+        return list(filter(lambda session: session['sid'] == sid, wsSessions))[0]
     except IndexError:
         emit('error', {
             'error': 'InternalServerError',
@@ -46,7 +45,7 @@ def get_session() -> dict:
 def connect(auth: dict):
     token = auth.get('token')
     roomId = auth.get('roomId')
-    sid: str = request.sid # type: ignore
+    sid: str = request.sid  # type: ignore
 
     unauthError = {
         'error': 'unauthorizationError'
@@ -89,8 +88,8 @@ def on_disconnect():
 
     session = get_session()
     print(f"User disconnected:\n"
-        f"    User ID: {session['user']['id']};"
-        f"    User Name: {session['user']['name']}.")
+          f"    User ID: {session['user']['id']};"
+          f"    User Name: {session['user']['name']}.")
 
     # leaving rooms is done by the framework
     wsSessions.remove(session)
@@ -107,15 +106,17 @@ def make_message(text: str, translation: str | None) -> dict:
     """
     return text
 
-def save_client_message(session: dict, text: str, time_iso_format: str) -> None:
+
+def save_client_message(session: dict, text: str, time_iso_format: str) -> int:
     message_id = db.message_op.save_message_only(
         session['user']['userId'],
         session['roomId'],
         text,
         datetime.fromisoformat(time_iso_format)
     )
-    
+
     return message_id
+
 
 @socketio.on('message')
 def message(json: dict):

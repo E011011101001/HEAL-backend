@@ -5,9 +5,11 @@
 
 # Use "communicate_qst" method to obtain a response from gpt for a query.
 #   speak = "I am fine"
-#   history = [{"text":"Hello", "speaker": "user"}, {"text":"Hello! Are you feeling unwell today?", "speaker":"assistant"}]
+#   log = [
+#       {"text":"Hello", "speaker": "user"},
+#       {"text":"Hello! Are you feeling unwell today?", "speaker":"assistant"}
+#   ]
 #   response = communicate_qst("English", speak, history)
-#   newHistory = __create_log(speak, response, log)
 
 # create class
 # export_history
@@ -15,25 +17,16 @@
 
 import connect_gpt
 
-class questioner():
-    def __init__(self, lan, history=[]):
-        language_dict = {'en': 'English', 'ja': 'Japanese', 'jp': 'Japanese', 'cn': 'Chinese'}
-        self.lan = language_dict.get(lan, lan)
-        self.log = []
 
-        userText = True
-        for text in history:
-            if userText:
-                self.log.append({"text":text, "speaker": "user"})
-            else:
-                self.log.append({"text":text, "speaker": "assistant"})
+def create_log(user_msg, ai_msg, log):
+    log.append({"text": user_msg, "speaker": "user"})
+    log.append({"text": ai_msg, "speaker": "assistant"})
 
-            userText = not userText
+    return log
 
-    def communicate_qst(self, speak):
 
-        prompt = """
-これからあなたは問診を行ってもらいます。
+class AIDoctor():
+    prompt = """これからあなたは問診を行ってもらいます。
 箇条書きされる質問について対話形式で質問を行ってください。
 ただし、一度のメッセージでは一言で回答できる質問だけをしてください。その際に括弧の中の選択肢を与えてください。
 一回の出力では質問を**ひとつだけ**出力してください。
@@ -58,21 +51,25 @@ class questioner():
 ・（飲むなら）頻度はどうか（１毎日・２時々・３月２～３回）
 """
 
+    def __init__(self, lan, log=None):
+        if log is None:
+            self.log = []
+        else:
+            self.log = log
+
+        self.lan = lan
+
+    def send_and_get_reply(self, message):
+
+        self.log.append({"text": message, "speaker": "user"})
+
         # Creating Chatbot Instances
-        qst = connect_gpt.ChatBot(self.lan, prompt)
-        res = qst.speak_to_gpt_with_log(speak, self.log)
+        bot = connect_gpt.ChatBot(self.lan, self.prompt)
+        ai_msg = bot.speak_to_gpt_with_log(message, self.log)
 
-        self.log = self.__create_log(speak, res, self.log)
+        self.log.append({"text": ai_msg, "speaker": "assistant"})
 
-        return res
-
-    # Creating formatted log
-    def __create_log(self, speak, res, log):
-
-        log.append({"text":speak, "speaker": "user"})
-        log.append({"text":res, "speaker":"assistant"})
-
-        return log
+        return ai_msg
 
     def export_history(self):
         history = []
@@ -81,19 +78,20 @@ class questioner():
 
         return history
 
+
 if __name__ == "__main__":
 
-    #new questioner chat
-    Qst = questioner("English")
+    # new questioner chat
+    Qst = AIDoctor("English")
     for i in range(5):
         str = input(">>")
-        res = Qst.communicate_qst(str)
+        res = Qst.send_and_get_reply(str)
 
-    #generate log
+    # generate log
     log = Qst.export_history()
 
-    #questioner chat using log
-    Qst2 = questioner("English", log)
+    # questioner chat using log
+    Qst2 = AIDoctor("English", log)
     for i in range(20):
         str = input(">>")
-        res = Qst2.communicate_qst(str)
+        res = Qst2.send_and_get_reply(str)
