@@ -108,13 +108,14 @@ def make_message(text: str, translation: str | None) -> dict:
     return text
 
 def save_client_message(session: dict, text: str, time_iso_format: str) -> None:
-    db.message_op.save_message_only(
+    message_id = db.message_op.save_message_only(
         session['user']['userId'],
         session['roomId'],
         text,
         datetime.fromisoformat(time_iso_format)
     )
-
+    
+    return message_id
 
 @socketio.on('message')
 def message(json: dict):
@@ -158,7 +159,7 @@ def message(json: dict):
 
     # Retrieve message and enhancments from db
     # Mock message_id for now
-    message_id = 2
+    # message_id = 2
     enahnced_message = db.message_op.get_message(roomId, message_id, doctor_lan)
 
     # Forward enchanced message on to receiving client
