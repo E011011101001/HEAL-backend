@@ -166,3 +166,16 @@ def message(json: dict):
 
     # Forward enhanced message on to receiving client
     emit('message', enhanced_message, to=roomId)
+
+
+@socketio.on('ping-pong')
+def pong_with_ping():
+    """
+    Should receive `{
+        'message: 'ping'
+    }`
+    However, no need to check it. Just pong.
+    """
+    emit('ping-pong', {
+        'message': 'pong'
+    })
