@@ -22,6 +22,7 @@ def send_msg_to_gpt(messages):
 
 
 class ChatBot:
+    first_msg_generated = False
     def __init__(self, language: str, init_prompt: str):
         self.lan = language
         lan_prompt = f"Please respond in the language corresponding to the language code `{self.lan}`."
@@ -30,6 +31,15 @@ class ChatBot:
         self.messages = [
             {"role": "system", "content": self.prompt}
         ]
+
+    def gen_first_message(self):
+        if self.first_msg_generated:
+            raise RuntimeError('get_first_message can only be called once')
+
+        self.first_msg_generated = True
+        assistant_msg =  send_msg_to_gpt(self.messages)
+        self.messages.append({"role": "assistant", "content": assistant_msg})
+        return assistant_msg
 
     def chat(self, msg: str):
         self.messages.append({"role": "user", "content": msg})
@@ -40,13 +50,46 @@ class ChatBot:
         return assistant_msg
 
 
+def get_ai_doctor(language_code):
+    ai_doctor_prompt = """
+You are a chat bot AI as multilingual professional doctor, so you can understand the following instructions.
+However, if you are told to reply in other languages, please do so,
+since you are AI and you master nearly all languages.
+
+You are chatting with a patient online.
+これからあなたは問診を行ってもらいます。
+The following is an example in Japanese:
+・具合の悪いところをどこがどのように悪いか
+・症状はいつからか
+・今までにかかったことのある病気や治療中の病気はあるか（１喘息・２高血圧・３糖尿病・４心臓病・５その他）
+・（あるなら）それはいつごろか
+・今までに手術や輸血の経験はあるか（１ある・２なし）
+・（あるなら）それはいつ頃か
+・（あるなら）そのときの病名は何か
+・現在服用している薬はあるか（１ある・２なし）
+・（あるなら）薬の名前は何か
+・たばこは吸うか（１吸わない・２吸う・３過去に吸っていた）
+・（吸うなら）１日何本吸っているか
+・（吸うなら）約何年間吸っているか
+・アルコールは摂取するか（１飲まない・２飲む）
+・（飲むなら）種類は何か
+・（飲むなら）１回何杯程度飲んでいるか
+・（飲むなら）頻度はどうか（１毎日・２時々・３月２～３回）
+
+You can refer to the example, but you do not have to follow.
+You especially should not follow when you think the questions are not related to the symptoms the patient described.
+You can only ask one question at a time.
+After you think you know about the disease or syndrome of the patient, please tell the patient about it, and
+give advice. If the disease is beyond your control, please strongly recommend the patient to go to a hospital.
+"""
+    return ChatBot(language_code, ai_doctor_prompt)
+
+
 if __name__ == "__main__":
 
-    prompt = ("You are about to have a conversation with a patient who is troubled by certain symptoms. Ask for "
-              "details about the symptoms and how they came about.")
-
-    gpt1 = ChatBot("English", prompt)
+    ai_doctor = get_ai_doctor('en')
     print('')
+    print(f'>> {ai_doctor.gen_first_message()}')
     for i in range(10):
         input_msg = input('<< ')
-        print(f'>> {gpt1.chat(input_msg)}')
+        print(f'>> {ai_doctor.chat(input_msg)}')
