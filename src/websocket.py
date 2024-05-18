@@ -88,9 +88,9 @@ def on_disconnect():
     global wsSessions
 
     session = get_session()
-    print(f'User disconnected:\n'
-          f'    User ID: {session['user']['id']};'
-          f'    User Name: {session['user']['name']}.')
+    print(f"User disconnected:\n"
+        f"    User ID: {session['user']['id']};"
+        f"    User Name: {session['user']['name']}.")
 
     # leaving rooms is done by the framework
     wsSessions.remove(session)
