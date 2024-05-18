@@ -17,8 +17,8 @@ import connect_gpt
 
 class questioner():
     def __init__(self, lan, history=[]):
-
-        self.lan = lan
+        language_dict = {'en': 'English', 'ja': 'Japanese', 'jp': 'Japanese', 'cn': 'Chinese'}
+        self.lan = language_dict.get(lan, lan)
         self.log = []
 
         userText = True
@@ -37,6 +37,7 @@ class questioner():
 箇条書きされる質問について対話形式で質問を行ってください。
 ただし、一度のメッセージでは一言で回答できる質問だけをしてください。その際に括弧の中の選択肢を与えてください。
 一回の出力では質問を**ひとつだけ**出力してください。
+
 全ての質問が終了したときは、情報をまとめて箇条書きで表示してください。
 
 ・具合の悪いところをどこがどのように悪いか

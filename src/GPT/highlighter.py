@@ -27,7 +27,7 @@ class highlighter():
 
         prompt = f"""
 Extract the medical terms from the following text and list them separated by commas.
-Output in the list format like [medicalTermA, medicalTermB, medicalTermC].
+Output in the list format like medicalTermA,medicalTermB,medicalTermC.
 No more extra output. Just simply list output.
 If there are no medical terms or unexpected input occurs, output {error}.
 """
@@ -43,15 +43,21 @@ If there are no medical terms or unexpected input occurs, output {error}.
         try:
             tmp = urllib.request.urlopen(url)
             tmp.close()
-        except:
-            validUrl = False
+        except urllib.error.HTTPError as e:
+            print(f"HTTP Error: {e.code}")
+            if e.code == 403:  # Forbidden Error
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
 
         return validUrl
 
     def explain_med_term(self, speak, error="None"):
 
         prompt1 = f"""
-Explain the following **medical terms** in no more than two sentences in {self.lan} simply.
+Explain the following **medical terms** in a sentence in {self.lan} simply.
 No more extra output. Just simply explanation output.
 If another language is entered, please explain the word in {self.lan}.
 If another unexpected input occurs like a sentence, output {error}.
@@ -65,7 +71,7 @@ If another unexpected input occurs like a sentence, output {error}.
 Output only the **URL** of the site that explains the following medical term in {self.lan}.
 No more extra output. Just simply URL output.
 If unexpected input occurs like long sentences, output {error}.
-If the website cannot be found, it is also acceptable to output the URL of Wikipedia.
+If the website cannot be found, it is also acceptable to output the URL of Wikipedia, but please try to refer to the most reliable sites possible.
 """
 
         link = connect_gpt.ChatBot(self.lan, prompt2)
@@ -76,6 +82,7 @@ If the website cannot be found, it is also acceptable to output the URL of Wikip
         for word in words:
             if word.startswith("http://") or word.startswith("https://"):
                 url = word
+                print(url)
                 if self.check_url(url):
                     res3 = url
                 break
