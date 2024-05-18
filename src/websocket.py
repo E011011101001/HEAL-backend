@@ -96,7 +96,7 @@ def on_disconnect():
     wsSessions.remove(session)
 
 
-def make_message(text: str, translation: str | None) -> dict:
+def make_message(text: str, translation: str | None = None) -> dict:
     """
     For all the messages sending to the front end:
     1. Get terms by GPT.
@@ -148,10 +148,10 @@ def message(json: dict):
         if chatBots.get(roomId) is None:
             # TODO: implement chat bot
             # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
-            # So have the system save their message, enhacne it and send it.
+            # So have the system save their message, enhance it and send it.
             chatBots[roomId] = get_ai_doctor(session['user']['language'])
         chatBot = chatBots[roomId]
-        emit('message', make_message(chatBot.reply_with(json.text)))
+        emit('message', make_message(chatBot.chat(json['text'])))
         return
 
     # stage == 2
@@ -159,10 +159,10 @@ def message(json: dict):
     # Warning: Only handling the last joined doctor's language
     doctor_lan = db.user_op.get_user_full(doctors[-1])['language']
 
-    # Retrieve message and enhancments from db
+    # Retrieve message and enhancements from db
     # Mock message_id for now
     # message_id = 2
-    enahnced_message = db.message_op.get_message(roomId, message_id, doctor_lan)
+    enhanced_message = db.message_op.get_message(roomId, message_id, doctor_lan)
 
-    # Forward enchanced message on to receiving client
-    emit('message', enahnced_message, to=roomId)
+    # Forward enhanced message on to receiving client
+    emit('message', enhanced_message, to=roomId)
