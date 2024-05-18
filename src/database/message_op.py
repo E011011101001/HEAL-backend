@@ -1,7 +1,8 @@
 from peewee import DoesNotExist
 from datetime import datetime
 
-from .data_models import MedicalTerm, MedicalTermInfo, Message, MessageTermCache, MedicalTermSynonym, MessageTranslationCache
+from .data_models import MedicalTerm, MedicalTermInfo, Message, \
+    MessageTermCache, MedicalTermSynonym, MessageTranslationCache, BaseUser
 
 def get_chat_messages(room_id: int, page_num: int, limit_num: int, language_code: str) -> dict:
     """
@@ -153,7 +154,7 @@ def get_term(term_id, language_code):
     """
     medical_term = MedicalTerm.get(MedicalTerm.id == term_id)
     medical_term_info = MedicalTermInfo.get(
-        (MedicalTermInfo.medical_term == term_id) & 
+        (MedicalTermInfo.medical_term == term_id) &
         (MedicalTermInfo.language_code == language_code)
     )
 
@@ -375,7 +376,7 @@ def search_medical_terms(query):
     return results
 
 
-def save_message(room_id, user_id, original_text, translated_text, medical_terms, translated_medical_terms):
+def save_message_everything_all_at_once(room_id, user_id, original_text, translated_text, medical_terms, translated_medical_terms):
     """
     Save a new message and its translations and medical terms.
 
@@ -400,7 +401,7 @@ def save_message(room_id, user_id, original_text, translated_text, medical_terms
 
     MessageTranslationCache.create(
         message=message.id,
-        language_code=user.language_code,
+        language_code=message.user.language_code,
         translated_text=translated_text
     ).save()
 
@@ -421,3 +422,7 @@ def save_message(room_id, user_id, original_text, translated_text, medical_terms
         cache.save()
 
     return message
+
+
+def save_message_only(user_id: int, room_id: int, text: str, date_time: datetime) -> None:
+    pass

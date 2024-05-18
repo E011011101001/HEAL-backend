@@ -2,7 +2,9 @@ from datetime import datetime, date
 
 from ..utils import salted_hash
 
-def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache, PatientCondition, PatientPrescription):
+def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
+        MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache,
+        MessageTranslationCache, PatientCondition, PatientPrescription):
     # Create Users
     patient_user = BaseUser.create(
         email="test@gmail.com",
@@ -59,14 +61,14 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
     # Add Synonyms for Condition
     synonyms_en = ["covid", "covid-19", "corona", "covid 19", "coronavirus"]
     synonyms_jp = ["コロナ", "新型コロナウイルス"]
-    
+
     for synonym in synonyms_en:
         MedicalTermSynonym.create(
             medical_term=condition_term.id,
             synonym=synonym,
             language_code="en"
         )
-    
+
     for synonym in synonyms_jp:
         MedicalTermSynonym.create(
             medical_term=condition_term.id,
@@ -81,7 +83,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
         description="COVID-19 is a severe respiratory disease caused by a novel coronavirus.",
         url="https://www.nhs.uk/conditions/coronavirus-covid-19/"
     )
-    
+
     MedicalTermInfo.create(
         medical_term=condition_term.id,
         language_code="jp",
@@ -98,14 +100,14 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
     # Add Synonyms for Prescription
     synonyms_en_prescription = ["paracetamol", "acetaminophen", "tylenol", "panadol"]
     synonyms_jp_prescription = ["パラセタモール", "アセトアミノフェン", "タイレノール", "パナドール"]
-    
+
     for synonym in synonyms_en_prescription:
         MedicalTermSynonym.create(
             medical_term=prescription_term.id,
             synonym=synonym,
             language_code="en"
         )
-    
+
     for synonym in synonyms_jp_prescription:
         MedicalTermSynonym.create(
             medical_term=prescription_term.id,
@@ -120,7 +122,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, Medica
         description="Paracetamol is used to treat pain and fever.",
         url="https://www.nhs.uk/medicines/paracetamol/"
     )
-    
+
     MedicalTermInfo.create(
         medical_term=prescription_term.id,
         language_code="jp",

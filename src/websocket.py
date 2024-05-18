@@ -43,10 +43,10 @@ def get_session() -> dict:
 
 
 @socketio.on('connect')
-def connect(auth):
+def connect(auth: dict):
     token = auth.get('token')
     roomId = auth.get('roomId')
-    sid: str = request.sid
+    sid: str = request.sid # type: ignore
 
     unauthError = {
         'error': 'unauthorizationError'
@@ -108,12 +108,17 @@ def make_message(text: str, translation: str | None) -> dict:
     pass
 
 
-def save_client_message(user_id, text, timestamp) -> None:
-    pass
+def save_client_message(session: dict, text: str, time_iso_format: str) -> None:
+    db.message_op.save_message_only(
+        session['user']['id'],
+        session['roomId'],
+        text,
+        datetime.fromisoformat(time_iso_format)
+    )
 
 
 @socketio.on('message')
-def message(json):
+def message(json: dict):
     """
     1. Get room stage.
     2. If there is no active doctor in the room, stage = 1, and message sent to chatbot;
@@ -132,7 +137,7 @@ def message(json):
         })
         return
 
-    save_client_message(session['user']['userId'], json['text'], json['timestamp'].split('Z')[0])
+    save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
 
     roomId = session['roomId']
     doctors = db.room_op.get_room_doctor_ids(roomId)

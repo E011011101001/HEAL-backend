@@ -1,10 +1,11 @@
 from peewee import (
-    SqliteDatabase, Model, AutoField, DateField, DateTimeField, 
+    SqliteDatabase, Model, AutoField, DateField, DateTimeField,
     TextField, IntegerField, ForeignKeyField, BooleanField, CompositeKey
 )
 
 from .data_seed import seed_data
 from ..glovars import DB_PATH
+from ..utils import print_info
 
 # Pragmas as instructed at https://docs.peewee-orm.com/en/latest/peewee/api.html#AutoField
 db = SqliteDatabase(DB_PATH, pragmas=[('foreign_keys', 'on')])
@@ -73,7 +74,14 @@ class DoctorInRoom(Model):
 
 class MedicalTerm(Model):
     id = AutoField()
-    term_type = TextField(choices=[('CONDITION', 'CONDITION'), ('PRESCRIPTION', 'PRESCRIPTION'), ('GENERAL', 'GENERAL')], default='GENERAL')
+    term_type = TextField(
+        choices=[
+            ('CONDITION', 'CONDITION'),
+            ('PRESCRIPTION', 'PRESCRIPTION'),
+            ('GENERAL', 'GENERAL')
+        ],
+        default='GENERAL'
+    )
 
     class Meta:
         database = db
@@ -186,7 +194,9 @@ def init():
         PatientCondition,
         PatientPrescription
     ])
-    print("Database tables created.")
-    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm, MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache, MessageTranslationCache, PatientCondition, PatientPrescription)
-    print("Database seeded with initial data.")
+    print_info("Database tables created.")
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
+              MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache,
+              MessageTranslationCache, PatientCondition, PatientPrescription)
+    print_info("Database seeded with initial data.")
     db.close()
