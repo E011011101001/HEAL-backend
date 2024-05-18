@@ -7,7 +7,7 @@ import os
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-def send_msg_to_gpt(messages):
+def send_msg_to_gpt(messages: list[dict]):
     response = openai.chat.completions.create(
         model="gpt-4o",  # change to gpt-4 for the most professional AI doctor
         messages=messages,
@@ -23,6 +23,7 @@ def send_msg_to_gpt(messages):
 
 class ChatBot:
     first_msg_generated = False
+
     def __init__(self, language: str, init_prompt: str):
         self.lan = language
         lan_prompt = f"Please respond in the language corresponding to the language code `{self.lan}`."
@@ -37,7 +38,7 @@ class ChatBot:
             raise RuntimeError('get_first_message can only be called once')
 
         self.first_msg_generated = True
-        assistant_msg =  send_msg_to_gpt(self.messages)
+        assistant_msg = send_msg_to_gpt(self.messages)
         self.messages.append({"role": "assistant", "content": assistant_msg})
         return assistant_msg
 
@@ -50,7 +51,7 @@ class ChatBot:
         return assistant_msg
 
 
-def get_ai_doctor(language_code):
+def get_ai_doctor(language_code: str):
     ai_doctor_prompt = """
 You are a chat bot AI as multilingual professional doctor, so you can understand the following instructions.
 However, if you are told to reply in other languages, please do so,

@@ -6,6 +6,7 @@ from flask_socketio import emit, disconnect, join_room
 
 from . import socketio
 from . import database as db
+from GPT import get_ai_doctor
 
 """
 wsSession = [{
@@ -148,7 +149,7 @@ def message(json: dict):
             # TODO: implement chat bot
             # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
             # So have the system save their message, enhacne it and send it.
-            chatBots[roomId] = ChatBot(lan=session['user']['language'])
+            chatBots[roomId] = get_ai_doctor(session['user']['language'])
         chatBot = chatBots[roomId]
         emit('message', make_message(chatBot.reply_with(json.text)))
         return

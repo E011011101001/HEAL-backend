@@ -427,7 +427,7 @@ def save_message_everything_all_at_once(room_id, user_id, original_text, transla
     return message
 
 
-def save_message_only(user_id: int, room_id: int, text: str, date_time: datetime) -> None:
+def save_message_only(user_id: int, room_id: int, text: str, date_time: datetime) -> int:
     message = Message.create(
         user=user_id,
         room=room_id,
