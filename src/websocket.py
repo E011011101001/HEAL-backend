@@ -1,10 +1,8 @@
 # src/websocket.py
-from functools import wraps
 from datetime import datetime
-from peewee import DoesNotExist
 
 from flask import request
-from flask_socketio import emit, disconnect
+from flask_socketio import emit, disconnect, join_room
 
 from . import socketio
 from . import database as db
@@ -32,7 +30,7 @@ chatBots = {}
 def get_session() -> dict:
     global wsSessions
     # get session from wsSession by session[sid]
-    sid = request.sid
+    sid = request.sid  # type: ignore
     try:
         return list(filter(lambda session : session['sid'] == sid, wsSessions))[0]
     except IndexError:
@@ -75,6 +73,9 @@ def connect(auth):
         disconnect()
         return
 
+    # Add user to SocketIO room of roomId
+    join_room(roomId)
+
     wsSessions.append({
         'user': db.user.get_user_full(session['userId']),
         'roomId': roomId,
@@ -84,12 +85,26 @@ def connect(auth):
 
 @socketio.on('disconnect')
 def on_disconnect():
-    print(f'User disconnected: {request.sid}')
     global wsSessions
-    wsSessions = [session for session in wsSessions if session['sid'] != request.sid]
+
+    session = get_session()
+    print(f'User disconnected:\n'
+          f'    User ID: {session['user']['id']};'
+          f'    User Name: {session['user']['name']}.')
+
+    # leaving rooms is done by the framework
+    wsSessions.remove(session)
 
 
-def make_message(message: str) -> dict:
+def make_message(text: str, translation: str | None) -> dict:
+    """
+    For all the messages sending to the front end:
+    1. Get terms by GPT.
+    2. If terms exists in the database, send the data stored in the database.
+    3. If terms does not exist, ask GPT for information and possible wiki links of the term. Send the data, and
+        store them in the database.
+    4. After 2&3, store the terms in the chat history
+    """
     pass
 
 
@@ -104,13 +119,6 @@ def message(json):
     2. If there is no active doctor in the room, stage = 1, and message sent to chatbot;
     3. If there is at least one active doctor in the room, stage = 2, and message sent to socketio room.
     4. If the other user in the room speaks a different language, send translation along with the message.
-
-    For all the messages sending to the front end:
-    1. Get terms by GPT.
-    2. If terms exists in the database, send the data stored in the database.
-    3. If terms does not exist, ask GPT for information and possible wiki links of the term. Send the data, and
-        store them in the database.
-    4. After 2&3, store the terms in the chat history
 
     """
 
@@ -136,3 +144,14 @@ def message(json):
         chatBot = chatBots[roomId]
         emit('message', make_message(chatBot.reply_with(json.text)))
         return
+
+    # stage == 2
+    # get doctor's language_code
+    # Warning: Only handling the last joined doctor's language
+    doctor_lan = db.user_op.get_user_full(doctors[-1])['language']
+
+    # if speaks the same language, do not translate
+    if doctor_lan == session['user']['language']:
+        doctor_lan = None
+
+    emit('message', make_message(json['message'], doctor_lan), to=roomId)
