@@ -13,7 +13,7 @@ CORS(app, supports_credentials=True)
 from . import error_handler
 from . import routes
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 from . import websocket
 
