@@ -105,12 +105,12 @@ def make_message(text: str, translation: str | None) -> dict:
         store them in the database.
     4. After 2&3, store the terms in the chat history
     """
-    pass
+    return text
 
 
 def save_client_message(session: dict, text: str, time_iso_format: str) -> None:
     db.message_op.save_message_only(
-        session['user']['id'],
+        session['user']['userId'],
         session['roomId'],
         text,
         datetime.fromisoformat(time_iso_format)
@@ -159,4 +159,4 @@ def message(json: dict):
     if doctor_lan == session['user']['language']:
         doctor_lan = None
 
-    emit('message', make_message(json['message'], doctor_lan), to=roomId)
+    emit('message', make_message(json['text'], doctor_lan), to=roomId)
