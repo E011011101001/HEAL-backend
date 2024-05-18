@@ -337,6 +337,7 @@ def get_message_terms(message_id, language_code):
 
 def search_medical_terms(query):
     """
+    UNFINISHED JUST A GENERAL TEMPLATE
     Search for medical terms by name or synonym.
 
     Parameters:
@@ -378,6 +379,7 @@ def search_medical_terms(query):
 
 def save_message_everything_all_at_once(room_id, user_id, original_text, translated_text, medical_terms, translated_medical_terms):
     """
+    UNFINISHED JUST A GENERAL TEMPLATE
     Save a new message and its translations and medical terms.
 
     Parameters:
