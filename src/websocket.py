@@ -130,7 +130,7 @@ def message(json: dict):
     global chatBots
     session = get_session()
 
-    if json.get('message') is None or json.get('timestamp') is None:
+    if json.get('text') is None or json.get('timestamp') is None:
         emit('error', {
             'error': 'missing items',
             'message': '"message" and "timestamp" are required'
