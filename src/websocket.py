@@ -7,7 +7,6 @@ from flask_socketio import emit, disconnect, join_room
 from . import socketio
 from . import database as db
 
-
 """
 wsSession = [{
     'user': db.user.get_user_full(user_id),
@@ -32,7 +31,7 @@ def get_session() -> dict:
     # get session from wsSession by session[sid]
     sid = request.sid  # type: ignore
     try:
-        return list(filter(lambda session : session['sid'] == sid, wsSessions))[0]
+        return list(filter(lambda session: session['sid'] == sid, wsSessions))[0]
     except IndexError:
         emit('error', {
             'error': 'InternalServerError',
@@ -46,7 +45,7 @@ def get_session() -> dict:
 def connect(auth: dict):
     token = auth.get('token')
     roomId = auth.get('roomId')
-    sid: str = request.sid # type: ignore
+    sid: str = request.sid  # type: ignore
 
     unauthError = {
         'error': 'unauthorizationError'
@@ -89,14 +88,14 @@ def on_disconnect():
 
     session = get_session()
     print(f"User disconnected:\n"
-        f"    User ID: {session['user']['id']};"
-        f"    User Name: {session['user']['name']}.")
+          f"    User ID: {session['user']['id']};"
+          f"    User Name: {session['user']['name']}.")
 
     # leaving rooms is done by the framework
     wsSessions.remove(session)
 
 
-def make_message(text: str, translation: str | None) -> dict:
+def make_message(text: str, translation: str | None = None) -> dict:
     """
     For all the messages sending to the front end:
     1. Get terms by GPT.
@@ -107,15 +106,15 @@ def make_message(text: str, translation: str | None) -> dict:
     """
     return text
 
+
 def save_client_message(session: dict, text: str, time_iso_format: str) -> None:
-    message_id = db.message_op.save_message_only(
+    db.message_op.save_message_only(
         session['user']['userId'],
         session['roomId'],
         text,
         datetime.fromisoformat(time_iso_format)
     )
-    
-    return message_id
+
 
 @socketio.on('message')
 def message(json: dict):
@@ -137,7 +136,7 @@ def message(json: dict):
         })
         return
 
-    message_id = save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
+    save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
 
     roomId = session['roomId']
     doctors = db.room_op.get_room_doctor_ids(roomId)
@@ -149,18 +148,23 @@ def message(json: dict):
             # So have the system save their message, enhacne it and send it.
             chatBots[roomId] = ChatBot(lan=session['user']['language'])
         chatBot = chatBots[roomId]
-        emit('message', make_message(chatBot.reply_with(json.text)))
+        emit('message', make_message(chatBot.reply_with(json['text'])))
         return
 
     # stage == 2
     # get doctor's language_code
     # Warning: Only handling the last joined doctor's language
     doctor_lan = db.user_op.get_user_full(doctors[-1])['language']
+    if doctor_lan == session['user']['language']:
+        doctor_lan = None
 
-    # Retrieve message and enhancments from db
-    # Mock message_id for now
-    # message_id = 2
-    enahnced_message = db.message_op.get_message(roomId, message_id, doctor_lan)
+    # Note from Peihao: Why getting the message from the database? It's a new message and should be sent to the room
+    # immediately
+    # # Retrieve message and enhancements from db
+    # # Mock message_id for now
+    # # message_id = 2
+    # enhanced_message = db.message_op.get_message(roomId, messege_id, doctor_lan)
 
-    # Forward enchanced message on to receiving client
-    emit('message', enahnced_message, to=roomId)
+    # Note from Peihao: Shouldn't the message be sent to other participants in the room?
+    # # Forward enhanced message on to receiving client
+    emit('message', make_message(json['text'], doctor_lan), to=roomId)
