@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8888:8888"
+    environment:
+      FLASK_ENV: development
+    volumes:
+      - .:/app
+    command: python run.py
