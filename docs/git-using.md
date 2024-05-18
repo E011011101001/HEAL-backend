@@ -8,3 +8,5 @@
 
 4. `git rebase` to rebase your local commits on top of the remote commits, or just
    fast-forwarding.
+
+5. `git push`
