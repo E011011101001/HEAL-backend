@@ -56,7 +56,7 @@ If there are no medical terms or unexpected input occurs, output {error}.
 
     def explain_med_term(self, speak, error="None"):
 
-        prompt1 = f"""
+        prompt_exp = f"""
 Explain the following **medical terms** in a sentence in {self.lan} simply.
 No more extra output. Just simply explanation output.
 If another language is entered, please explain the word in {self.lan}.
@@ -64,37 +64,63 @@ If another unexpected input occurs like a sentence, output {error}.
 """
 
         # Creating Chatbot Instances
-        exp = connect_gpt.ChatBot(self.lan, prompt1)
+        exp = connect_gpt.ChatBot(self.lan, prompt_exp)
         res1 = exp.speak_to_gpt(speak)
 
-        prompt2 = f"""
+        prompt_url = f"""
 Output only the **URL** of the site that explains the following medical term in {self.lan}.
 No more extra output. Just simply URL output.
 If unexpected input occurs like long sentences, output {error}.
-If the website cannot be found, it is also acceptable to output the URL of Wikipedia, but please try to refer to the most reliable sites possible.
+Please try to refer to the most reliable sites possible about following medical term.
+"""
+        prompt_wiki_url = f"""
+Output only the **wikipedia URL** that explains the following medical term in {self.lan}.
+No more extra output. Just simply URL output.
+If unexpected input occurs like long sentences, output {error}.
+For example, when language code is ja, inputting リウマチ熱, output https://ja.wikipedia.org/wiki/%E3%83%AA%E3%82%A6%E3%83%9E%E3%83%81%E7%86%B1
 """
 
-        link = connect_gpt.ChatBot(self.lan, prompt2)
+        link = connect_gpt.ChatBot(self.lan, prompt_url)
         res2 = link.speak_to_gpt(speak)
 
-        words = res2.split()
+        #words = res2.split()
         res3 = error
-        for word in words:
-            if word.startswith("http://") or word.startswith("https://"):
-                url = word
-                print(url)
-                if self.check_url(url):
-                    res3 = url
-                break
+        #for word in words:
+        #    if word.startswith("http://") or word.startswith("https://"):
+        #        url = word
 
-        print("last: " + res3)
+        if self.check_url(res2):
+            res3 = res2
+        else:
+            link = connect_gpt.ChatBot(self.lan, prompt_wiki_url)
+            res2 = link.speak_to_gpt(speak)
+
+            if self.check_url(res2):
+                res3 = res2
+
         return {"exp":res1, "link":res3}
+
+    def get_synonym(self, term, error="None"):
+        prompt_syn = f"""
+List synonyms that have exactly the same meaning as {term} in {self.lan}.
+Output in the list format like synonymA,synonymB,synonymC.
+No more extra output. Just simply list output.
+If there are no synonyms terms or unexpected input occurs, output {error}.
+"""
+        syn = connect_gpt.ChatBot(self.lan, prompt_syn)
+        res = syn.speak_to_gpt(term)
+
+        return res
 
 if __name__ == "__main__":
 
-    HL = highlighter("English")
+    HL = highlighter("jp")
     for i in range(5):
 
         str2 = input(">>")
         res2 = HL.explain_med_term(str2)
+        print(res2)
+        res3 = HL.get_synonym(str2)
+        print(res3)
+
         #res1 = HL.search_med_term(str2)
