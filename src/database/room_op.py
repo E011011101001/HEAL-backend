@@ -1,3 +1,4 @@
+# src/database/room_op.py
 from peewee import DoesNotExist
 from datetime import datetime
 
@@ -150,4 +151,4 @@ def get_room_doctor_ids(roomId: int) -> list[int]:
     :return: All the active doctor's ids in a room. If none active, return []
     """
 
-    return [doctor.id for doctor in DoctorInRoom.select().where(DoctorInRoom.room == roomId and DoctorInRoom.enabled)]
+    return [doctor.doctor_id for doctor in DoctorInRoom.select().where(DoctorInRoom.room == roomId and DoctorInRoom.enabled)]

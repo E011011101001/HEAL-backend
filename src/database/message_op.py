@@ -1,3 +1,4 @@
+# src/database/message_op.py
 from peewee import DoesNotExist
 from datetime import datetime
 
@@ -59,7 +60,7 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
         "messageId": message.id,
         "roomId": message.room.id,
         "senderUserId": message.user.id,
-        "timestamp": message.send_time,
+        "timestamp": message.send_time.isoformat(),
         "content": {
             "text": message.text,
             "metadata": {
@@ -426,5 +427,13 @@ def save_message_everything_all_at_once(room_id, user_id, original_text, transla
     return message
 
 
-def save_message_only(user_id: int, room_id: int, text: str, date_time: datetime) -> None:
-    pass
+def save_message_only(user_id: int, room_id: int, text: str, date_time: datetime) -> int:
+    message = Message.create(
+        user=user_id,
+        room=room_id,
+        text=text,
+        send_time=date_time
+    )
+    message.save()
+
+    return message.id

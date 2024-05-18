@@ -2,6 +2,9 @@ import connect_gpt
 
 def translate(lan, speak, user='PATIENT', errorString="error"):
 
+    language_dict = {'en': 'English', 'ja': 'Japanese', 'jp': 'Japanese', 'cn': 'Chinese'}
+    lan = language_dict.get(lan, lan)
+
     # DOCTOR -> PATIENT translate
     if user=='PATIENT':
         prompt = f"""

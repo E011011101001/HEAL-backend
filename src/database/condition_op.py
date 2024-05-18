@@ -1,3 +1,4 @@
+# src/database/condoition.py
 from peewee import DoesNotExist
 from datetime import datetime
 
