@@ -380,7 +380,8 @@ def search_medical_terms(query):
 
 def save_message_everything_all_at_once(room_id, user_id, original_text, translated_text, medical_terms, translated_medical_terms):
     """
-    UNFINISHED JUST A GENERAL TEMPLATE
+    TODO: UNFINISHED JUST A GENERAL TEMPLATE
+
     Save a new message and its translations and medical terms.
 
     Parameters:
@@ -393,6 +394,24 @@ def save_message_everything_all_at_once(room_id, user_id, original_text, transla
 
     Returns:
     Message: The newly created message
+
+
+
+
+    LOGIC TO IMPLMENET:
+    SAVE MESSAGE TEXT
+     - Save original message
+     - Use AI to translate original message and save translation
+
+    MEDICAL TERM
+     - Use AI to extract all potential medical terms of message (both lanugages?)
+     - For each extracted potential medical term
+        - Search database for medical term (use synonym).
+            - if you find match in db then 
+                - link this medical term to message (save original language synonym and translated language synonym)
+            - else
+                - Use AI to get all medical term information and potential synonyms in each language and save in database
+                - Then link new save medical term to message (save original language synonym and translated language synonym)
     """
     message = Message.create(
         user=user_id,
