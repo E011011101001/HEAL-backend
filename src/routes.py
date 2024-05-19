@@ -383,16 +383,54 @@ def get_rooms(user_id, _):
     }
     200 OK
     """
-    user_data = db.user.get_user_full(user_id)
-    if user_data['type'] == 'DOCTOR':
-        return {
-            "error": "forbiddenError",
-            "message": "Only patients can get rooms."
-        }
-
     data = db.room_op.get_rooms_all(user_id)
     return data, 200
 
+@app.route('/users/chats/requests', methods=['GET'])
+@login_required
+def get_requested_rooms(user_id, _):
+    """
+    Get all chat rooms for a that a doctor has been requested to join.
+
+    Response:
+    {
+        "rooms": [
+            {
+                "roomId": 1,
+                "roomName": "",
+                "creationTime": "2023-01-01T12:00:00",
+                "participants": [
+                    {
+                        "id": 1,
+                        "email": "test@gmail.com",
+                        "language_code": "en",
+                        "name": "John Doe",
+                        "user_type": 1,
+                        "date_of_birth": "1990-12-25"
+                    },
+                    {
+                        "id": 2,
+                        "email": "doctor@gmail.com",
+                        "language_code": "jp",
+                        "name": "Dr. Smith",
+                        "user_type": 2,
+                        "date_of_birth": "1980-02-15"
+                    }
+                ]
+            }
+        ]
+    }
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] == 'PATIENT':
+        return {
+            "error": "forbiddenError",
+            "message": "Only doctors can get hospital room requests."
+        }
+
+    data = db.room_op.get_room_requests_all(user_id)
+    return data, 200
 
 # Message Management
 @app.route('/chats/<int:room_id>/messages', methods=['GET'])
@@ -1022,3 +1060,22 @@ def delete_patient_prescription(user_id, __, prescription_id):
 
     db.condition_op.delete_prescription(prescription_id)
     return '', 204
+
+
+
+
+
+
+"""
+Specialised Doctor Screen Endpoints
+
+
+Get pending pateint requests
+
+
+Get all unapproved medical terms
+"""
+
+
+
+
