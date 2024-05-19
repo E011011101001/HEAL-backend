@@ -1,4 +1,7 @@
+import json
+
 from . import ChatBot
+from ..utils import print_info
 
 
 translators = {}
@@ -25,4 +28,11 @@ def translate_to(lan_code: str, text: str):
         translators[lan_code] = ChatBot(lan_code, prompt)
         translator = translators[lan_code]
 
-    return translator.chat(text)
+    output = json.load(translator.chat(text))
+
+    if output.get('status') == 'OK':
+        return output.get('translation')
+
+    # error
+    print_info(output)
+    return ''
