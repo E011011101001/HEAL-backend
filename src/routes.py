@@ -1079,3 +1079,69 @@ Get all unapproved medical terms
 
 
 
+# Get all doctor users
+@app.route('/users/doctors', methods=['GET'])
+@login_required
+def get_all_doctors(_, __):
+    """
+    Get all doctor users.
+
+    Response:
+    {
+        "doctors": [
+            {
+                "id": 1,
+                "email": "doctor1@example.com",
+                "name": "Dr. John Doe",
+                "specialisation": "Cardiology",
+                "language_code": "en"
+            },
+            {
+                "id": 2,
+                "email": "doctor2@example.com",
+                "name": "Dr. Jane Smith",
+                "specialisation": "Dermatology",
+                "language_code": "jp"
+            }
+        ]
+    }
+    200 OK
+    """
+    doctors = db.user.get_all_doctors()
+    return jsonify({"doctors": doctors}), 200
+
+
+# Get all patient users
+@app.route('/users/patients', methods=['GET'])
+@login_required
+def get_all_patients(_, __):
+    """
+    Get all patient users.
+
+    Response:
+    {
+        "patients": [
+            {
+                "id": 1,
+                "email": "patient1@example.com",
+                "name": "John Doe",
+                "date_of_birth": "1990-12-25",
+                "height": 180,
+                "weight": 75,
+                "language_code": "en"
+            },
+            {
+                "id": 2,
+                "email": "patient2@example.com",
+                "name": "Jane Smith",
+                "date_of_birth": "1985-02-15",
+                "height": 165,
+                "weight": 60,
+                "language_code": "jp"
+            }
+        ]
+    }
+    200 OK
+    """
+    patients = db.user.get_all_patients()
+    return jsonify({"patients": patients}), 200
