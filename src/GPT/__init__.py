@@ -4,6 +4,8 @@
 import openai
 import os
 
+from .translator import translate_to
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
@@ -24,7 +26,7 @@ def send_msg_to_gpt(messages: list[dict]):
 class ChatBot:
     first_msg_generated = False
 
-    def __init__(self, language: str, init_prompt: str):
+    def __init__(self, language: str = 'en', init_prompt: str = ''):
         self.lan = language
         lan_prompt = f"Please respond in the language corresponding to the language code `{self.lan}`."
         self.prompt = init_prompt + ' ' + lan_prompt

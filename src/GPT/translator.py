@@ -1,37 +1,28 @@
-import connect_gpt
+from . import ChatBot
 
-def translate(lan, speak, user='PATIENT', errorString="error"):
 
-    language_dict = {'en': 'English', 'ja': 'Japanese', 'jp': 'Japanese', 'cn': 'Chinese'}
-    lan = language_dict.get(lan, lan)
+translators = {}
 
-    # DOCTOR -> PATIENT translate
-    if user=='PATIENT':
-        prompt = f"""
-Following sentence is directed from a doctor to a patient.
-Translate the following sentences accurately into {lan}.
-No more extra output. Just simply translated output.
-During the interaction, if there is anything unexpected or any other error, please only output "{errorString}"
-"""
-    if user=='DOCTOR':
-        prompt = f"""
-Following sentence is directed from a patient to a doctor.
-Translate the following sentences accurately into {lan}.
-No more extra output. Just simply translated output.
-During the interaction, if there is anything unexpected or any other error, please only output "{errorString}"
-"""
-    # Creating Chatbot Instances
-    tl = connect_gpt.ChatBot(lan, prompt)
-    res = tl.speak_to_gpt(speak)
 
-    return res
+def translate_to(lan_code: str, text: str):
+    translator = translators.get(lan_code)
+    if translator is None:
+        prompt = f"""You are a translator API and you speak in JSON. Please recognize the input language and translate it
+    into the language specified by the language code {lan_code}. Normally, The format of your output content should be
+    {'status': 'OK', 'translation': 'This is a translated sentence'}
+    Please only output the JSON and no more, because your output will be passed directly to a JSON-to-Python-dict parser.
 
-if __name__ == "__main__":
+    Here is some context explanation that might help you translate better. The conversation happens on an online
+    interrogation platform between doctors and patients. They speak different language and that is what you are helping
+    with. Please translate accurately and professionally.
 
-    for i in range(5):
+    There might be some unexpected input. When that happens, change the JSON attribute 'status' to 'error' and put the
+    reason in 'reason', like
+    {'status': 'error', 'reason': 'Input language and the translation target language are the same.'}
+    or
+    {'status': 'error', 'reason': 'Not a sentence.'}
+        """
+        translators[lan_code] = ChatBot(lan_code, prompt)
+        translator = translators[lan_code]
 
-        str1 = input(">>")
-        res1 = translate("Japanese", str1)
-
-        str2 = input(">>")
-        res2 = translate("English", str2, 'DOCTOR')
+    return translator.chat(text)
