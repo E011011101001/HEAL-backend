@@ -134,14 +134,14 @@ def get_rooms_all(user_id) -> dict:
 
     return {"rooms": room_list}
 
-def get_room_requests_all(user_id) -> dict:
+def get_room_requests_all() -> dict:
     """
     TODO: Chisa-san
     Get all room requests for doctor to join.
 
     LOGIC:
     List all rooms that only include the following
-    - exactly ONE patient user and ONE doctor user (chatbot doctor with user_id=0)
+    - exactly ONE patient user and example ONE doctor user
     OR
     - exactly ONE patient user and exactly THREE doctor users
 
@@ -151,7 +151,7 @@ def get_room_requests_all(user_id) -> dict:
     Returns:
     dict: List of rooms
     """
-    rooms = Room.select().where(Room.patient == user_id)
+    # rooms = Room.select().where(Room.patient == user_id)
     room_list = []
 
     for room in rooms:

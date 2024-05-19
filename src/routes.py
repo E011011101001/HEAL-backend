@@ -429,7 +429,7 @@ def get_requested_rooms(user_id, _):
             "message": "Only doctors can get hospital room requests."
         }
 
-    data = db.room_op.get_room_requests_all(user_id)
+    data = db.room_op.get_room_requests_all()
     return data, 200
 
 # Message Management
