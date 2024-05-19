@@ -27,7 +27,7 @@ class highlighter():
 
         prompt = f"""
 Extract the medical terms from the following text and list them separated by commas.
-Output in the list format like medicalTermA,medicalTermB,medicalTermC.
+Output in the list format like [medicalTermA,medicalTermB,medicalTermC].
 No more extra output. Just simply list output.
 If there are no medical terms or unexpected input occurs, output {error}.
 """
@@ -38,13 +38,29 @@ If there are no medical terms or unexpected input occurs, output {error}.
 
         return res
 
+    def search_translated_med_term(self, speak, original_text, termList, error="None"):
+
+        prompt = f"""
+The medical term list {termList} is extracted from the text "{original_text}".
+Extract terms with the same meaning from the following text written in different languages in the same order.
+Output in the list format like [[medicalTermA_in_termList,translatedMedicalTermA],[medicalTermB_in_termList,translatedMedicalTermB]].
+Output list size must be equal to the medical term list size.
+No more extra output. Just simply list output.
+If there are no medical terms or unexpected input occurs, output {error}.
+"""
+
+        # Creating Chatbot Instances
+        smt = ChatBot("two input languages", prompt)
+        res = smt.chat(speak)
+
+        return res
+
     def check_url(self, url):
         validUrl = True
         try:
             tmp = urllib.request.urlopen(url)
             tmp.close()
         except urllib.error.HTTPError as e:
-            print(f"HTTP Error: {e.code}")
             if e.code == 403:  # Forbidden Error
                 return True
             else:
@@ -65,8 +81,11 @@ If another unexpected input occurs like a sentence, output {error}.
 
         # Creating Chatbot Instances
         exp = ChatBot(self.lan, prompt_exp)
-        res1 = exp.chat(speak)
+        res = exp.chat(speak)
 
+        return res
+
+    def get_url(self, term, error="None"):
         prompt_url = f"""
 Output only the **URL** of the site that explains the following medical term in {self.lan}.
 No more extra output. Just simply URL output.
@@ -81,34 +100,45 @@ For example, when language code is ja, inputting リウマチ熱, output https:/
 """
 
         url = ChatBot(self.lan, prompt_url)
-        res2 = url.chat(speak)
+        res = url.chat(term)
 
         #words = res2.split()
-        res3 = error
+        urlstr = error
         #for word in words:
         #    if word.startswith("http://") or word.startswith("https://"):
         #        url = word
 
-        if self.check_url(res2):
-            res3 = res2
+        if self.check_url(res):
+            urlstr = res
         else:
             link = ChatBot(self.lan, prompt_wiki_url)
-            res2 = link.chat(speak)
+            res2 = link.chat(term)
 
             if self.check_url(res2):
-                res3 = res2
+                urlstr = res2
 
-        return {"exp":res1, "link":res3}
+        return urlstr
 
     def get_synonym(self, term, error="None"):
         prompt_syn = f"""
 List synonyms that have exactly the same meaning as {term} in {self.lan}.
-Output in the list format like synonymA,synonymB,synonymC.
+Output in the list format like [synonymA,synonymB,synonymC].
 No more extra output. Just simply list output.
 If there are no synonyms terms or unexpected input occurs, output {error}.
 """
         syn = ChatBot(self.lan, prompt_syn)
         res = syn.chat(term)
+
+        return res
+
+    def get_termType(self, term, error="GENERAL"):
+        prompt_type = f"""
+Classify the following medical terms into one of the three categories: 'CONDITION,' 'PRESCRIPTION,' or 'GENERAL'.
+No more extra output. Just simply categories output like "CONDITION".
+If another unexpected input occurs like a sentence, output {error}.
+"""
+        typ = ChatBot(self.lan, prompt_type)
+        res = typ.chat(term)
 
         return res
 

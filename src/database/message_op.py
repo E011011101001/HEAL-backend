@@ -2,6 +2,8 @@
 from peewee import DoesNotExist
 from datetime import datetime
 
+from ..GPT import highlighter, translate_to
+
 from .data_models import MedicalTerm, MedicalTermInfo, Message, \
     MessageTermCache, MedicalTermSynonym, MessageTranslationCache, BaseUser
 
@@ -377,8 +379,14 @@ def search_medical_terms(query):
 
     return results
 
+def check_synonym(synonym):
+    try:
+        MedicalTermSynonym.get(MedicalTermSynonym.synonym == synonym)
+        return True
+    except DoesNotExist:
+        return False
 
-def save_message_everything_all_at_once(room_id, user_id, original_text, translated_text, medical_terms, translated_medical_terms):
+def save_message_everything_all_at_once(room_id, user_id, original_text, original_lan, translated_lan):
     """
     TODO: UNFINISHED JUST A GENERAL TEMPLATE
 
@@ -407,12 +415,158 @@ def save_message_everything_all_at_once(room_id, user_id, original_text, transla
      - Use AI to extract all potential medical terms of message (both lanugages?)
      - For each extracted potential medical term
         - Search database for medical term (use synonym).
-            - if you find match in db then 
+            - if you find match in db then
                 - link this medical term to message (save original language synonym and translated language synonym)
             - else
                 - Use AI to get all medical term information and potential synonyms in each language and save in database
                 - Then link new save medical term to message (save original language synonym and translated language synonym)
     """
+
+    #get translated msg
+    translated_text = translate_to(translated_lan, original_text)
+
+    #generate instance for chat gpt
+    HLOriginal = highlighter.highlighter(original_lan)
+    HLTranslate = highlighter.highlighter(translated_lan)
+
+    #get extract terms (list format)
+    termList = HLOriginal.search_med_term(original_text, error="[]")
+    # [A,B,C]
+    pairTermList = HLOriginal.search_translated_med_term(translated_text, original_text, termList, error="[]")
+    # [[A,tA], [B,tB], [C,tC]]
+
+    medical_terms = []
+    translated_medical_terms = []
+
+    #search all terms
+    for pairTerm in pairTermList:
+        term = pairTerm[0]
+        transTerm = pairTerm[1]
+
+        if check_synonym(term):
+            termSynonym = MedicalTermSynonym.get(MedicalTermSynonym.synonym == term)
+
+            # append to term list for MessageTermCache
+            medical_terms.append({'id':termSynonym.medical_term ,'synonym': term})
+
+            if check_synonym(transTerm):
+                transTermSynonym = MedicalTermSynonym.get(MedicalTermSynonym.synonym == transTerm)
+
+                # append to term list for MessageTermCache
+                translated_medical_terms.append({'id':transTermSynonym.medical_term ,'synonym': transTerm})
+
+            else:
+                # get information of transTerm from GPT
+                transDescription = HLTranslate.explain_med_term(transTerm)
+                transUrl = HLTranslate.get_url(transTerm)
+                transSynonyms = HLTranslate.get_synonym(transTerm)
+                transSynonyms.append(transTerm)
+
+                # create Term info and Synonym to database
+                MedicalTermInfo.create(
+                    medical_term = termSynonym.medical_term,
+                    language_code = translated_lan,
+                    name = transTerm,
+                    description = transDescription,
+                    url = transUrl
+                ).save()
+
+                for synonym in transSynonyms:
+                    MedicalTermSynonym.create(
+                        medical_term = termSynonym.medical_term,
+                        synonym = synonym,
+                        language_code = translated_lan
+                    ).save()
+
+                medical_terms.append({'id':termSynonym.medical_term ,'synonym': term})
+
+        else:
+            description = HLOriginal.explain_med_term(term)
+            url = HLOriginal.get_url(term)
+            synonyms = HLOriginal.get_synonym(term)
+            synonyms.append(term)
+
+            if check_synonym(transTerm):
+                transTermSynonym = MedicalTermSynonym.get(MedicalTermSynonym.synonym == transTerm)
+                translated_medical_terms.append({'id':transTermSynonym.medical_term ,'synonym': transTerm})
+
+                MedicalTermInfo.create(
+                    medical_term = transTermSynonym.medical_term,
+                    language_code = original_lan,
+                    name = term,
+                    description = description,
+                    url = url
+                ).save()
+
+                for synonym in synonyms:
+                    MedicalTermSynonym.create(
+                        medical_term = transTermSynonym.medical_term,
+                        synonym = synonym,
+                        language_code = original_lan
+                    ).save()
+
+                medical_terms.append({'id':transTermSynonym.medical_term ,'synonym': term})
+
+            else:
+                transDescription = HLTranslate.explain_med_term(transTerm)
+                transUrl = HLTranslate.get_url(transTerm)
+                transSynonyms = HLTranslate.get_synonym(transTerm)
+                transSynonyms.append(transTerm)
+
+                termType = HLOriginal.get_termType(term)
+
+                #create medical term, medical term info, medical term synonym
+                medicalTerm = MedicalTerm.create(
+                    # need to classify by gpt
+                    term_type=termType
+                )
+                medicalTerm.save()
+
+                MedicalTermInfo.create(
+                    medical_term = medicalTerm.id,
+                    language_code = original_lan,
+                    name = term,
+                    description = description,
+                    url = url
+                ).save()
+
+                MedicalTermInfo.create(
+                    medical_term = medicalTerm.id,
+                    language_code = original_lan,
+                    name = term,
+                    description = description,
+                    url = url
+                ).save()
+
+                # create link between term and synonym
+                for synonym in synonyms:
+                    MedicalTermSynonym.create(
+                    medical_term = medicalTerm.id,
+                    synonym = synonym,
+                    language_code = original_lan
+                ).save()
+
+                medical_terms.append({'id':medicalTerm.id ,'synonym': term})
+
+                MedicalTermInfo.create(
+                    medical_term = termSynonym.medical_term,
+                    language_code = translated_lan,
+                    name = transTerm,
+                    description = transDescription,
+                    url = transUrl
+                ).save()
+
+                # create link between term and synonym
+                for synonym in transSynonyms:
+                    MedicalTermSynonym.create(
+                        medical_term = termSynonym.medical_term,
+                        synonym = synonym,
+                        language_code = translated_lan
+                    ).save()
+
+                medical_terms.append({'id': medicalTerm.id,'synonym': term})
+
+    # save message and translation link
     message = Message.create(
         user=user_id,
         room=room_id,
@@ -427,6 +581,7 @@ def save_message_everything_all_at_once(room_id, user_id, original_text, transla
         translated_text=translated_text
     ).save()
 
+    # link term message
     for term in medical_terms:
         MessageTermCache.create(
             message=message.id,
