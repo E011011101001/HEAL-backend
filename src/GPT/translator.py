@@ -1,3 +1,4 @@
+# src/GPT/translator.py
 import json
 
 from . import ChatBot

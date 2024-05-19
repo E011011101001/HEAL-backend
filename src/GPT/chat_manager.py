@@ -1,3 +1,4 @@
+# src/GPT/chat_manager.py
 import translator
 import highlighter
 import questioner

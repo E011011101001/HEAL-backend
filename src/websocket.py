@@ -1,6 +1,5 @@
 # src/websocket.py
 from datetime import datetime
-
 from flask import request
 from flask_socketio import emit, disconnect, join_room
 
@@ -8,32 +7,15 @@ from . import socketio
 from . import database as db
 from src.GPT import get_ai_doctor
 
-"""
-wsSession = [{
-    'user': db.user.get_user_full(user_id),
-    'roomId': roomId,
-    'sid': sid
-}]
-"""
 wsSessions = []
-
-"""
-chatBots = {
-    3: <ChatBot>,
-    16: <ChatBot>,
-    ...
-}
-"""
 chatBots = {}
-
 
 def get_session() -> dict:
     global wsSessions
-    # get session from wsSession by session[sid]
-    sid = request.sid  # type: ignore
+    sid = request.sid
     try:
-        return list(filter(lambda session: session['sid'] == sid, wsSessions))[0]
-    except IndexError:
+        return next(session for session in wsSessions if session['sid'] == sid)
+    except StopIteration:
         emit('error', {
             'error': 'InternalServerError',
             'message': 'User is authenticated. However, no registered sid is found.'
@@ -41,18 +23,68 @@ def get_session() -> dict:
         disconnect()
         raise
 
+def save_client_message(user_id: int, room_id: int, text: str, timestamp: str) -> int:
+    message_id = db.message_op.save_message_only(
+        user_id,
+        room_id,
+        text,
+        datetime.fromisoformat(timestamp)
+    )
+    return message_id
+
+def chat_with_bot(session: dict, user_msg: str) -> int:
+    global chatBots
+    room_id = session['roomId']
+    
+    if room_id not in chatBots:
+        chatBots[room_id] = get_ai_doctor(session['user']['language'])
+    chatBot = chatBots[room_id]
+
+    bot_msg = chatBot.chat(user_msg)
+    message_id = db.message_op.save_message_only(0, room_id, bot_msg, datetime.now())
+    
+    return message_id
+
+@socketio.on('message')
+def handle_message(json: dict):
+    session = get_session()
+    room_id = session['roomId']
+    user_id = session['user']['userId']
+
+    if 'text' not in json or 'timestamp' not in json:
+        emit('error', {
+            'error': 'missing items',
+            'message': '"message" and "timestamp" are required'
+        })
+        return
+
+    message_id = save_client_message(user_id, room_id, json['text'], json['timestamp'].split('Z')[0])
+    doctors = db.room_op.get_room_doctor_ids(room_id)
+    
+    if len(doctors) == 1:
+        # Step 1: Chatbot response
+        bot_message_id = chat_with_bot(session, json['text'])
+        bot_message = db.message_op.get_message(room_id, bot_message_id, session['user']['language'])
+        emit('message', bot_message, to=room_id)
+    else:
+        # Step 2 and Step 3: Real doctor(s) in the room
+        for doctor_id in doctors:
+            doctor_language = db.user.get_user_full(doctor_id)['language']
+            enhanced_message = db.message_op.get_message(room_id, message_id, doctor_language)
+            emit('message', enhanced_message, to=room_id)
+
+        # Send the message back to the original sender
+        original_message = db.message_op.get_message(room_id, message_id, session['user']['language'])
+        emit('message', original_message, to=request.sid)
 
 @socketio.on('connect')
 def connect(auth: dict):
     token = auth.get('token')
-    roomId = auth.get('roomId')
-    sid: str = request.sid  # type: ignore
+    room_id = auth.get('roomId')
+    sid = request.sid
 
-    unauthError = {
-        'error': 'unauthorizationError'
-    }
+    unauthError = {'error': 'unauthorizationError'}
 
-    # Check if logged in
     session = db.user.get_session_by_token(token)
     if session and session['expirationTime'] < datetime.now():
         session = None
@@ -63,132 +95,27 @@ def connect(auth: dict):
         disconnect()
         return
 
-    # Check if in room
     rooms = db.room_op.get_rooms_all(session['userId'])['rooms']
-    roomIds = list(map(lambda room: room.get('roomId'), rooms))
+    room_ids = [room['roomId'] for room in rooms]
 
-    if roomId not in roomIds:
+    if room_id not in room_ids:
         unauthError['message'] = 'Room invalid'
         emit('error', unauthError)
         disconnect()
         return
 
-    # Add user to SocketIO room of roomId
-    join_room(roomId)
-
+    join_room(room_id)
     wsSessions.append({
         'user': db.user.get_user_full(session['userId']),
-        'roomId': roomId,
+        'roomId': room_id,
         'sid': sid
     })
-
 
 @socketio.on('disconnect')
 def on_disconnect():
     global wsSessions
-
     session = get_session()
     print(f"User disconnected:\n"
-          f"    User ID: {session['user']['id']};"
+          f"    User ID: {session['user']['userId']};"
           f"    User Name: {session['user']['name']}.")
-
-    # leaving rooms is done by the framework
     wsSessions.remove(session)
-
-
-def make_message(text: str, translation: str | None = None) -> dict:
-    """
-    For all the messages sending to the front end:
-    1. Get terms by GPT.
-    2. If terms exists in the database, send the data stored in the database.
-    3. If terms does not exist, ask GPT for information and possible wiki links of the term. Send the data, and
-        store them in the database.
-    4. After 2&3, store the terms in the chat history
-    """
-    return text
-
-
-def save_client_message(session: dict, text: str, time_iso_format: str) -> int:
-    message_id = db.message_op.save_message_only(
-        session['user']['userId'],
-        session['roomId'],
-        text,
-        datetime.fromisoformat(time_iso_format)
-    )
-
-    return message_id
-
-
-def chat_with_bot(session: dict, json: dict) -> None:
-    global chatBots
-    roomId = session['roomId']
-    user_msg = json['text']
-
-    if chatBots.get(roomId) is None:
-        # TODO: implement chat bot
-        # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
-        # So have the system save their message, enhance it and send it.
-        chatBots[roomId] = get_ai_doctor(session['user']['language'])
-    chatBot = chatBots[roomId]
-
-    bot_msg = chatBot.chat(user_msg)
-
-    db.message_op.save_message_only(0, roomId, bot_msg, datetime.now())
-
-    emit('message', make_message(bot_msg))
-
-
-@socketio.on('message')
-def message(json: dict):
-    """
-    1. Get room stage.
-    2. If there is no active doctor in the room, stage = 1, and message sent to chatbot;
-    3. If there is at least one active doctor in the room, stage = 2, and message sent to socketio room.
-    4. If the other user in the room speaks a different language, send translation along with the message.
-
-    """
-
-    global chatBots
-    session = get_session()
-
-    if json.get('text') is None or json.get('timestamp') is None:
-        emit('error', {
-            'error': 'missing items',
-            'message': '"message" and "timestamp" are required'
-        })
-        return
-
-    message_id = save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
-
-    roomId = session['roomId']
-    doctors = db.room_op.get_room_doctor_ids(roomId)
-    if len(doctors) == 0:
-        chat_with_bot(session, json)
-        # stage == 1
-        return
-
-    # stage == 2
-    # get doctor's language_code
-    # Warning: Only handling the last joined doctor's language
-    doctor_lan = db.user_op.get_user_full(doctors[-1])['language']
-
-    # Retrieve message and enhancements from db
-    # Mock message_id for now
-    # message_id = 2
-    enhanced_message = db.message_op.get_message(roomId, message_id, doctor_lan)
-
-    # Forward enhanced message on to receiving client
-    emit('message', enhanced_message, to=roomId)
-
-
-@socketio.on('ping-pong')
-def pong_with_ping():
-    """
-    Should receive `{
-        'message: 'ping'
-    }`
-    However, no need to check it. Just pong.
-    """
-    emit('ping-pong', {
-        'message': 'pong'
-    })

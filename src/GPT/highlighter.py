@@ -1,3 +1,4 @@
+# src/GPT/highlighter.py
 # This code has two functions.
 
 # Use "search_med_term" method to obtain a response from gpt for medical term extraction.

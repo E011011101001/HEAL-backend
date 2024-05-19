@@ -1,3 +1,4 @@
+# src/GPT/__init__.py
 # This class takes a language and prompt as arguments and creates an instance.
 #   gpt = ChatBot("Japanese", "You are a doctor. Ask for details about the symptoms.")
 
