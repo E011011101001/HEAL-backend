@@ -5,8 +5,8 @@
 
 # do we need history?
 
-import connect_gpt
 import urllib.request
+from . import ChatBot
 
 class highlighter():
     def __init__(self, lan, history=[]):
@@ -33,8 +33,8 @@ If there are no medical terms or unexpected input occurs, output {error}.
 """
 
         # Creating Chatbot Instances
-        smt = connect_gpt.ChatBot("input language", prompt)
-        res = smt.speak_to_gpt(speak)
+        smt = ChatBot("input language", prompt)
+        res = smt.chat(speak)
 
         return res
 
@@ -64,8 +64,8 @@ If another unexpected input occurs like a sentence, output {error}.
 """
 
         # Creating Chatbot Instances
-        exp = connect_gpt.ChatBot(self.lan, prompt_exp)
-        res1 = exp.speak_to_gpt(speak)
+        exp = ChatBot(self.lan, prompt_exp)
+        res1 = exp.chat(speak)
 
         prompt_url = f"""
 Output only the **URL** of the site that explains the following medical term in {self.lan}.
@@ -80,8 +80,8 @@ If unexpected input occurs like long sentences, output {error}.
 For example, when language code is ja, inputting リウマチ熱, output https://ja.wikipedia.org/wiki/%E3%83%AA%E3%82%A6%E3%83%9E%E3%83%81%E7%86%B1
 """
 
-        link = connect_gpt.ChatBot(self.lan, prompt_url)
-        res2 = link.speak_to_gpt(speak)
+        url = ChatBot(self.lan, prompt_url)
+        res2 = url.chat(speak)
 
         #words = res2.split()
         res3 = error
@@ -92,8 +92,8 @@ For example, when language code is ja, inputting リウマチ熱, output https:/
         if self.check_url(res2):
             res3 = res2
         else:
-            link = connect_gpt.ChatBot(self.lan, prompt_wiki_url)
-            res2 = link.speak_to_gpt(speak)
+            link = ChatBot(self.lan, prompt_wiki_url)
+            res2 = link.chat(speak)
 
             if self.check_url(res2):
                 res3 = res2
@@ -107,8 +107,8 @@ Output in the list format like synonymA,synonymB,synonymC.
 No more extra output. Just simply list output.
 If there are no synonyms terms or unexpected input occurs, output {error}.
 """
-        syn = connect_gpt.ChatBot(self.lan, prompt_syn)
-        res = syn.speak_to_gpt(term)
+        syn = ChatBot(self.lan, prompt_syn)
+        res = syn.chat(term)
 
         return res
 
