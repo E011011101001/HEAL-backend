@@ -1,4 +1,3 @@
-# src/websocket.py
 from datetime import datetime
 from flask import request
 from flask_socketio import emit, disconnect, join_room
@@ -7,15 +6,14 @@ from . import socketio
 from . import database as db
 from src.GPT.chatbot import get_ai_doctor
 
-wsSessions = []
+wsSessions = {}
 chatBots = {}
 
 def get_session() -> dict:
-    global wsSessions
     sid = request.sid
     try:
-        return next(session for session in wsSessions if session['sid'] == sid)
-    except StopIteration:
+        return wsSessions[sid]
+    except KeyError:
         emit('error', {
             'error': 'InternalServerError',
             'message': 'User is authenticated. However, no registered sid is found.'
@@ -54,28 +52,34 @@ def handle_message(json: dict):
     if 'text' not in json or 'timestamp' not in json:
         emit('error', {
             'error': 'missing items',
-            'message': '"message" and "timestamp" are required'
+            'message': '"text" and "timestamp" are required'
         })
         return
 
+    # Save client message
     message_id = save_client_message(user_id, room_id, json['text'], json['timestamp'].split('Z')[0])
-    doctors = db.room_op.get_room_doctor_ids(room_id)
     
+    # Get all users in the room
+    room_users = db.room_op.get_room_doctor_ids(room_id)
+
+    # Add the current user ID to the list if it's not already included
+    if user_id not in room_users:
+        room_users.append(user_id)
+
+    # Send the message to all users in the room
+    for user in room_users:
+        user_language = db.user.get_user_full(user)['language']
+        enhanced_message = db.message_op.get_message(room_id, message_id, user_language)
+        if user in wsSessions:
+            emit('message', enhanced_message, to=wsSessions[user]['sid'])
+
+    # Check if there's only one doctor (the chatbot) in the room
+    doctors = db.room_op.get_room_doctor_ids(room_id)
     if len(doctors) == 1:
-        # Step 1: Chatbot response
         bot_message_id = chat_with_bot(session, json['text'])
         bot_message = db.message_op.get_message(room_id, bot_message_id, session['user']['language'])
-        emit('message', bot_message, to=room_id)
-    else:
-        # Step 2 and Step 3: Real doctor(s) in the room
-        for doctor_id in doctors:
-            doctor_language = db.user.get_user_full(doctor_id)['language']
-            enhanced_message = db.message_op.get_message(room_id, message_id, doctor_language)
-            emit('message', enhanced_message, to=room_id)
+        emit('message', bot_message, to=wsSessions[session['user']['userId']]['sid'])
 
-        # Send the message back to the original sender
-        original_message = db.message_op.get_message(room_id, message_id, session['user']['language'])
-        emit('message', original_message, to=request.sid)
 
 @socketio.on('connect')
 def connect(auth: dict):
@@ -105,17 +109,17 @@ def connect(auth: dict):
         return
 
     join_room(room_id)
-    wsSessions.append({
+    wsSessions[sid] = {
         'user': db.user.get_user_full(session['userId']),
         'roomId': room_id,
         'sid': sid
-    })
+    }
 
 @socketio.on('disconnect')
 def on_disconnect():
-    global wsSessions
-    session = get_session()
-    print(f"User disconnected:\n"
-          f"    User ID: {session['user']['userId']};"
-          f"    User Name: {session['user']['name']}.")
-    wsSessions.remove(session)
+    sid = request.sid
+    session = wsSessions.pop(sid, None)
+    if session:
+        print(f"User disconnected:\n"
+              f"    User ID: {session['user']['userId']};"
+              f"    User Name: {session['user']['name']}.")
