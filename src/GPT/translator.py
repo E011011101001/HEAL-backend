@@ -1,12 +1,9 @@
 # src/GPT/translator.py
 import json
-
-from . import ChatBot
+from .chatbot import ChatBot
 from ..utils import print_info
 
-
 translators = {}
-
 
 def translate_to(lan_code: str, text: str):
     translator = translators.get(lan_code)
@@ -29,7 +26,7 @@ or
         translators[lan_code] = ChatBot(lan_code, prompt)
         translator = translators[lan_code]
 
-    output = json.load(translator.chat(text))
+    output = json.loads(translator.chat(text))
 
     if output.get('status') == 'OK':
         return output.get('translation')

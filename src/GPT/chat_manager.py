@@ -1,7 +1,6 @@
 # src/GPT/chat_manager.py
-import translator
-import highlighter
-import questioner
+from .translator import translate_to
+from .highlighter import highlighter
 
 def translate(lan, str, user='PATIENT', errorString="error"):
     """
@@ -16,8 +15,7 @@ def translate(lan, str, user='PATIENT', errorString="error"):
     Response:
     string - translated text
     """
-
-    res = translator.translate(lan, str, user, errorString)
+    res = translate_to(lan, str, user, errorString)
     return res
 
 def extract_medical_term(str, errorString):
@@ -31,9 +29,8 @@ def extract_medical_term(str, errorString):
     Response:
     string - translated text
     """
-    HL = highlighter.highlighter("input language")
+    HL = highlighter("input language")
     res = HL.search_med_term(str, errorString)
-
     string_list = res.split(",")
     return string_list
 
@@ -52,9 +49,8 @@ def explain_medical_term(lan, term, errorString):
         "link": "https://___"
     }
     """
-    HL = highlighter.highlighter(lan)
+    HL = highlighter(lan)
     res = HL.search_med_term(term, errorString)
-
     return res
 
 def questioner_chat(lan, str, log):
@@ -69,8 +65,6 @@ def questioner_chat(lan, str, log):
     Response:
     string - response text by chat bot
     """
-
-    Qst = questioner.AIDoctor(lan, log)
+    Qst = AIDoctor(lan, log)
     res = Qst.send_and_get_reply(str)
-
     return res
