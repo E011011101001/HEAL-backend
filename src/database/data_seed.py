@@ -71,6 +71,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
         hospital="Virtual Hospital"
     )
 
+    # COVID MEDICAL TERM START
     # Create Medical Term for Condition
     condition_term = MedicalTerm.create(
         term_type="CONDITION"
