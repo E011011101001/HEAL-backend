@@ -7,7 +7,7 @@
 import json
 
 import urllib.request
-#from . import ChatBot
+from . import ChatBot
 #from .translator import translate_to
 
 import openai
@@ -16,85 +16,57 @@ import ast
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-class ChatBot:
-    def __init__(self, language, prompt):
+extractors: dict[str, ChatBot] = {}
+synonymGetters: dict[str, ChatBot] = {}
 
-        self.lan = language     #string
+def search_med_term(lan_code, text, error="None"):
+    global extractors
 
-        self.prompt = prompt    #string
-        self.system_content1 = self.prompt
-
-    #private function
-    # model = gpt-3.5-turbo
-    # model = gpt-4-0125-preview
-    def __send_msg_to_gpt(self, messages):
-        response = openai.chat.completions.create(
-            model="gpt-4o",
-            messages=messages,
-            temperature=0,
-            max_tokens=256,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
-
-        pol_msg = response.choices[0].message.content
-        response = pol_msg
-
-        return response
-
-    def speak_to_gpt(self, utterance):
-
-        messages=[
-            {"role": "system", "content": self.system_content1},
-            {"role": "user", "content": utterance}
-        ]
-
-        return self.__send_msg_to_gpt(messages)
-
-    def speak_to_gpt_with_log(self, utterance, history):
-
-        messages=[
-            {"role": "system", "content": self.system_content1},
-            {"role": "system", "content": self.system_content2}
-        ]
-
-        for textTaple in history:
-            messages.append({"role": textTaple["speaker"], "content": textTaple["text"]})
-
-        messages.append({"role": "user", "content": utterance})
-
-        return self.__send_msg_to_gpt(messages)
-
-translators = {}
-
-
-def translate(lan, speak, user='PATIENT', errorString="error"):
-
-    language_dict = {'en': 'English', 'ja': 'Japanese', 'jp': 'Japanese', 'cn': 'Chinese'}
-    lan = language_dict.get(lan, lan)
-
-    # DOCTOR -> PATIENT translate
-    if user=='PATIENT':
-        prompt = f"""
-Following sentence is directed from a doctor to a patient.
-Translate the following sentences accurately into {lan}.
-No more extra output. Just simply translated output.
-During the interaction, if there is anything unexpected or any other error, please only output "{errorString}"
-"""
-    if user=='DOCTOR':
-        prompt = f"""
-Following sentence is directed from a patient to a doctor.
-Translate the following sentences accurately into {lan}.
-No more extra output. Just simply translated output.
-During the interaction, if there is anything unexpected or any other error, please only output "{errorString}"
+    prompt = f"""
+Extract specialized medical terms from the following text and list them separated by commas.
+Output in the list format like medicalTermA,medicalTermB,medicalTermC.
+Make sure to extract only what is present in the text.
+No more extra output. Just simply list output.
+If there are no medical terms or unexpected input occurs, output {error}.
 """
     # Creating Chatbot Instances
-    tl = ChatBot(lan, prompt)
-    res = tl.speak_to_gpt(speak)
-    return res
+    extractor = extractors.get(lan_code)
 
-class highlighter():
+    if extractor is None:
+        extractor = ChatBot(lan_code, prompt)
+        extractors[lan_code] = extractor
+
+    res = extractor.chat(text)
+
+    if res == error:
+        return []
+
+    resList = res.split(",")
+    return resList
+
+def get_synonym(lan_code, term, error="None"):
+    prompt_syn = f"""
+List synonyms that have the same meaning as {term} in {lan_code}.
+Output in the list format like synonymA,synonymB,synonymC.
+No more extra output. Just simply list output.
+If there are no synonyms terms or unexpected input occurs, output {error}.
+"""
+    synonymGetter = synonymGetters.get(lan_code)
+
+    if synonymGetter is None:
+        synonymGetter = ChatBot(lan_code, prompt_syn)
+        synonymGetters[lan_code] = synonymGetter
+
+    res = synonymGetter.chat(term)
+
+    if res == error:
+        return []
+
+    resList = res.split(",")
+    return resList
+
+
+class Highlighter():
     def __init__(self, lan, history=[]):
         language_dict = {'en': 'English', 'ja': 'Japanese', 'jp': 'Japanese', 'cn': 'Chinese'}
         self.lan = language_dict.get(lan, lan)
@@ -108,25 +80,6 @@ class highlighter():
                 self.log.append({"text":text, "speaker": "assistant"})
 
             userText = not userText
-
-    def search_med_term(self, speak, error="None"):
-
-        prompt = f"""
-Extract the medical terms from the following text and list them separated by commas.
-Output in the list format like medicalTermA,medicalTermB,medicalTermC.
-No more extra output. Just simply list output.
-If there are no medical terms or unexpected input occurs, output {error}.
-"""
-
-        # Creating Chatbot Instances
-        smt = ChatBot("input language", prompt)
-        res = smt.speak_to_gpt(speak)
-
-        if res == error:
-            return []
-
-        resList = res.split(",")
-        return resList
 
     def search_translated_med_term(self, speak, original_text, termList, error="None"):
 
@@ -242,7 +195,7 @@ If another unexpected input occurs like a sentence, output {error}.
 
 if __name__ == "__main__":
 
-    HL = highlighter("jp")
+    HL = Highlighter("jp")
     """
     for i in range(5):
 
