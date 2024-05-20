@@ -113,10 +113,11 @@ def add_condition(patient_id: int, medical_term_id: int, condition_info: dict):
         medical_term=medical_term_id,
         patient=patient_id,
         status=condition_info.get('status'),
-        diagnosis_date=condition_info.get('diagnosis_date'),
-        resolution_date=condition_info.get('resolution_date')
+        diagnosis_date=condition_info.get('diagnosisDate'),
+        resolution_date=condition_info.get('resolutionDate', None)
     )
     new_condition.save()
+    return get_history(patient_id)
 
 
 def update_condition(condition_id: int, condition_info: dict):
@@ -186,10 +187,11 @@ def add_prescription(user_id: int, condition_id: int, medical_term_id: int, pres
         user_condition=condition_id,
         medical_term=medical_term_id,
         dosage=prescription_info.get('dosage'),
-        prescription_date=prescription_info.get('prescription_date'),
+        prescription_date=prescription_info.get('prescriptionDate'),
         frequency=prescription_info.get('frequency')
     )
     new_prescription.save()
+    return get_history(new_prescription.user_condition.patient_id)
 
 
 def update_prescription(prescription_id: int, prescription_info: dict):

@@ -860,8 +860,8 @@ def create_patient_condition(user_id, __, patient_id, medical_term_id):
             'message': 'Condition already exists for this patient.'
         }, 409
 
-    db.condition_op.add_condition(patient_id, medical_term_id, data)
-    return '', 201
+    updated_conditions = db.condition_op.add_condition(patient_id, medical_term_id, data)
+    return updated_conditions, 201
 
 
 @app.route('/patients/conditions/<int:condition_id>', methods=['PUT'])
@@ -916,8 +916,8 @@ def update_patient_condition(user_id, __, condition_id):
             "message": "Only doctors can update conditions."
         }
 
-    updated_condition = db.condition_op.update_condition(condition_id, data)
-    return updated_condition, 200
+    updated_conditions = db.condition_op.update_condition(condition_id, data)
+    return updated_conditions, 200
 
 
 @app.route('/patients/conditions/<int:condition_id>', methods=['DELETE'])
@@ -978,8 +978,8 @@ def create_patient_prescription(user_id, __, condition_id, medical_term_id):
             'message': 'Prescription already exists for this condition.'
         }, 409
 
-    db.condition_op.add_prescription(user_id, condition_id, medical_term_id, data)
-    return '', 201
+    updated_conditions = db.condition_op.add_prescription(user_id, condition_id, medical_term_id, data)
+    return updated_conditions, 201
 
 
 @app.route('/patients/prescriptions/<int:prescription_id>', methods=['PUT'])
