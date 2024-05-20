@@ -78,6 +78,8 @@ The following is an example in Japanese:
 ・（飲むなら）種類は何か
 ・（飲むなら）１回何杯程度飲んでいるか
 ・（飲むなら）頻度はどうか（１毎日・２時々・３月２～３回）
+・（女性のみ）現在妊娠中または授乳中か
+・（妊娠中なら）妊娠週数は何週か
 
 You can refer to the example, but you do not have to follow.
 You especially should not follow when you think the questions are not related to the symptoms the patient described.
