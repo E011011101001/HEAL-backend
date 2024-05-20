@@ -50,10 +50,12 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
     dict: Message with translation and medical terms
     """
     message = Message.get((Message.room == room_id) & (Message.id == message_id))
+    print(message.id)
+    print(message.text)
 
     try:
         translation = MessageTranslationCache.get(
-            (MessageTranslationCache.message == message_id) and
+            (MessageTranslationCache.message == message_id) &
             (MessageTranslationCache.language_code == language_code)
         )
         translated_text = translation.translated_text
@@ -669,6 +671,5 @@ def save_message_only(user_id: int, room_id: int, text: str, date_time: datetime
         text=text,
         send_time=date_time
     )
-    message.save()
 
     return message.id

@@ -172,7 +172,8 @@ def get_room_doctor_ids(roomId: int) -> list[int]:
     :return: All the active doctor's ids in a room. If none active, return []
     """
 
-    return [doctor.doctor_id for doctor in DoctorInRoom.select().where(DoctorInRoom.room == roomId and DoctorInRoom.enabled)]
+    doctors = DoctorInRoom.select().where(DoctorInRoom.room == roomId)
+    return [doctor.doctor_id for doctor in doctors]
 
 def get_step1_rooms():
     """
@@ -241,7 +242,7 @@ def get_step3_rooms(doctor_id):
     target_rooms = (Room
                     .select()
                     .join(SecondOpinionRequest, on=(Room.id == SecondOpinionRequest.room))
-                    .where((SecondOpinionRequest.second_opinion_doctor == doctor_id) & 
+                    .where((SecondOpinionRequest.second_opinion_doctor == doctor_id) &
                            (Room.id.not_in(joined_rooms))))
 
     # Fetch full room details using an assumed function `get_room` for fetching detailed room information

@@ -89,7 +89,7 @@ def on_disconnect():
 
     session = get_session()
     print(f"User disconnected:\n"
-          f"    User ID: {session['user']['id']};"
+          f"    User ID: {session['user']['userId']};"
           f"    User Name: {session['user']['name']}.")
 
     # leaving rooms is done by the framework
@@ -119,8 +119,10 @@ def analyze_terms(text: str, text_lan: str) -> list[(int, int)]:
     term_pairs = []
     terms = GPT.extract_medical_term(text_lan, text)
     for term in terms:
-        found_synonyms = (db.data_models.MedicalTermSynonym.select()
-                          .where(db.data_models.MedicalTermSynonym.synonym in term['synonyms']))
+        found_synonyms = []
+        for synonym in term['synonyms']:
+            found_synonyms += list(db.data_models.MedicalTermSynonym.select()
+                                   .where(db.data_models.MedicalTermSynonym.synonym == synonym))
 
         if len(found_synonyms) == 0:
             # It's new. So search for explanation, and save
@@ -169,7 +171,7 @@ def make_message(message_id: int, src_lan: str, target_lan: str) -> None:
         for term_pair in translated_pairs:
             db.data_models.MessageTermCache.create(
                 message=message_id,
-                term=term_pair[0],
+                medical_term=term_pair[0],
                 translated_synonym=term_pair[1]
             )
     else:
@@ -178,7 +180,7 @@ def make_message(message_id: int, src_lan: str, target_lan: str) -> None:
         for term_pair in term_pairs:
             db.data_models.MessageTermCache.create(
                 message=message_id,
-                term=term_pair[0],
+                medical_term=term_pair[0],
                 original_synonym=term_pair[1]
             )
 
@@ -230,6 +232,11 @@ def message(json: dict):
         return
 
     message_id = save_client_message(session, json['text'], json['timestamp'].split('Z')[0])
+    emit(
+        'message',
+        db.message_op.get_message(roomId, message_id, session['user']['language']),
+        to=session['sid']
+    )
 
     """
     translation target. If session user is the patient, target_lan should be the doctor's lan. If session user is the
@@ -260,7 +267,8 @@ def message(json: dict):
         make_message(doctor_msg_id, session['user']['language'], target_lan)
 
     # Forward enhanced message on to receiving client
-    emit('message', db.message_op.get_message(roomId, doctor_msg_id, target_lan), to=roomId)
+    data = db.message_op.get_message(roomId, doctor_msg_id, target_lan)
+    emit('message', data, to=roomId)
 
 
 @socketio.on('ping-pong')
