@@ -4,9 +4,10 @@ from datetime import datetime
 from flask import request
 from flask_socketio import emit, disconnect, join_room
 
+import GPT
 from . import socketio
 from . import database as db
-from src.GPT import get_ai_doctor
+from src.GPT import get_ai_doctor, translate_to
 
 """
 wsSession = [{
@@ -128,15 +129,61 @@ def chat_with_bot(session: dict, json: dict) -> int:
     return db.message_op.save_message_only(0, roomId, bot_msg, datetime.now())
 
 
-def make_message(message_id: int, translation: str | None = None) -> dict:
+def analyze_terms(text: str, text_lan: str) -> list[int]:
     """
-    For all the messages sending to the front end:
     1. Get terms by GPT.
     2. If terms exists in the database, send the data stored in the database.
     3. If terms does not exist, ask GPT for information and possible wiki links of the term. Send the data, and
         store them in the database.
+    """
+
+    term_ids = []
+    terms = GPT.extract_medical_term(text_lan, text)
+    for term in terms:
+        foundTerms = (db.data_models.MedicalTermSynonym.select()
+                      .where(db.data_models.MedicalTermSynonym.synonym in term['synonyms']))
+
+        # TODO
+        term_id: int = 0
+        if not len(foundTerms):
+            # term_id = Create new term
+            pass
+            # Get new term info by GPT
+            pass
+        else:
+            term_id = foundTerms[0].medical_term
+        term_ids.append(term_id)
+
+        stored_synonyms = (db.data_models.MedicalTermSynonym.select()
+                           .where(db.data_models.MedicalTermSynonym.medical_term == term_id))
+        new_synonyms = [synonym for synonym in term['synonyms'] if synonym not in stored_synonyms]
+        for new_syn in new_synonyms:
+            db.data_models.MedicalTermSynonym.create(
+                medical_term=term_id,
+                synonym=new_syn,
+                language_code=text_lan
+            )
+
+    return term_ids
+
+
+def make_message(message_id: int, src_lan: str, target_lan: str) -> dict:
+    """
     4. After 2&3, store the terms in the chat history
     """
+    msg_text = db.data_models.Message.get(db.data_models.Message.id == message_id).text
+
+    term_id_list = analyze_terms(msg_text, src_lan)
+
+    if src_lan != target_lan:
+        translation = translate_to(target_lan, msg_text)
+        db.data_models.MessageTranslationCache.create(
+            message=message_id,
+            language_code=target_lan,
+            translated_text=translation
+        )
+        translated_term_id_list = analyze_terms(translation, target_lan)
+
     return {}
 
 
@@ -190,7 +237,7 @@ def message(json: dict):
         doctor_msg_id = message_id
         patient_id = db.data_models.Room.get(db.data_models.Room.id == roomId).patient
         target_lan = db.data_models.Patient.get(db.data_models.BaseUser.id == patient_id).language_code
-        make_message(doctor_msg_id)
+        make_message(doctor_msg_id, )
 
     # Forward enhanced message on to receiving client
     emit('message', db.message_op.get_message(roomId, doctor_msg_id, target_lan), to=roomId)

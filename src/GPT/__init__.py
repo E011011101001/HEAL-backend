@@ -91,12 +91,4 @@ give advice. If the disease is beyond your control, please strongly recommend th
 
 
 from .translator import translate_to
-
-if __name__ == "__main__":
-
-    ai_doctor = get_ai_doctor('en')
-    print('')
-    print(f'>> {ai_doctor.gen_first_message()}')
-    for i in range(10):
-        input_msg = input('<< ')
-        print(f'>> {ai_doctor.chat(input_msg)}')
+from .chat_manager import extract_medical_term
