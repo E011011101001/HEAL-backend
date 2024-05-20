@@ -4,8 +4,6 @@
 import openai
 import os
 
-from .translator import translate_to
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
@@ -89,6 +87,8 @@ give advice. If the disease is beyond your control, please strongly recommend th
 """
     return ChatBot(language_code, ai_doctor_prompt)
 
+
+from .translator import translate_to
 
 if __name__ == "__main__":
 
