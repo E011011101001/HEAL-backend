@@ -135,8 +135,18 @@ class Report(Model):
 class MessageTermCache(Model):
     medical_term = ForeignKeyField(MedicalTerm, backref='message_term_caches', on_delete="CASCADE")
     message = ForeignKeyField(Message, backref='message_term_caches', on_delete="CASCADE")
-    original_synonym = ForeignKeyField(MedicalTermSynonym, backref='original_message_term_caches', null=True, on_delete="CASCADE")
-    translated_synonym = ForeignKeyField(MedicalTermSynonym, backref='translated_message_term_caches', null=True, on_delete="CASCADE")
+    original_synonym = ForeignKeyField(
+        MedicalTermSynonym,
+        backref='original_message_term_caches',
+        null=True,
+        on_delete="CASCADE"
+    )
+    translated_synonym = ForeignKeyField(
+        MedicalTermSynonym,
+        backref='translated_message_term_caches',
+        null=True,
+        on_delete="CASCADE"
+    )
 
     class Meta:
         database = db
