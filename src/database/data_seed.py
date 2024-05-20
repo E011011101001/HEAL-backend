@@ -34,6 +34,17 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
         date_of_birth=date(1985, 5, 10)
     )
 
+    # Create special AI doctor chatbot user
+    ai_doctor_user = BaseUser.create(
+        id=0,
+        email="aidoc@chatbot.com",
+        password=salted_hash("password"),
+        language_code="en",
+        name="AI Doctor Chatbot",
+        user_type=2,  # DOCTOR
+        date_of_birth=date(2020, 1, 1)  # Arbitrary date of birth
+    )
+
     # Create Patients
     Patient.create(
         base_user=patient_user.id,
@@ -52,6 +63,12 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
         base_user=doctor_user_2.id,
         specialisation="Cardiology",
         hospital="St Pauls Hospital"
+    )
+
+    Doctor.create(
+        base_user=ai_doctor_user.id,
+        specialisation="General Medicine",
+        hospital="Virtual Hospital"
     )
 
     # Create Medical Term for Condition

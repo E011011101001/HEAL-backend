@@ -230,3 +230,45 @@ def delete_user(user_id: int):
     """
     base_user = BaseUser.get(BaseUser.id == user_id)
     base_user.delete_instance()
+
+def get_all_doctors() -> list:
+    """
+    Get all doctor users.
+
+    Returns:
+    list: List of doctor users
+    """
+    query = BaseUser.select().join(Doctor).where(BaseUser.user_type == DOCTOR)
+    doctors = [
+        {
+            "id": doctor.id,
+            "email": doctor.email,
+            "name": doctor.name,
+            "specialisation": doctor.doctor.specialisation,
+            "language_code": doctor.language_code
+        }
+        for doctor in query
+    ]
+    return doctors
+
+def get_all_patients() -> list:
+    """
+    Get all patient users.
+
+    Returns:
+    list: List of patient users
+    """
+    query = BaseUser.select().join(Patient).where(BaseUser.user_type == PATIENT)
+    patients = [
+        {
+            "id": patient.id,
+            "email": patient.email,
+            "name": patient.name,
+            "date_of_birth": patient.date_of_birth.strftime('%Y-%m-%d'),
+            "height": patient.patient.height,
+            "weight": patient.patient.weight,
+            "language_code": patient.language_code
+        }
+        for patient in query
+    ]
+    return patients
