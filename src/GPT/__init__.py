@@ -4,7 +4,7 @@
 import openai
 import os
 
-from .translator import translate_to
+from src.GPT.translator import translate_to
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 

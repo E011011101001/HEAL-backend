@@ -134,16 +134,9 @@ def get_rooms_all(user_id) -> dict:
 
     return {"rooms": room_list}
 
-def get_room_requests_all() -> dict:
+def get_room_requests_all(user_id) -> dict:
     """
-    TODO: Chisa-san
     Get all room requests for doctor to join.
-
-    LOGIC:
-    List all rooms that only include the following
-    - exactly ONE patient user and example ONE doctor user
-    OR
-    - exactly ONE patient user and exactly THREE doctor users
 
     Parameters:
     user_id (int): ID of the doctor
@@ -151,7 +144,10 @@ def get_room_requests_all() -> dict:
     Returns:
     dict: List of rooms
     """
-    # rooms = Room.select().where(Room.patient == user_id)
+    rooms = Room.select().where(
+        (Room.doctor.contains(user_id))&
+         ((Room.patients.count() == 1)&
+          ((Room.doctor.count() == 1) | (Room.doctor.count() == 3))))
     room_list = []
 
     for room in rooms:

@@ -1,13 +1,11 @@
 import json
 
-from . import ChatBot
 from ..utils import print_info
-
 
 translators = {}
 
-
 def translate_to(lan_code: str, text: str):
+    from . import ChatBot
     translator = translators.get(lan_code)
     prompt = f"""You are a translator API and you speak in JSON. Please recognize the input language and translate it
 into the language specified by the language code {lan_code}. Normally, The format of your output content should be
