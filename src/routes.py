@@ -383,16 +383,54 @@ def get_rooms(user_id, _):
     }
     200 OK
     """
-    user_data = db.user.get_user_full(user_id)
-    if user_data['type'] == 'DOCTOR':
-        return {
-            "error": "forbiddenError",
-            "message": "Only patients can get rooms."
-        }
-
     data = db.room_op.get_rooms_all(user_id)
     return data, 200
 
+@app.route('/users/chats/requests', methods=['GET'])
+@login_required
+def get_requested_rooms(user_id, _):
+    """
+    Get all chat rooms for a that a doctor has been requested to join.
+
+    Response:
+    {
+        "rooms": [
+            {
+                "roomId": 1,
+                "roomName": "",
+                "creationTime": "2023-01-01T12:00:00",
+                "participants": [
+                    {
+                        "id": 1,
+                        "email": "test@gmail.com",
+                        "language_code": "en",
+                        "name": "John Doe",
+                        "user_type": 1,
+                        "date_of_birth": "1990-12-25"
+                    },
+                    {
+                        "id": 2,
+                        "email": "doctor@gmail.com",
+                        "language_code": "jp",
+                        "name": "Dr. Smith",
+                        "user_type": 2,
+                        "date_of_birth": "1980-02-15"
+                    }
+                ]
+            }
+        ]
+    }
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] == 'PATIENT':
+        return {
+            "error": "forbiddenError",
+            "message": "Only doctors can get hospital room requests."
+        }
+
+    data = db.room_op.get_room_requests_all()
+    return data, 200
 
 # Message Management
 @app.route('/chats/<int:room_id>/messages', methods=['GET'])
@@ -1084,3 +1122,84 @@ def create_consultation(user_id, _):
             'error': 'databaseError',
             'message': str(e)
         }, 500
+
+
+"""
+Specialised Doctor Screen Endpoints
+
+
+Get pending pateint requests
+
+
+Get all unapproved medical terms
+"""
+
+
+
+
+# Get all doctor users
+@app.route('/users/doctors', methods=['GET'])
+@login_required
+def get_all_doctors(_, __):
+    """
+    Get all doctor users.
+
+    Response:
+    {
+        "doctors": [
+            {
+                "id": 1,
+                "email": "doctor1@example.com",
+                "name": "Dr. John Doe",
+                "specialisation": "Cardiology",
+                "language_code": "en"
+            },
+            {
+                "id": 2,
+                "email": "doctor2@example.com",
+                "name": "Dr. Jane Smith",
+                "specialisation": "Dermatology",
+                "language_code": "jp"
+            }
+        ]
+    }
+    200 OK
+    """
+    doctors = db.user.get_all_doctors()
+    return jsonify({"doctors": doctors}), 200
+
+
+# Get all patient users
+@app.route('/users/patients', methods=['GET'])
+@login_required
+def get_all_patients(_, __):
+    """
+    Get all patient users.
+
+    Response:
+    {
+        "patients": [
+            {
+                "id": 1,
+                "email": "patient1@example.com",
+                "name": "John Doe",
+                "date_of_birth": "1990-12-25",
+                "height": 180,
+                "weight": 75,
+                "language_code": "en"
+            },
+            {
+                "id": 2,
+                "email": "patient2@example.com",
+                "name": "Jane Smith",
+                "date_of_birth": "1985-02-15",
+                "height": 165,
+                "weight": 60,
+                "language_code": "jp"
+            }
+        ]
+    }
+    200 OK
+    """
+    patients = db.user.get_all_patients()
+    return jsonify({"patients": patients}), 200

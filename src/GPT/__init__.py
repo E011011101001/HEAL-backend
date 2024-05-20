@@ -4,6 +4,8 @@
 import openai
 import os
 
+from .translator import translate_to
+
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
@@ -24,7 +26,7 @@ def send_msg_to_gpt(messages: list[dict]):
 class ChatBot:
     first_msg_generated = False
 
-    def __init__(self, language: str, init_prompt: str):
+    def __init__(self, language: str = 'en', init_prompt: str = ''):
         self.lan = language
         lan_prompt = f"Please respond in the language corresponding to the language code `{self.lan}`."
         self.prompt = init_prompt + ' ' + lan_prompt
@@ -69,6 +71,8 @@ The following is an example in Japanese:
 ・（あるなら）そのときの病名は何か
 ・現在服用している薬はあるか（１ある・２なし）
 ・（あるなら）薬の名前は何か
+・アレルギーはありますか（１ある・２なし）
+・（あるなら）それは何か
 ・たばこは吸うか（１吸わない・２吸う・３過去に吸っていた）
 ・（吸うなら）１日何本吸っているか
 ・（吸うなら）約何年間吸っているか

@@ -119,6 +119,25 @@ def save_client_message(session: dict, text: str, time_iso_format: str) -> int:
     return message_id
 
 
+def chat_with_bot(session: dict, json: dict) -> None:
+    global chatBots
+    roomId = session['roomId']
+    user_msg = json['text']
+
+    if chatBots.get(roomId) is None:
+        # TODO: implement chat bot
+        # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
+        # So have the system save their message, enhance it and send it.
+        chatBots[roomId] = get_ai_doctor(session['user']['language'])
+    chatBot = chatBots[roomId]
+
+    bot_msg = chatBot.chat(user_msg)
+
+    db.message_op.save_message_only(0, roomId, bot_msg, datetime.now())
+
+    emit('message', make_message(bot_msg))
+
+
 @socketio.on('message')
 def message(json: dict):
     """
@@ -144,14 +163,8 @@ def message(json: dict):
     roomId = session['roomId']
     doctors = db.room_op.get_room_doctor_ids(roomId)
     if len(doctors) == 0:
+        chat_with_bot(session, json)
         # stage == 1
-        if chatBots.get(roomId) is None:
-            # TODO: implement chat bot
-            # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
-            # So have the system save their message, enhance it and send it.
-            chatBots[roomId] = get_ai_doctor(session['user']['language'])
-        chatBot = chatBots[roomId]
-        emit('message', make_message(chatBot.chat(json['text'])))
         return
 
     # stage == 2
