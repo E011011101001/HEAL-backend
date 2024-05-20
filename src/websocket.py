@@ -4,7 +4,6 @@ from datetime import datetime
 from flask import request
 from flask_socketio import emit, disconnect, join_room
 
-import GPT
 from . import socketio
 from . import database as db
 from src.GPT import get_ai_doctor, translate_to
