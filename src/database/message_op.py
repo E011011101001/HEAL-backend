@@ -183,6 +183,50 @@ def get_term(term_id, language_code):
         ]
     }
 
+def get_terms_approved(language_code: str):
+    """
+    Get approved medical terms.
+
+    Parameters:
+    language_code (str): Language code for the response
+
+    Returns:
+    dict: List of approved medical terms
+    """
+    approved_terms = MedicalTermInfo.select().where(MedicalTermInfo.approved == True)
+    term_list = []
+
+    for term in approved_terms:
+        term_id = term.medical_term.id
+        term_info = get_term(term_id, language_code)
+        term_list.append(term_info)
+
+    return {
+        "medicalTerms": term_list
+    }
+
+def get_terms_unapproved(language_code: str):
+    """
+    Get unapproved medical terms.
+
+    Parameters:
+    language_code (str): Language code for the response
+
+    Returns:
+    dict: List of unapproved medical terms
+    """
+    unapproved_terms = MedicalTermInfo.select().where(MedicalTermInfo.approved == False)
+    term_list = []
+
+    for term in unapproved_terms:
+        term_id = term.medical_term.id
+        term_info = get_term(term_id, language_code)
+        term_list.append(term_info)
+
+    return {
+        "medicalTerms": term_list
+    }
+
 
 def get_terms_all(language_code: str):
     """
