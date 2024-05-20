@@ -52,10 +52,12 @@ def user_register():
         }, 409
 
     data.setdefault('language', 'en')
+    new_user_id = db.user.create_user(data)
+    token = db.user.new_session_by_id(new_user_id)
     return {
-        'userId': db.user.create_user(data)
+        'user': db.user.get_user_full(new_user_id),
+        'token': token
     }, 201
-
 
 @app.route('/users/<int:user_id>', methods=['GET'])
 @login_required
@@ -260,15 +262,6 @@ def create_room(user_id, _):
 
     # create room
     room_id = db.room_op.create_room(user_id)
-
-    # add chatbot to room
-    chatbot_user_id = 0
-    added = db.room_op.participant_room(chatbot_user_id, room_id)
-    if not added:
-        return {
-            "error": "conflictError",
-            "message": "The doctor is already in the room."
-        }, 409
 
     data = db.room_op.get_room(room_id)
     return data, 201
@@ -1167,3 +1160,115 @@ def get_all_patients(_, __):
     """
     patients = db.user.get_all_patients()
     return jsonify({"patients": patients}), 200
+
+
+@app.route('/chats/step1', methods=['GET'])
+@login_required
+def list_step1_rooms(user_id, _):
+    """
+    Get all rooms that only have a patient and the chatbot (user_id=0).
+
+    Response:
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] != 'DOCTOR':
+        return {
+            "error": "forbiddenError",
+            "message": "Only doctors can access this endpoint."
+        }, 403
+
+    step1_rooms = db.room_op.get_step1_rooms()
+    return jsonify({"rooms": step1_rooms}), 200
+
+
+@app.route('/chats/step2', methods=['GET'])
+@login_required
+def list_step2_rooms(user_id, _):
+    """
+    Get all rooms that a doctor has joined.
+
+    Response:
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] != 'DOCTOR':
+        return {
+            "error": "forbiddenError",
+            "message": "Only doctors can access this endpoint."
+        }, 403
+
+    step2_rooms = db.room_op.get_step2_rooms(user_id)
+    return jsonify({"rooms": step2_rooms}), 200
+
+
+@app.route('/chats/step3', methods=['GET'])
+@login_required
+def list_step3_rooms(user_id, _):
+    """
+    Get all rooms that a doctor has not joined but includes their user_id in the second_opinion_doctor field.
+
+    Response:
+    200 OK
+    """
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] != 'DOCTOR':
+        return {
+            "error": "forbiddenError",
+            "message": "Only doctors can access this endpoint."
+        }, 403
+
+    step3_rooms = db.room_op.get_step3_rooms(user_id)
+    return jsonify({"rooms": step3_rooms}), 200
+
+
+@app.route('/chats/<int:room_id>/second-opinion/<int:doctor_id>', methods=['POST'])
+@login_required
+def add_second_opinion_doctor(_, __, room_id, doctor_id):
+    """
+    Assign a doctor as a second opinion doctor for a specific room.
+
+    URL Parameters:
+    room_id: int - ID of the room
+    doctor_id: int - ID of the doctor to be assigned as second opinion
+
+    Response:
+    201 Created
+    """
+    try:
+        # Check if the room exists
+        if not db.room_op.check_room(room_id):
+            return {
+                "error": "NotFoundError",
+                "message": "Room not found."
+            }, 404
+        
+        # Check if the doctor exists
+        if not db.user.get_user_full(doctor_id) or db.user.get_user_full(doctor_id)['user_type'] != 2:
+            return {
+                "error": "NotFoundError",
+                "message": "Doctor not found."
+            }, 404
+
+        # Check if the second opinion request already exists
+        existing_request = db.SecondOpinionRequest.get_or_none(db.SecondOpinionRequest.room == room_id, db.SecondOpinionRequest.second_opinion_doctor == doctor_id)
+        if existing_request:
+            return {
+                "error": "conflictError",
+                "message": "Second opinion already requested for this doctor in this room."
+            }, 409
+        
+        # Create the second opinion request
+        db.SecondOpinionRequest.create(
+            room=room_id,
+            requesting_doctor=db.user.get_doctor_id_from_user_id(__),  # Assuming you have a utility to extract doctor ID from user ID
+            second_opinion_doctor=doctor_id
+        )
+        return {
+            "message": "Second opinion doctor assigned successfully."
+        }, 201
+    except Exception as e:
+        return {
+            "error": "ServerError",
+            "message": str(e)
+        }, 500

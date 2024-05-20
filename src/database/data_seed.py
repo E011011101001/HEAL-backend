@@ -3,7 +3,7 @@ from datetime import datetime, date
 
 from ..utils import salted_hash
 
-def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
+def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionRequest, MedicalTerm,
         MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache,
         MessageTranslationCache, PatientCondition, PatientPrescription):
     # Create Users
@@ -224,3 +224,62 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
     )
 
     print("Initial data seeded.")
+
+    # More Doctors
+    doctor_user_3 = BaseUser.create(
+        email="cardio_doctor@gmail.com",
+        password=salted_hash("password"),
+        language_code="jp",
+        name="Dr. Hiro",
+        user_type=2,  # DOCTOR
+        date_of_birth=date(1975, 8, 20)
+    )
+
+    Doctor.create(
+        base_user=doctor_user_3.id,
+        specialisation="Neurology",
+        hospital="Osaka Medical Center"
+    )
+
+    # New Room without any doctor joined
+    room2 = Room.create(
+        patient=patient_user.id,
+        creation_time=datetime.now()
+    )
+
+    # New Room with one doctor
+    room3 = Room.create(
+        patient=patient_user.id,
+        creation_time=datetime.now()
+    )
+
+    DoctorInRoom.create(
+        doctor=doctor_user_3.id,
+        room=room3.id,
+        joined_time=datetime.now(),
+        enabled=True
+    )
+
+    # Second Opinion Request targeting a doctor who hasn't joined yet
+    SecondOpinionRequest.create(
+        room=room3.id,
+        requesting_doctor=doctor_user_1.id,
+        second_opinion_doctor=doctor_user_2.id
+    )
+
+    # Messages for the new rooms
+    Message.create(
+        user=patient_user.id,
+        room=room2.id,
+        text="I feel dizzy and have headaches.",
+        send_time=datetime.now()
+    )
+
+    Message.create(
+        user=doctor_user_3.id,
+        room=room3.id,
+        text="It seems like you might need a neurology consult.",
+        send_time=datetime.now()
+    )
+
+    print("Additional data seeded.")

@@ -1,8 +1,8 @@
 # src/database/room_op.py
-from peewee import DoesNotExist
+from peewee import DoesNotExist, JOIN, fn
 from datetime import datetime
 
-from .data_models import Room, DoctorInRoom
+from .data_models import Room, DoctorInRoom, SecondOpinionRequest
 from .user_op import get_user_full
 
 
@@ -173,3 +173,81 @@ def get_room_doctor_ids(roomId: int) -> list[int]:
     """
 
     return [doctor.doctor_id for doctor in DoctorInRoom.select().where(DoctorInRoom.room == roomId and DoctorInRoom.enabled)]
+
+def get_step1_rooms():
+    """
+    Get all rooms that only have a patient and no doctors.
+
+    Returns:
+    list: List of rooms
+    """
+    active_doctors_rooms = (DoctorInRoom
+                            .select(DoctorInRoom.room)
+                            .where(DoctorInRoom.enabled == True)
+                            .distinct())
+
+    # Main query to select rooms that are not in the list of rooms with active doctors
+    rooms_with_no_doctors = (Room
+                             .select()
+                             .where(Room.id.not_in(active_doctors_rooms)))
+
+    # Fetch full room details using an existing function assumed to fetch detailed room information
+    room_list = []
+    for room in rooms_with_no_doctors:
+        room_data = get_room(room.id)
+        room_list.append(room_data)
+
+    return room_list
+
+def get_step2_rooms(doctor_id):
+    """
+    Get all rooms that a doctor has joined.
+
+    Parameters:
+    doctor_id (int): ID of the doctor
+
+    Returns:
+    list: List of rooms
+    """
+    # Query to find all rooms that the doctor has joined
+    rooms_joined = (DoctorInRoom
+                    .select(DoctorInRoom.room)
+                    .where((DoctorInRoom.doctor == doctor_id) & (DoctorInRoom.enabled == True)))
+
+    # Fetch full room details using an assumed function `get_room` for fetching detailed room information
+    room_list = []
+    for doctor_in_room in rooms_joined:
+        room_data = get_room(doctor_in_room.room.id)
+        room_list.append(room_data)
+
+    return room_list
+
+def get_step3_rooms(doctor_id):
+    """
+    Get all rooms that a doctor has not joined but includes their user_id in the second_opinion_doctor field.
+
+    Parameters:
+    doctor_id (int): ID of the doctor
+
+    Returns:
+    list: List of rooms
+    """
+    # Subquery to find rooms that the doctor has joined
+    joined_rooms = (DoctorInRoom
+                    .select(DoctorInRoom.room)
+                    .where(DoctorInRoom.doctor == doctor_id))
+
+    # Main query to select rooms where there is a second opinion request for this doctor and the doctor hasn't joined the room
+    target_rooms = (Room
+                    .select()
+                    .join(SecondOpinionRequest, on=(Room.id == SecondOpinionRequest.room))
+                    .where((SecondOpinionRequest.second_opinion_doctor == doctor_id) & 
+                           (Room.id.not_in(joined_rooms))))
+
+    # Fetch full room details using an assumed function `get_room` for fetching detailed room information
+    room_list = []
+    for room in target_rooms:
+        room_data = get_room(room.id)
+        room_list.append(room_data)
+
+    return room_list

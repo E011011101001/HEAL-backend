@@ -72,6 +72,14 @@ class DoctorInRoom(Model):
         database = db
         primary_key = CompositeKey('doctor', 'room', 'joined_time')
 
+class SecondOpinionRequest(Model):
+    id = AutoField()
+    room = ForeignKeyField(Room, backref='second_opinion_requests', on_delete='CASCADE')
+    requesting_doctor = ForeignKeyField(Doctor, backref='requested_second_opinions', on_delete='CASCADE')
+    second_opinion_doctor = ForeignKeyField(Doctor, backref='second_opinion_assignments', null=True, on_delete='CASCADE')
+
+    class Meta:
+        database = db
 
 class MedicalTerm(Model):
     id = AutoField()
@@ -186,6 +194,7 @@ def init():
         Session,
         Room,
         DoctorInRoom,
+        SecondOpinionRequest,
         MedicalTerm,
         MedicalTermSynonym,
         MedicalTermInfo,
@@ -197,7 +206,7 @@ def init():
         PatientPrescription
     ])
     print_info("Database tables created.")
-    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, MedicalTerm,
+    seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionRequest, MedicalTerm,
               MedicalTermSynonym, MedicalTermInfo, Message, MessageTermCache,
               MessageTranslationCache, PatientCondition, PatientPrescription)
     print_info("Database seeded with initial data.")
