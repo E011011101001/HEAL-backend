@@ -5,8 +5,8 @@ def extract_medical_term(lan_code, text) -> list[dict]:
     extract medical terms in sentences
 
     Request:
-    str: string - original sentences
-    errorString: string - message when unexpected input
+    lan_code: string
+    text: string - original sentences
 
     Response:
     [
@@ -31,22 +31,29 @@ def extract_medical_term(lan_code, text) -> list[dict]:
 
     return termDictList
 
-def explain_medical_term(lan, term, errorString):
+def explain_medical_term(lan_code, term):
     """
     explain medical term
 
     Request:
-    lan: string - target language ex. 'en', 'jp', 'French'
+    lan_code: string
     term: string - a medical term
-    errorString: string - message when unexpected input
 
     Response:
     {
-        "exp": "covid-19 is ___",
-        "link": "https://___"
+        "type": "CONDITION"
+        "description": "covid-19 is ___",
+        "url": "https://___"
     }
     """
-    HL = highlighter.highlighter(lan)
-    res = HL.search_med_term(term, errorString)
+    termType = highlighter.get_termType(lan_code, term)
+    termDescription = highlighter.explain_med_term(lan_code, term)
+    termUrl = highlighter.get_url(lan_code, term)
+
+    res = {
+        "type": termType,
+        "description": termDescription,
+        "url": termUrl
+    }
 
     return res

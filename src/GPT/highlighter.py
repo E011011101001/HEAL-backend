@@ -18,6 +18,11 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 extractors: dict[str, ChatBot] = {}
 synonymGetters: dict[str, ChatBot] = {}
+typeGetters: dict[str, ChatBot] = {}
+explainers: dict[str, ChatBot] = {}
+urlGetters: dict[str, ChatBot] = {}
+wikiUrlGetters: dict[str, ChatBot] = {}
+
 
 def search_med_term(lan_code, text, error="None"):
     global extractors
@@ -45,6 +50,8 @@ If there are no medical terms or unexpected input occurs, output {error}.
     return resList
 
 def get_synonym(lan_code, term, error="None"):
+    global synonymGetters
+
     prompt_syn = f"""
 List synonyms that have the same meaning as {term} in {lan_code}.
 Output in the list format like synonymA,synonymB,synonymC.
@@ -65,6 +72,99 @@ If there are no synonyms terms or unexpected input occurs, output {error}.
     resList = res.split(",")
     return resList
 
+def get_termType(lan_code, term, error="GENERAL"):
+    global typeGetters
+
+    prompt_type = f"""
+Classify the following medical terms into one of the three categories: 'CONDITION,' 'PRESCRIPTION,' or 'GENERAL'.
+No more extra output. Just simply categories output like "CONDITION".
+If another unexpected input occurs like a sentence, output {error}.
+"""
+    typeGetter = typeGetters.get(lan_code)
+    if typeGetter is None:
+        typeGetter = ChatBot(lan_code, prompt_type)
+        typeGetters[lan_code] = typeGetter
+
+    res = typeGetter.chat(term)
+
+    return res
+
+def explain_med_term(lan_code, term, error="None"):
+    global explainers
+
+    prompt_exp = f"""
+Explain the following **medical terms** in a sentence in {lan_code} simply.
+No more extra output. Just simply explanation output.
+If another language is entered, please explain the word in {lan_code}.
+If another unexpected input occurs like a sentence, output {error}.
+"""
+    explainer = explainers.get(lan_code)
+
+    if explainer is None:
+        explainer = ChatBot(lan_code, prompt_exp)
+        explainers[lan_code] = explainer
+
+    res = explainer.chat(term)
+
+    return res
+
+def check_url(url):
+    validUrl = True
+    try:
+        tmp = urllib.request.urlopen(url)
+        tmp.close()
+    except urllib.error.HTTPError as e:
+        if e.code == 403:  # Forbidden Error
+            return True
+        else:
+            return False
+    except Exception as e:
+        return False
+
+    return validUrl
+
+def get_url(lan_code, term, error="None"):
+    # chatgpt CANNOT confirm the site of link
+    # if getting only wikipedia is OK, just prompt_wiki_url is enough
+    global urlGetters
+    global wikiUrlGetters
+
+    prompt_url = f"""
+Output only the **URL** of the site that **certainly explains the following medical term** in {lan_code}.
+No more extra output. Just simply URL output.
+If unexpected input occurs like long sentences, output {error}.
+Please try to refer to the most reliable sites about following medical term.
+"""
+    prompt_wiki_url = f"""
+Output only the **wikipedia URL** that explains the following medical term in {lan_code}.
+No more extra output. Just simply URL output.
+If unexpected input occurs like long sentences, output {error}.
+For example, when language code is jp, inputting リウマチ熱, output https://ja.wikipedia.org/wiki/%E3%83%AA%E3%82%A6%E3%83%9E%E3%83%81%E7%86%B1
+"""
+
+    urlGetter = urlGetters.get(lan_code)
+    if urlGetter is None:
+        urlGetter = ChatBot(lan_code, prompt_url)
+        urlGetters[lan_code] = urlGetter
+
+    res = urlGetter.chat(term)
+
+    urlstr = error
+
+    if check_url(res):
+        urlstr = res
+    else:
+        wikiUrlGetter = wikiUrlGetters.get(lan_code)
+        if wikiUrlGetter is None:
+            wikiUrlGetter = ChatBot(lan_code, prompt_wiki_url)
+            wikiUrlGetters[lan_code] = wikiUrlGetter
+
+        res = wikiUrlGetter.chat(term)
+
+        if check_url(res2):
+            urlstr = res2
+
+    return urlstr
 
 class Highlighter():
     def __init__(self, lan, history=[]):
@@ -81,8 +181,8 @@ class Highlighter():
 
             userText = not userText
 
-    def search_translated_med_term(self, speak, original_text, termList, error="None"):
-
+    def search_translated_med_term(self, trans_text, original_text, termList, error="None"):
+        #[A, B, C]
         prompt = f"""
 The medical term list {termList} is extracted from the text "{original_text}".
 Extract terms with the same meaning from the following text written in different languages in the same order.
@@ -100,37 +200,9 @@ If there are no medical terms or unexpected input occurs, output {error}.
             return []
 
         resList = ast.literal_eval(res)
+
+        #[[A, tA],[B, tB],[C, tC]]
         return resList
-
-    def check_url(self, url):
-        validUrl = True
-        try:
-            tmp = urllib.request.urlopen(url)
-            tmp.close()
-        except urllib.error.HTTPError as e:
-            if e.code == 403:  # Forbidden Error
-                return True
-            else:
-                return False
-        except Exception as e:
-            return False
-
-        return validUrl
-
-    def explain_med_term(self, speak, error="None"):
-
-        prompt_exp = f"""
-Explain the following **medical terms** in a sentence in {self.lan} simply.
-No more extra output. Just simply explanation output.
-If another language is entered, please explain the word in {self.lan}.
-If another unexpected input occurs like a sentence, output {error}.
-"""
-
-        # Creating Chatbot Instances
-        exp = ChatBot(self.lan, prompt_exp)
-        res = exp.speak_to_gpt(speak)
-
-        return res
 
     def get_url(self, term, error="None"):
         prompt_url = f"""
@@ -165,22 +237,6 @@ For example, when language code is ja, inputting リウマチ熱, output https:/
                 urlstr = res2
 
         return urlstr
-
-    def get_synonym(self, term, error="None"):
-        prompt_syn = f"""
-List synonyms that have exactly the same meaning as {term} in {self.lan}.
-Output in the list format like 'synonymA','synonymB','synonymC'.
-No more extra output. Just simply list output.
-If there are no synonyms terms or unexpected input occurs, output {error}.
-"""
-        syn = ChatBot(self.lan, prompt_syn)
-        res = syn.speak_to_gpt(term)
-
-        if res == error:
-            return []
-
-        resList = res.split(",")
-        return resList
 
     def get_termType(self, term, error="GENERAL"):
         prompt_type = f"""
