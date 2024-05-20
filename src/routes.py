@@ -258,8 +258,20 @@ def create_room(user_id, _):
             "message": "Only patients can create rooms."
         }
 
+    # create room
     room_id = db.room_op.create_room(user_id)
-    return {'roomId': room_id}, 201
+
+    # add chatbot to room
+    chatbot_user_id = 0
+    added = db.room_op.participant_room(chatbot_user_id, room_id)
+    if not added:
+        return {
+            "error": "conflictError",
+            "message": "The doctor is already in the room."
+        }, 409
+
+    data = db.room_op.get_room(room_id)
+    return data, 201
 
 
 @app.route('/chats/<int:room_id>', methods=['GET', 'DELETE'])
@@ -621,6 +633,17 @@ def get_terms(_, language_code):
     }
     200 OK
     """
+    if request.args.get('approved') == "True":
+        # Get list of approved medical terms
+        print("GET ONLY APPROVED")
+    elif request.args.get('approved') == "False":
+        # Get list of unapproved medical terms
+        print("GET ONLY UNAPPROVED")
+    else:
+        # Get ALL medical terms
+        print("GET ALL")
+        data = db.message_op.get_terms_all(language_code)
+
     data = db.message_op.get_terms_all(language_code)
     return data
 

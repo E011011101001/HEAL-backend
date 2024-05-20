@@ -104,6 +104,7 @@ class MedicalTermInfo(Model):
     name = TextField()
     description = TextField()
     url = TextField(null=True)
+    approved = BooleanField(default=False)
 
     class Meta:
         database = db
