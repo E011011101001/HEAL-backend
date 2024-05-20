@@ -6,7 +6,7 @@ from flask_socketio import emit, disconnect, join_room
 
 from . import socketio
 from . import database as db
-from src.GPT import get_ai_doctor, translate_to
+from src import GPT
 
 """
 wsSession = [{
@@ -159,7 +159,7 @@ def make_message(message_id: int, src_lan: str, target_lan: str) -> None:
     msg_text = db.data_models.Message.get(db.data_models.Message.id == message_id).text
 
     if src_lan != target_lan:
-        translation = translate_to(target_lan, msg_text)
+        translation = GPT.translate_to(target_lan, msg_text)
         db.data_models.MessageTranslationCache.create(
             message=message_id,
             language_code=target_lan,
@@ -197,7 +197,7 @@ def chat_with_bot(session: dict, json: dict) -> int:
         # TODO: implement chat bot
         # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
         # So have the system save their message, enhance it and send it.
-        chatBots[roomId] = get_ai_doctor(lan)
+        chatBots[roomId] = GPT.get_ai_doctor(lan)
     chatBot = chatBots[roomId]
 
     bot_msg = chatBot.chat(user_msg)
