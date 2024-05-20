@@ -91,4 +91,4 @@ give advice. If the disease is beyond your control, please strongly recommend th
 
 
 from .translator import translate_to
-from .chat_manager import extract_medical_term
+from .chat_manager import extract_medical_term, explain_medical_term

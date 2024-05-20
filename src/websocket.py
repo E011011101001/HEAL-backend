@@ -123,15 +123,17 @@ def analyze_terms(text: str, text_lan: str) -> list[(int, int)]:
         found_synonyms = (db.data_models.MedicalTermSynonym.select()
                           .where(db.data_models.MedicalTermSynonym.synonym in term['synonyms']))
 
-        # TODO
-        term_id: int = 0
         if len(found_synonyms) == 0:
-            # term_id = Create new term
-            pass
-            # Get new term info by GPT
-            pass
-            # Save term info with term_id
-            pass
+            # It's new. So search for explanation, and save
+            term_explanation = GPT.explain_medical_term(text_lan, term['term'])
+            term_id = db.data_models.MedicalTerm.create(term_type=term_explanation['type']).id
+            db.data_models.MedicalTermInfo.create(
+                medical_term=term_id,
+                language_code=text_lan,
+                name=term['term'],
+                description=term_explanation['description'],
+                url=term_explanation['url']
+            )
         else:
             term_id = found_synonyms[0].medical_term
 
