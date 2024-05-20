@@ -44,7 +44,6 @@ class ChatBot:
         return response
 
     def speak_to_gpt(self, utterance):
-        print(f"Received {utterance}")
 
         messages=[
             {"role": "system", "content": self.system_content1},
