@@ -119,7 +119,7 @@ def add_condition(patient_id: int, medical_term_id: int, condition_info: dict):
     new_condition.save()
 
 
-def update_condition(condition_id: int, medical_term_id: int, condition_info: dict, language_code: str):
+def update_condition(condition_id: int, condition_info: dict):
     """
     Update a patient's condition.
 

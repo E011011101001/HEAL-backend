@@ -864,15 +864,14 @@ def create_patient_condition(user_id, __, patient_id, medical_term_id):
     return '', 201
 
 
-@app.route('/patients/conditions/<int:condition_id>/<int:medical_term_id>', methods=['PUT'])
+@app.route('/patients/conditions/<int:condition_id>', methods=['PUT'])
 @login_required
-def update_patient_condition(user_id, language_code, condition_id, medical_term_id):
+def update_patient_condition(user_id, __, condition_id):
     """
     Update a condition for a patient.
 
     URL Parameters:
     condition_id: int - ID of the condition
-    medical_term_id: int - ID of the medical term
 
     Request JSON body example:
     {
@@ -917,7 +916,7 @@ def update_patient_condition(user_id, language_code, condition_id, medical_term_
             "message": "Only doctors can update conditions."
         }
 
-    updated_condition = db.condition_op.update_condition(condition_id, medical_term_id, data, language_code)
+    updated_condition = db.condition_op.update_condition(condition_id, data)
     return updated_condition, 200
 
 
