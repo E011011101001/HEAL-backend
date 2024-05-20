@@ -1022,3 +1022,65 @@ def delete_patient_prescription(user_id, __, prescription_id):
 
     db.condition_op.delete_prescription(prescription_id)
     return '', 204
+
+
+@app.route('/consultations/create', methods=['POST'])
+@login_required
+def create_consultation(user_id, _):
+    """
+    Create a new consultation room.
+
+    Request:
+    {}
+
+    Response:
+    {
+        "roomId": 1,
+        "roomName": "",
+        "creationTime": "2023-01-01T12:00:00",
+        "participants": [
+            {
+                "id": 1,
+                "email": "patient@gmail.com",
+                "language_code": "en",
+                "name": "John Doe",
+                "user_type": 1,
+                "date_of_birth": "1990-12-25"
+            },
+            {
+                "id": 0,
+                "email": "chatbot@doctor.com",
+                "language_code": "en",
+                "name": "AI Doctor",
+                "user_type": 2,
+                "date_of_birth": "2000-01-01"
+            }
+        ]
+    }
+    201 Created
+    """
+    # Verify the user is a patient
+    user_data = db.user.get_user_full(user_id)
+    if user_data['type'] != 'PATIENT':
+        return {
+            "error": "forbiddenError",
+            "message": "Only patients can create consultations."
+        }, 403
+
+    try:
+        # Create a new room
+        room_id = db.room_op.create_room(user_id)
+
+        # Add the chatbot doctor (user_id=0) to the room
+        db.room_op.participant_room(0, room_id)
+
+        # Get the room details
+        room_details = db.room_op.get_room(room_id)
+
+        # Return the room details in the response
+        return jsonify(room_details), 201
+    except IntegrityError as e:
+        return {
+            'error': 'databaseError',
+            'message': str(e)
+        }, 500
