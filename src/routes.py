@@ -636,15 +636,14 @@ def get_terms(_, language_code):
     if request.args.get('approved') == "True":
         # Get list of approved medical terms
         data = db.message_op.get_terms_approved(language_code)
+
     elif request.args.get('approved') == "False":
         # Get list of unapproved medical terms
         data = db.message_op.get_terms_unapproved(language_code)
     else:
         # Get ALL medical terms
-        print("GET ALL")
         data = db.message_op.get_terms_all(language_code)
 
-    data = db.message_op.get_terms_all(language_code)
     return data
 
 
