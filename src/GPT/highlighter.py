@@ -161,8 +161,8 @@ For example, when language code is jp, inputting リウマチ熱, output https:/
 
         res = wikiUrlGetter.chat(term)
 
-        if check_url(res2):
-            urlstr = res2
+        if check_url(res):
+            urlstr = res
 
     return urlstr
 

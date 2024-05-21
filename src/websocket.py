@@ -196,9 +196,6 @@ def chat_with_bot(session: dict, json: dict) -> int:
     lan = session['user']['language']
 
     if chatBots.get(roomId) is None:
-        # TODO: implement chat bot
-        # NOTE FROM CHRIS: We should also be storing the messages sent by ChatGPT.
-        # So have the system save their message, enhance it and send it.
         chatBots[roomId] = GPT.get_ai_doctor(lan)
     chatBot = chatBots[roomId]
 
