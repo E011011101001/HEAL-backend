@@ -145,9 +145,9 @@ def get_room_requests_all(user_id) -> dict:
     dict: List of rooms
     """
     rooms = Room.select().where(
-        (Room.doctor.contains(user_id))&
-         ((Room.patients.count() == 1)&
-          ((Room.doctor.count() == 1) | (Room.doctor.count() == 3))))
+        (DoctorInRoom.doctor.id)&
+         ((Room.patient.count() == 1)&
+          ((DoctorInRoom.doctor.count() == 1) | (DoctorInRoom.doctor.count() == 3))))
     room_list = []
 
     for room in rooms:
@@ -241,7 +241,7 @@ def get_step3_rooms(doctor_id):
     target_rooms = (Room
                     .select()
                     .join(SecondOpinionRequest, on=(Room.id == SecondOpinionRequest.room))
-                    .where((SecondOpinionRequest.second_opinion_doctor == doctor_id) & 
+                    .where((SecondOpinionRequest.second_opinion_doctor == doctor_id) &
                            (Room.id.not_in(joined_rooms))))
 
     # Fetch full room details using an assumed function `get_room` for fetching detailed room information
