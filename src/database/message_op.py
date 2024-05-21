@@ -51,10 +51,7 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
     dict: Message with translation and medical terms
     """
     message = Message.get((Message.room == room_id) & (Message.id == message_id))
-    print_info(f"Retrieving message: {str({
-        "id": message_id,
-        "text": message.text
-    })}")
+    print_info(f"Retrieving message: {str({ 'id': message_id, 'text': message.text })}")
 
     try:
         translation = MessageTranslationCache.get(
