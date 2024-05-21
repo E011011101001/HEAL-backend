@@ -244,7 +244,7 @@ def get_all_doctors() -> list:
             "id": doctor.id,
             "email": doctor.email,
             "name": doctor.name,
-            "specialisation": doctor.doctor.specialisation,
+            # "specialisation": doctor.doctor.specialisation,
             "language_code": doctor.language_code
         }
         for doctor in query

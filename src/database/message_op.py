@@ -71,6 +71,8 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
         } for message_term in message_terms
     ]
 
+    print(medical_terms)
+
     return {
         "messageId": message.id,
         "roomId": message.room.id,
@@ -170,10 +172,16 @@ def get_term(term_id, language_code):
     dict: Information about the medical term
     """
     medical_term = MedicalTerm.get(MedicalTerm.id == term_id)
-    medical_term_info = MedicalTermInfo.get(
-        (MedicalTermInfo.medical_term == term_id) &
-        (MedicalTermInfo.language_code == language_code)
-    )
+    try:
+        # medical_term_info = MedicalTermInfo.get(
+        #     (MedicalTermInfo.medical_term == term_id) &
+        #     (MedicalTermInfo.language_code == language_code)
+        # )
+        medical_term_info = MedicalTermInfo.get(
+            (MedicalTermInfo.medical_term == term_id)
+        )
+    except Exception as e:
+        print(e)
 
     return {
         "medicalTermId": term_id,

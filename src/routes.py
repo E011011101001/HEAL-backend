@@ -1243,11 +1243,11 @@ def add_second_opinion_doctor(_, __, room_id, doctor_id):
             }, 404
         
         # Check if the doctor exists
-        if not db.user.get_user_full(doctor_id) or db.user.get_user_full(doctor_id)['user_type'] != 2:
+        if not db.user.get_user_full(doctor_id) or db.user.get_user_full(doctor_id).get('user_type') != 2:
             return {
                 "error": "NotFoundError",
                 "message": "Doctor not found."
-            }, 404
+                }, 404
 
         # Check if the second opinion request already exists
         existing_request = db.SecondOpinionRequest.get_or_none(db.SecondOpinionRequest.room == room_id, db.SecondOpinionRequest.second_opinion_doctor == doctor_id)

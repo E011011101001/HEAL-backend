@@ -203,6 +203,7 @@ def chat_with_bot(session: dict, json: dict) -> int:
 
     message_id = db.message_op.save_message_only(0, roomId, bot_msg, datetime.now())
     make_message(message_id, lan, lan)
+    emit('message', db.message_op.get_message(roomId, message_id, lan), to=roomId)
     return message_id
 
 
@@ -253,6 +254,8 @@ def message(json: dict):
 
             # get doctor's language_code. Warning: Only handling the last joined doctor's language
             target_lan = db.user_op.get_user_full(doctors[-1])['language']
+
+            make_message(message_id, session['user']['language'], target_lan)
 
             emit('message', db.message_op.get_message(roomId, message_id, target_lan), to=roomId, include_self=False)
             return
