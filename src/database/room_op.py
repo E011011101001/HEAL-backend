@@ -2,7 +2,7 @@
 from peewee import DoesNotExist, JOIN, fn
 from datetime import datetime
 
-from .data_models import Room, DoctorInRoom, SecondOpinionRequest
+from .data_models import Room, DoctorInRoom, SecondOpinionRequest, BaseUser
 from .user_op import get_user_full
 
 
@@ -114,6 +114,33 @@ def leave_room(user_id, room_id):
     except DoesNotExist:
         return False
 
+
+def get_rooms_all_fixed(user_id) -> dict:
+    """
+    Get all rooms for a patient.
+
+    Parameters:
+    user_id (int): ID of the user
+
+    Returns:
+    dict: List of rooms
+    """
+    user = BaseUser.get(BaseUser.id == user_id)
+
+    room_list = []
+
+    if user.user_type == 1:  # Patient
+        rooms = Room.select().where(Room.patient == user_id)
+    elif user.user_type == 2:  # Doctor
+        rooms = Room.select().join(DoctorInRoom).where(DoctorInRoom.doctor == user_id)
+    else:
+        return {"rooms": room_list}
+
+    for room in rooms:
+        room_data = get_room(room.id)
+        room_list.append(room_data)
+
+    return {"rooms": room_list}
 
 def get_rooms_all(user_id) -> dict:
     """

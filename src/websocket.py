@@ -64,7 +64,7 @@ def connect(auth: dict):
         return
 
     # Check if in room
-    rooms = db.room_op.get_rooms_all(session['userId'])['rooms']
+    rooms = db.room_op.get_rooms_all_fixed(session['userId'])['rooms']
     roomIds = list(map(lambda room: room.get('roomId'), rooms))
 
     if roomId not in roomIds:
@@ -254,7 +254,7 @@ def message(json: dict):
             # get doctor's language_code. Warning: Only handling the last joined doctor's language
             target_lan = db.user_op.get_user_full(doctors[-1])['language']
 
-            emit('message', db.message_op.get_message(roomId, message_id, target_lan), to=roomId)
+            emit('message', db.message_op.get_message(roomId, message_id, target_lan), to=roomId, include_self=False)
             return
     else:
         # User is a doctor
@@ -265,7 +265,7 @@ def message(json: dict):
 
     # Forward enhanced message on to receiving client
     data = db.message_op.get_message(roomId, doctor_msg_id, target_lan)
-    emit('message', data, to=roomId)
+    emit('message', data, to=roomId, include_self=False)
 
 
 @socketio.on('ping-pong')
