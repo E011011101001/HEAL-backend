@@ -116,8 +116,8 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
     )
 
     # Add Synonyms for Prescription
-    synonyms_en_prescription = ["paracetamol", "acetaminophen", "tylenol", "panadol"]
-    synonyms_jp_prescription = ["パラセタモール", "アセトアミノフェン", "タイレノール", "パナドール"]
+    synonyms_en_prescription = ["Paracetamol", "Tylenol", "Panadol"]
+    synonyms_jp_prescription = ["パラセタモール", "タイレノール", "パナドール"]
 
     for synonym in synonyms_en_prescription:
         MedicalTermSynonym.create(
@@ -143,10 +143,42 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
 
     MedicalTermInfo.create(
         medical_term=prescription_term.id,
+        language_code="en",
+        name="Tylenol",
+        description="Tylenol is used as an antipyretic analgesic.",
+        url="https://www.webmd.com/drugs/2/drug-7076/tylenol-oral/details"
+    )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term.id,
+        language_code="en",
+        name="Panadol",
+        description="Tylenol is used as an antipyretic analgesic.",
+        url="https://www.haleonhealthpartner.com/en-ie/pain-relief/brands/panadol/overview/"
+    )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term.id,
         language_code="jp",
         name="パラセタモール",
         description="パラセタモールは痛みと発熱を治療するために使用されます。",
         url="https://www.nhs.uk/medicines/paracetamol/"
+    )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term.id,
+        language_code="jp",
+        name="タイレノール",
+        description="タイレノールは解熱鎮痛剤として使用されます。",
+        url="https://fastdoctor.jp/columns/corona-high-fever"
+    )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term.id,
+        language_code="jp",
+        name="パナドール",
+        description="パナドールは解熱鎮痛剤として使用されます。",
+        url="https://www.petkusuri.com/products/panadol-500mg"
     )
 
     # Create Room
@@ -241,6 +273,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
         hospital="Osaka Medical Center"
     )
 
+
     # New Room without any doctor joined
     room2 = Room.create(
         patient=patient_user.id,
@@ -282,4 +315,176 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
         send_time=datetime.now()
     )
 
+    ###↑ONE CASE ###
+    ###ADD INFORMATION###
+    #More Patients
+    # User 2
+    patient_user2 = BaseUser.create(
+        email="jane.smith@gmail.com",
+        password=salted_hash("password"),
+        language_code="en",
+        name="Jane Smith",
+        user_type=1,  # PATIENT
+        date_of_birth=date(1985, 5, 14)
+    )
+    Patient.create(
+        base_user=patient_user2.id,
+        height=165,
+        weight=70
+    )
+
+    # User 3
+    patient_user3 = BaseUser.create(
+        email="michael.jordan@gmail.com",
+        password=salted_hash("password"),
+        language_code="en",
+        name="Michael Jordan",
+        user_type=1,  # PATIENT
+        date_of_birth=date(1963, 2, 17)
+    )
+    Patient.create(
+        base_user=patient_user3.id,
+        height=198,
+        weight=98
+    )
+
+    # User 4
+    patient_user4 = BaseUser.create(
+        email="emily.jones@gmail.com",
+        password=salted_hash("password"),
+        language_code="en",
+        name="Emily Jones",
+        user_type=1,  # PATIENT
+        date_of_birth=date(1992, 11, 30)
+    )
+    Patient.create(
+        base_user=patient_user4.id,
+        height=160,
+        weight=55
+    )
+
+    # User 5
+    patient_user5 = BaseUser.create(
+        email="david.wilson@gmail.com",
+        password=salted_hash("password"),
+        language_code="en",
+        name="David Wilson",
+        user_type=1,  # PATIENT
+        date_of_birth=date(1978, 7, 22)
+    )
+    Patient.create(
+        base_user=patient_user5.id,
+        height=175,
+        weight=80
+    )
+
+    #More Doctors
+    doctor_user_4 = BaseUser.create(
+    email="pediatrician_doctor@gmail.com",
+    password=salted_hash("password"),
+    language_code="jp",
+    name="Dr. Sato",
+    user_type=2,  # DOCTOR
+        date_of_birth=date(1980, 3, 15)
+    )
+    Doctor.create(
+        base_user=doctor_user_4.id,
+        specialisation="Pediatrics",
+        hospital="Tokyo Ikebukuro Hospital"
+    )
+
+    doctor_user_5 = BaseUser.create(
+        email="oncologist_doctor@gmail.com",
+        password=salted_hash("password3"),
+        language_code="jp",
+        name="Dr. Tanaka",
+        user_type=2,  # DOCTOR
+        date_of_birth=date(1968, 11, 10)
+    )
+    Doctor.create(
+        base_user=doctor_user_5.id,
+        specialisation="Oncology",
+        hospital="Kyoto nijo Hospital"
+    )
+
+    #Create Medical Term for Condition
+    condition_term_2 = MedicalTerm.create(
+        term_type="CONDITION"
+    )
+
+    # Add Synonyms for Condition
+    synonyms_en_2 = ["Asthma", "Bronchial Asthma", "Reactive Airway Disease", "Asthmatic Condition", "Respiratory Asthma"]
+    synonyms_jp_2 = ["喘息", "気管支喘息", "呼吸器喘息"]
+
+    for synonym in synonyms_en_2:
+        MedicalTermSynonym.create(
+            medical_term_2=condition_term_2.id,
+            synonym=synonym,
+            language_code="en"
+        )
+
+    for synonym in synonyms_jp_2:
+        MedicalTermSynonym.create(
+            medical_term_2=condition_term_2.id,
+            synonym=synonym,
+            language_code="jp"
+        )
+
+    MedicalTermInfo.create(
+        medical_term_2=condition_term_2.id,
+        language_code="en",
+        name="Bronchial Asthma",
+        description="Bronchial asthma is a condition where inflammation persists in the airways, causing the airways to become sensitive to various triggers and repeatedly narrowing them in spasms.",
+        url="https://my.clevelandclinic.org/health/diseases/6424-asthma"
+    )
+
+    MedicalTermInfo.create(
+        medical_term_2=condition_term_2.id,
+        language_code="jp",
+        name="気管支喘息",
+        description="気管支喘息は気道に炎症が続き、さまざまな刺激に気道が敏感になって発作的に気道が狭くなることを繰り返す病気です",
+        url="https://www.mhlw.go.jp/new-info/kobetu/kenkou/ryumachi/dl/jouhou01-07.pdf"
+    )
+
+    # Create Medical Term for Prescription
+    prescription_term_2 = MedicalTerm.create(
+        term_type="PRESCRIPTION"
+    )
+
+    # Add Synonyms for Prescription
+    synonyms_en_prescription_2 = ["Relvar", "Alvesco", "Mepolizumab", "Salmeterol"]
+    synonyms_jp_prescription_2 = ["レルベア", "オルベスコ", "メプチン", "サルタノール"]
+
+    for synonym in synonyms_en_prescription_2:
+        MedicalTermSynonym.create(
+            medical_term=prescription_term_2.id,
+            synonym=synonym,
+            language_code="en"
+        )
+
+    for synonym in synonyms_jp_prescription_2:
+        MedicalTermSynonym.create(
+            medical_term=prescription_term_2.id,
+            synonym=synonym,
+            language_code="jp"
+        )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term_2.id,
+        language_code="en",
+        name="Paracetamol",
+        description="Paracetamol is used to treat pain and fever.",
+        url="https://www.nhs.uk/medicines/paracetamol/"
+    )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term_2.id,
+        language_code="jp",
+        name="パラセタモール",
+        description="パラセタモールは痛みと発熱を治療するために使用されます。",
+        url="https://www.nhs.uk/medicines/paracetamol/"
+    )
+
+
     print("Additional data seeded.")
+
