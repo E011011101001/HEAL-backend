@@ -452,8 +452,8 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
     )
 
     # Add Synonyms for Prescription
-    synonyms_en_prescription_2 = ["Relvar", "Alvesco", "Mepolizumab", "Salmeterol"]
-    synonyms_jp_prescription_2 = ["レルベア", "オルベスコ", "メプチン", "サルタノール"]
+    synonyms_en_prescription_2 = ["Relvar", "Salmeterol"]
+    synonyms_jp_prescription_2 = ["レルベア", "サルタノール"]
 
     for synonym in synonyms_en_prescription_2:
         MedicalTermSynonym.create(
@@ -472,19 +472,34 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
     MedicalTermInfo.create(
         medical_term=prescription_term_2.id,
         language_code="en",
-        name="Paracetamol",
-        description="Paracetamol is used to treat pain and fever.",
-        url="https://www.nhs.uk/medicines/paracetamol/"
+        name="Relvar",
+        description="Lerbea reduces inflammation in the airways and dilates the bronchi, thereby improving cough and breathlessness.",
+        url="https://www.rad-ar.or.jp/siori/english/search/result?n=34088"
+    )
+
+    MedicalTermInfo.create(
+        medical_term=prescription_term_2.id,
+        language_code="en",
+        name="Salmeterol",
+        description="It is used both as a reliever to immediately suppress symptoms during a seizure and as a controller to prevent seizures with daily doses.",
+        url="https://medlineplus.gov/druginfo/meds/a695001.html"
     )
 
     MedicalTermInfo.create(
         medical_term=prescription_term_2.id,
         language_code="jp",
-        name="パラセタモール",
-        description="パラセタモールは痛みと発熱を治療するために使用されます。",
-        url="https://www.nhs.uk/medicines/paracetamol/"
+        name="レルベア",
+        description="レルベアは気道の炎症を抑え気管支を拡張することで、咳や息苦しさなどを改善する効果があります。",
+        url="https://www.kegg.jp/medicus-bin/japic_med?japic_code=00064840"
     )
 
+    MedicalTermInfo.create(
+        medical_term=prescription_term_2.id,
+        language_code="jp",
+        name="サルタノール",
+        description="発作の時に即座に症状を抑えるリリーバーとしても、毎日の服用で発作を予防するコントローラーとしても使用されます。",
+        url="https://www.kamimutsukawa.com/blog2/kokyuuki/5712/"
+    )
 
     print("Additional data seeded.")
 
