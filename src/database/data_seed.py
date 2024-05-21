@@ -315,6 +315,7 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
         send_time=datetime.now()
     )
 
+
     ###↑ONE CASE ###
     ###ADD INFORMATION###
     #More Patients
@@ -331,51 +332,6 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
         base_user=patient_user2.id,
         height=165,
         weight=70
-    )
-
-    # User 3
-    patient_user3 = BaseUser.create(
-        email="michael.jordan@gmail.com",
-        password=salted_hash("password"),
-        language_code="en",
-        name="Michael Jordan",
-        user_type=1,  # PATIENT
-        date_of_birth=date(1963, 2, 17)
-    )
-    Patient.create(
-        base_user=patient_user3.id,
-        height=198,
-        weight=98
-    )
-
-    # User 4
-    patient_user4 = BaseUser.create(
-        email="emily.jones@gmail.com",
-        password=salted_hash("password"),
-        language_code="en",
-        name="Emily Jones",
-        user_type=1,  # PATIENT
-        date_of_birth=date(1992, 11, 30)
-    )
-    Patient.create(
-        base_user=patient_user4.id,
-        height=160,
-        weight=55
-    )
-
-    # User 5
-    patient_user5 = BaseUser.create(
-        email="david.wilson@gmail.com",
-        password=salted_hash("password"),
-        language_code="en",
-        name="David Wilson",
-        user_type=1,  # PATIENT
-        date_of_birth=date(1978, 7, 22)
-    )
-    Patient.create(
-        base_user=patient_user5.id,
-        height=175,
-        weight=80
     )
 
     #More Doctors
@@ -499,6 +455,78 @@ def seed_data(BaseUser, Doctor, Patient, Room, DoctorInRoom, SecondOpinionReques
         name="サルタノール",
         description="発作の時に即座に症状を抑えるリリーバーとしても、毎日の服用で発作を予防するコントローラーとしても使用されます。",
         url="https://www.kamimutsukawa.com/blog2/kokyuuki/5712/"
+    )
+
+    room4 = Room.create(
+        patient=patient_user2.id,
+        creation_time=datetime.now()
+    )
+
+    DoctorInRoom.create(
+        doctor=doctor_user_4.id,
+        room=room4.id,
+        joined_time=datetime.now(),
+        enabled=True
+    )
+
+    DoctorInRoom.create(
+        doctor=doctor_user_5.id,
+        room=room4.id,
+        joined_time=datetime.now(),
+        enabled=True
+    )
+
+    # Create Messages
+    message_3 = Message.create(
+        user=patient_user.id,
+        room=room.id,
+        text="Hi, I caught a cold a week ago and have been coughing.",
+        send_time=datetime.now()
+    )
+
+    message_4 = Message.create(
+        user=doctor_user_1.id,
+        room=room.id,
+        text="おそらく風邪をひいたことによってウイルスに感染してそれが引き金になって喘息が小発作と呼ばれる状態になっていると思われます。",
+        send_time=datetime.now()
+    )
+
+    # Link the medical term to the second message
+    MessageTermCache.create(
+        medical_term=condition_term.id,
+        message=message_4.id,
+        original_synonym=MedicalTermSynonym.get(MedicalTermSynonym.synonym == "喘息").id,
+        translated_synonym=MedicalTermSynonym.get(MedicalTermSynonym.synonym == "Bronchial Asthma").id
+    )
+
+    # Add Translations for Messages
+    MessageTranslationCache.create(
+        message=message_3.id,
+        language_code="jp",
+        translated_text="こんにちは。一週間前に風邪をひき、咳が続いています。"
+    )
+
+    MessageTranslationCache.create(
+        message=message_2.id,
+        language_code="en",
+        translated_text="Perhaps you have a cold that has infected you with a virus that has triggered your asthma into a condition called a flare-up."
+    )
+
+    # Create Patient Condition for asthma
+    patient_condition_2 = PatientCondition.create(
+        medical_term=condition_term_2.id,
+        patient=patient_user2.id,
+        status="current",
+        diagnosis_date=date(2022, 1, 1)
+    )
+
+    # Create Prescription for the asthma Condition
+    PatientPrescription.create(
+        user_condition=patient_condition_2.id,
+        medical_term=prescription_term_2.id,
+        dosage="100μg",
+        prescription_date=datetime.now(),
+        frequency="once a day"
     )
 
     print("Additional data seeded.")
