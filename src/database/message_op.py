@@ -9,6 +9,7 @@ from ..GPT import highlighter, translate_to
 from .data_models import MedicalTerm, MedicalTermInfo, Message, \
     MessageTermCache, MedicalTermSynonym, MessageTranslationCache, BaseUser
 
+from ..utils import print_info
 
 def get_chat_messages(room_id: int, page_num: int, limit_num: int, language_code: str) -> list[dict]:
     """
@@ -50,8 +51,10 @@ def get_message(room_id: int, message_id: int, language_code: str) -> dict:
     dict: Message with translation and medical terms
     """
     message = Message.get((Message.room == room_id) & (Message.id == message_id))
-    print(message.id)
-    print(message.text)
+    print_info(f"Retrieving message: {str({
+        "id": message_id,
+        "text": message.text
+    })}")
 
     try:
         translation = MessageTranslationCache.get(
